@@ -1,0 +1,11 @@
+Helpful Notes for using SQLite3:
+
+Installation: I'm using Ubuntu, if you're using Windows I would look up a tutorial.
+Ubuntu Commands:
+
+sudo apt update
+sudo apt install sqlite3
+
+The structure of what a login/register query would look like:
+
+

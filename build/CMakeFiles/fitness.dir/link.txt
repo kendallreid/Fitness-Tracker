@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/fitness.dir/code/backend/db/schema.cpp.o CMakeFiles/fitness.dir/code/backend/main.cpp.o CMakeFiles/fitness.dir/code/backend/routes/login.cpp.o CMakeFiles/fitness.dir/code/backend/routes/register.cpp.o -o fitness  -lsqlite3 /usr/lib/x86_64-linux-gnu/libboost_system.so.1.74.0 /usr/lib/x86_64-linux-gnu/libboost_date_time.so.1.74.0 
