@@ -8,4 +8,33 @@ sudo apt install sqlite3
 
 The structure of what a login/register query would look like:
 
+Login: For login we have 2 options that we could use
+
+(1)
+We use a query to check the values of username and password in the table
+
+create a prepared statement (look up syntax, sqlite3_prepare_v2())
+- make sure that any inputted values are replaced with a ? in the prepared statement 
+bind the inputted values (look up syntax, sql_bind_text())
+- this replaces the ? in the prepared statement with the user-inputted values
+
+Then use sqlite3_step(statement)
+- this executes the query, then returns a value based on the result.
+- look up return types (row, done)
+
+call finalize to free memory that we don't need anymore
+
+
+(2)
+We use a query to obtain the hashed password corresponding to a username, 
+then we check if the passwords match in our C++ code
+
+Create prepared statement and bind values like above
+- except we only need to bind the username, we will obtain the hashed password
+
+use step to execute the statement
+- if successful, use sqlite3_column_text(statement, col) to access the data
+- col will be 0 in this case we only obtain 1 value (it's zero indexed)
+  if we had a query that wanted to obtain 3 values (a, b, c), col = 0 -> a and so on
+- this gives us the password which we will check against the hashed password
 
