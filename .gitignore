@@ -7,3 +7,5 @@
 /external/crow/Makefile
 *.o
 *.d
+
+echo ".vs/" >> .gitignore
