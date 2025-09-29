@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Registration</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --text: #222;
+      --muted: #666;
+      --border: #8c001a44;
+      --bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 460px;
+      border: 2px solid var(--crimson);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(0,0,0,.07);
+    }
+    .card-inner { padding: 22px; }
+    h1 { margin: 0 0 8px; color: var(--crimson); font-size: 26px; }
+    p.sub { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+    .field { margin: 12px 0; }
+    label { display: block; font-size: 13px; color: var(--crimson); margin-bottom: 6px; }
+    .input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 15px;
+      outline: none;
+    }
+    .input:focus { border-color: var(--crimson); box-shadow: 0 0 0 3px rgba(140,0,26,.12); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .checkbox { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text); }
+    .btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--crimson);
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--crimson-600); }
+    .error { color: #b91c1c; font-size: 13px; margin-top: 8px; }
+    .success { color: #166534; font-size: 13px; margin-top: 8px; }
+    .footer { text-align: center; margin-top: 12px; font-size: 13px; }
+    a.link { color: var(--crimson); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <main class="card" role="region" aria-labelledby="title">
+    <div class="card-inner">
+      <h1 id="title">Create your account</h1>
+
+      <form id="registerForm" novalidate>
+        <div class="row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input class="input" id="firstName" name="firstName" type="text" autocomplete="given-name" placeholder="First" />
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input class="input" id="lastName" name="lastName" type="text" autocomplete="family-name" placeholder="Last" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="email.com" required />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="password">Password</label>
+            <input class="input" id="password" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required />
+          </div>
+          <div class="field">
+            <label for="confirm">Confirm password</label>
+            <input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repeat password" required />
+          </div>
+        </div>
+
+        <button class="btn" id="submitBtn" type="submit">Create account</button>
+        <p id="msg" class="error" role="alert" aria-live="polite"></p>
+
+        <p class="footer">Already have an account? <a class="link" href="/login">Sign in</a></p>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const confirmPw = document.getElementById('confirm');
+    const terms = document.getElementById('terms');
+    const msg = document.getElementById('msg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function validate(){
+      msg.className = 'error';
+      if(!email.value.trim()) return 'Please enter your email.';
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) return 'Enter a valid email address.';
+      if(!password.value || password.value.length < 8) return 'Password must be at least 8 characters.';
+      if(password.value !== confirmPw.value) return 'Passwords do not match.';
+      return '';
+    }
+
+    async function register(payload){
+      // Replace with backend 
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok){
+        try { const data = await res.json(); throw new Error(data.message || 'Registration failed.'); }
+        catch(_) { throw new Error(res.status === 409 ? 'Email already in use.' : `Error ${res.status}`); }
+      }
+      return res.json();
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+      const err = validate();
+      if(err){ msg.textContent = err; return; }
+
+      submitBtn.disabled = true; submitBtn.textContent = 'Creating…';
+      try{
+        const payload = {
+          firstName: document.getElementById('firstName').value.trim(),
+          lastName: document.getElementById('lastName').value.trim(),
+          email: email.value.trim(),
+          password: password.value
+        };
+        await register(payload);
+        msg.className = 'success';
+        msg.textContent = 'Account created!';
+        // Brings to login page
+        setTimeout(()=> window.location.assign('/login'), 800);
+      }catch(err){
+        msg.className = 'error';
+        msg.textContent = err.message;
+      }finally{
+        submitBtn.disabled = false; submitBtn.textContent = 'Create account';
+      }
+    });
+  </script>
+</body>
+</html>
