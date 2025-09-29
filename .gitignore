@@ -8,4 +8,3 @@
 *.o
 *.d
 
-echo ".vs/" >> .gitignore
