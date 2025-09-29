@@ -8,3 +8,13 @@
 *.o
 *.d
 
+
+# IDE and build/output folders
+.vs/
+out/
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+*.o
+*.d
