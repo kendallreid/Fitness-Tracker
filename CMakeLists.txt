@@ -22,7 +22,11 @@ file(GLOB_RECURSE SRC_FILES
 add_executable(fitness ${SRC_FILES})
 
 # Make sure your target can see libsodium headers
-target_include_directories(fitness PRIVATE ${SODIUM_INCLUDE_DIRS})
+target_include_directories(fitness PRIVATE
+    ${SODIUM_INCLUDE_DIRS}             # libsodium headers
+    ${CMAKE_SOURCE_DIR}/code/backend   # project headers
+    ${CMAKE_SOURCE_DIR}/code/backend/routes
+)
 
 # Link dependencies
 find_package(Threads REQUIRED)

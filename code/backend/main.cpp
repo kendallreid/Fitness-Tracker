@@ -53,16 +53,18 @@ int main() {
             return makeError(400, "Invalid JSON");
         }
 
-        string username = body["username"].s();
-        string email = body["email"].s();
-        string password = body["password"].s();
-        string firstName = body["first_name"].s();
-        string lastName = body["last_name"].s();
+        string username, email, password, firstName, lastName;
 
         // Basic validation
         if (username.empty() || email.empty() || password.empty() || firstName.empty() || lastName.empty()) {
             return makeError(400, "Missing required fields");
         }
+
+        username = body["username"].s();
+        email = body["email"].s();
+        password = body["password"].s();
+        firstName = body["first_name"].s();
+        lastName = body["last_name"].s();
 
         // Create user
         CreateUserResult result = createUser(db, username, password, email, firstName, lastName);
