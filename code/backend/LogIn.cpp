@@ -1,4 +1,5 @@
 #include "LogIn.h"
+#include "hash.h"
 #include <sqlite3.h>
 #include <iostream>
 
@@ -55,7 +56,7 @@ bool LogInManager::LogIn(const string& username, const string& password)
     if (!getUser(username, user))  // User not found from fetch
         return false;
     
-    if (user.password == password)  // NEED TO HASH THIS EVENTUALLY
+    if (verifyPassword(password, user.password))  // NEED TO HASH THIS EVENTUALLY
         return true;  // Login successful
     else
         return false;  // Wrong password
