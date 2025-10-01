@@ -1,4 +1,5 @@
 #include <crow.h>
+#include <sqlite3.h>
 #include <sstream>
 #include <map>
 #include "../LogIn.h"
@@ -24,9 +25,9 @@ std::map<string, string> parseFormData(const string& body) {
     return form;
 }
 
-void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager) 
+void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3* db) 
 {
-    CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST)([&loginManager](const crow::request& req)
+    CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST)([&loginManager, db](const crow::request& req)
     {
         auto form = parseFormData(req.body);
 
@@ -39,7 +40,7 @@ void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager)
         std::string username = usernameIt->second;
         std::string password = passwordIt->second;
 
-        if (loginManager.LogIn(username, password)) {
+        if (loginManager.LogIn(username, password, db)) {
             return crow::response(200, "Login successful!");
         } else {
             return crow::response(401, "Invalid username or password");

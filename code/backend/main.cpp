@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager);
+void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3* db);
 
 // helpers to create JSON responses
 inline crow::response makeError(int code, const string& message) {
@@ -61,7 +61,7 @@ int main() {
     LogInManager loginManager("backend/fitness.db");
 
     // Hook up login routes
-    setupLoginRoutes(fitnessApp, loginManager);
+    setupLoginRoutes(fitnessApp, loginManager, db);
   
     // Initialize libsodium
     if (sodium_init() < 0) {

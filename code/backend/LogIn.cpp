@@ -6,21 +6,21 @@
 using std::cerr;
 using std::endl;
 
-bool LogInManager::userExists(const string& username)
+bool LogInManager::userExists(const string& username, sqlite3* db)
 {
     User user;  // Dummy value for getUser argument
-    return getUser(username, user);
+    return getUser(username, user, db);
 }
 
-bool LogInManager::getUser(const std::string& username, User& outUser)
+bool LogInManager::getUser(const std::string& username, User& outUser, sqlite3* db)
 {
     // Open the database
-    sqlite3* db;
-    if (sqlite3_open(_databasePath.c_str(), &db))
-    {
-        cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
-        return false;
-    }
+    //sqlite3* db;
+    //if (sqlite3_open(_databasePath.c_str(), &db))
+    //{
+    //    cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
+    //    return false;
+    //}
 
     // Create a query
     string query = "SELECT username, password_hash FROM users WHERE username = ?;";
@@ -45,15 +45,15 @@ bool LogInManager::getUser(const std::string& username, User& outUser)
 
     // Clear space created from query and close database
     sqlite3_finalize(stmt);
-    sqlite3_close(db);
+    //sqlite3_close(db);
     return found;
 }
 
-bool LogInManager::LogIn(const string& username, const string& password)
+bool LogInManager::LogIn(const string& username, const string& password, sqlite3* db)
 {
     User user;
 
-    if (!getUser(username, user))  // User not found from fetch
+    if (!getUser(username, user, db))  // User not found from fetch
         return false;
     
     if (verifyPassword(password, user.password))  // NEED TO HASH THIS EVENTUALLY
