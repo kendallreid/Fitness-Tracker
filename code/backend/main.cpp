@@ -20,6 +20,23 @@ inline crow::response makeSuccess(int code, const string& message) {
     return crow::response(code, body);
 }
 
+crow::response serveFile(const string& filepath, const string& contentType) {
+    // open file and read content
+    ifstream file(filepath, ios::in | ios::binary);
+    if (!file) {
+        return makeError(404, "File not found");
+    }
+
+    // read file content into a string
+    ostringstream buffer;
+    buffer << file.rdbuf();
+
+    // create response
+    crow::response res(buffer.str());
+    res.set_header("Content-Type", contentType);
+    return res;
+}
+
 int main() {
 
     // Initialize SQLite database connection
@@ -43,8 +60,14 @@ int main() {
         return 1; // don’t continue if init fails
     }
 
+    // Serve registration page
+    CROW_ROUTE(fitnessApp, "/auth/register")
+    ([]{
+        return serveFile("code/frontend/UserRegistration.html", "text/html");
+    });
+
     // User registration route
-    CROW_ROUTE(fitnessApp, "/users")
+    CROW_ROUTE(fitnessApp, "/register")
     .methods("POST"_method)([db](const crow::request& req){
 
         // Parse JSON body
@@ -55,16 +78,16 @@ int main() {
 
         string username, email, password, firstName, lastName;
 
+        username = body["username"].s();
+        email = body["email"].s();
+        password = body["password"].s();
+        firstName = body["firstName"].s();
+        lastName = body["lastName"].s();
+
         // Basic validation
         if (username.empty() || email.empty() || password.empty() || firstName.empty() || lastName.empty()) {
             return makeError(400, "Missing required fields");
         }
-
-        username = body["username"].s();
-        email = body["email"].s();
-        password = body["password"].s();
-        firstName = body["first_name"].s();
-        lastName = body["last_name"].s();
 
         // Create user
         CreateUserResult result = createUser(db, username, password, email, firstName, lastName);

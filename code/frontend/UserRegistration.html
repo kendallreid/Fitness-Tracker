@@ -88,6 +88,11 @@
           <input class="input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="email.com" required />
         </div>
 
+        <div class="field">
+          <label for="username">Username</label>
+          <input class="input" id="username" name="username" type="text" autocomplete="username" placeholder="Choose a username" required />
+        </div>
+
         <div class="row">
           <div class="field">
             <label for="password">Password</label>
@@ -127,7 +132,7 @@
 
     async function register(payload){
       // Replace with backend 
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -151,6 +156,7 @@
           firstName: document.getElementById('firstName').value.trim(),
           lastName: document.getElementById('lastName').value.trim(),
           email: email.value.trim(),
+          username: document.getElementById('username').value.trim(),
           password: password.value
         };
         await register(payload);
