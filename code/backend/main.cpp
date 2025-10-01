@@ -1,9 +1,12 @@
 #include <crow.h>
+#include "LogIn.h"
 #include <sodium.h>
 #include "routes/register.h"
 #include "db/schema.h"
 #include <iostream>
 using namespace std;
+
+void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager);
 
 // helpers to create JSON responses
 inline crow::response makeError(int code, const string& message) {
@@ -54,6 +57,12 @@ int main() {
 
     crow::SimpleApp fitnessApp;
 
+    // Initialize login manager with DB path
+    LogInManager loginManager("backend/fitness.db");
+
+    // Hook up login routes
+    setupLoginRoutes(fitnessApp, loginManager);
+  
     // Initialize libsodium
     if (sodium_init() < 0) {
         std::cerr << "Failed to initialize libsodium" << std::endl;
@@ -107,7 +116,8 @@ int main() {
 
     });
 
-    fitnessApp.port(8080).multithreaded().run();
+    // Start server
+    fitnessApp.port(18080).multithreaded().run();
     sqlite3_close(db);
 
     return 0;
