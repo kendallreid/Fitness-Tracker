@@ -27,7 +27,7 @@ bool LogInManager::getUser(const std::string& username, User& outUser, sqlite3* 
     sqlite3_stmt* stmt;
     if(sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
     {
-        sqlite3_close(db);
+        //sqlite3_close(db);
         return false;
     }
 
@@ -53,11 +53,19 @@ bool LogInManager::LogIn(const string& username, const string& password, sqlite3
 {
     User user;
 
-    if (!getUser(username, user, db))  // User not found from fetch
+    if (!getUser(username, user, db)) {
+        std::cout << "User not found: " << username << std::endl;
         return false;
-    
-    if (verifyPassword(password, user.passwordHash))  // NEED TO HASH THIS EVENTUALLY
-        return true;  // Login successful
-    else
-        return false;  // Wrong password
+    }
+
+    std::cout << "User found: " << user.username << std::endl;
+    std::cout << "Stored hash: " << user.passwordHash << std::endl;
+
+    if (verifyPassword(password, user.passwordHash)) {
+        std::cout << "Password verification SUCCESS!" << std::endl;
+        return true;
+    } else {
+        std::cout << "Password verification FAILED for user: " << username << std::endl;
+        return false;
+    }
 }

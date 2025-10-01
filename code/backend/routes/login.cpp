@@ -5,21 +5,37 @@
 #include "../LogIn.h"
 #include "../helper.h"
 
-std::map<string, string> parseFormData(const string& body) {
-    std::map<string, string> form;
+std::string urlDecode(const std::string &s) {
+    std::ostringstream out;
+    for (size_t i = 0; i < s.size(); ++i) {
+        if (s[i] == '%' && i + 2 < s.size()) {
+            std::string hex = s.substr(i + 1, 2);
+            char c = static_cast<char>(std::stoi(hex, nullptr, 16));
+            out << c;
+            i += 2;
+        } else if (s[i] == '+') {
+            out << ' ';
+        } else {
+            out << s[i];
+        }
+    }
+    return out.str();
+}
+
+std::map<std::string, std::string> parseFormData(const std::string& body) {
+    std::map<std::string, std::string> form;
     std::istringstream stream(body);
-    string pair;
+    std::string pair;
 
     while (std::getline(stream, pair, '&')) {
         auto pos = pair.find('=');
-        if (pos != string::npos) {
-            string key = pair.substr(0, pos);
-            string value = pair.substr(pos + 1);
+        if (pos != std::string::npos) {
+            std::string key = pair.substr(0, pos);
+            std::string value = pair.substr(pos + 1);
 
-            // decode + and %20 → space
-            for (auto &c : value) {
-                if (c == '+') c = ' ';
-            }
+            // decode + and %XX sequences
+            value = urlDecode(value);
+
             form[key] = value;
         }
     }
@@ -31,6 +47,9 @@ void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3*
     CROW_ROUTE(app, "/login").methods(crow::HTTPMethod::POST)([&loginManager, db](const crow::request& req)
     {
         auto form = parseFormData(req.body);
+        std::cout << "Raw body: " << req.body << std::endl;
+        std::cout << "Parsed username: " << form["username"] << std::endl;
+        std::cout << "Parsed password: " << form["password"] << std::endl;
 
         auto usernameIt = form.find("username");
         auto passwordIt = form.find("password");

@@ -50,10 +50,6 @@ int main() {
 
     // Hook up register routes
     setupRegisterRoutes(fitnessApp, db);
-    
-
-
-
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();
