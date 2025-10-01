@@ -1,12 +1,15 @@
 #include "schema.h"
 
-bool create_tables(sqlite3 *db)
+bool createTables(sqlite3 *db)
 {
     const char *sql = R"(
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT NOT NULL,
+            last_name TEXT NOT NULL,
             username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
+            password_hash TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS workouts (
