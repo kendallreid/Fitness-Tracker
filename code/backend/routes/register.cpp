@@ -1,4 +1,50 @@
 #include "register.h"
+#include <sqlite3.h>
+#include <crow.h>
+
+void setupRegisterRoutes(crow::SimpleApp& app, sqlite3* db)
+{
+    // User registration route
+    CROW_ROUTE(app, "/register")
+    .methods("POST"_method)([db](const crow::request& req){
+
+        // Parse JSON body
+        auto body = crow::json::load(req.body);
+        if (!body) {
+            return makeError(400, "Invalid JSON");
+        }
+
+        string username, email, password, firstName, lastName;
+
+        username = body["username"].s();
+        email = body["email"].s();
+        password = body["password"].s();
+        firstName = body["firstName"].s();
+        lastName = body["lastName"].s();
+
+        // Basic validation
+        if (username.empty() || email.empty() || password.empty() || firstName.empty() || lastName.empty()) {
+            return makeError(400, "Missing required fields");
+        }
+
+        // Create user
+        CreateUserResult result = createUser(db, username, password, email, firstName, lastName);
+
+        // Handle result
+        switch (result) {
+            case CreateUserResult::Success:
+                return makeSuccess(201, "User created successfully");
+            case CreateUserResult::EmailAlreadyExists:
+                return makeError(409, "Email already exists");
+            case CreateUserResult::UsernameAlreadyExists:
+                return makeError(409, "Username already exists");
+            case CreateUserResult::DatabaseError:
+            default:
+                return makeError(500, "Database error");
+        }
+
+    });
+}
 
 CreateUserResult createUser(sqlite3* db, const string &username, const string &password, const string &email, const string &firstName, const string &lastName)
 {

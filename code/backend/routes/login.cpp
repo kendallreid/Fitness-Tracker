@@ -3,6 +3,7 @@
 #include <sstream>
 #include <map>
 #include "../LogIn.h"
+#include "../helper.h"
 
 std::map<string, string> parseFormData(const string& body) {
     std::map<string, string> form;

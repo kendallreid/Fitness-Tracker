@@ -5,6 +5,7 @@
 #include <sqlite3.h>
 #include <iostream>
 #include "hash.h"
+#include "../helper.h"
 
 using namespace std;
 
@@ -31,3 +32,4 @@ struct UserResult {
 
 CreateUserResult createUser(sqlite3* db, const string& username, const string& password, const string& email, const string& firstName, const string& lastName);
 int insertUserIntoDB(sqlite3* db, const User& user); // Placeholder for actual DB insertion function
+void setupRegisterRoutes(crow::SimpleApp& app, sqlite3* db);

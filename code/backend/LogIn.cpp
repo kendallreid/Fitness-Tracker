@@ -39,7 +39,7 @@ bool LogInManager::getUser(const std::string& username, User& outUser, sqlite3* 
     if(sqlite3_step(stmt) == SQLITE_ROW)
     {
         outUser.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        outUser.password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        outUser.passwordHash = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         found = true;
     }
 
@@ -56,7 +56,7 @@ bool LogInManager::LogIn(const string& username, const string& password, sqlite3
     if (!getUser(username, user, db))  // User not found from fetch
         return false;
     
-    if (verifyPassword(password, user.password))  // NEED TO HASH THIS EVENTUALLY
+    if (verifyPassword(password, user.passwordHash))  // NEED TO HASH THIS EVENTUALLY
         return true;  // Login successful
     else
         return false;  // Wrong password
