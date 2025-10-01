@@ -13,13 +13,13 @@ struct User{
 class LogInManager
 {
 public:
-    LogInManager(string& dbPath);
-    bool LogIn(const string& username, const string& password);
+    LogInManager(const string& dbPath) : _databasePath(dbPath) {};
     bool userExists(const string& username);
     bool getUser(const std::string& username, User& outUser);
+    bool LogIn(const string& username, const string& password);
 
 private:
-    string databasePath;
+    string _databasePath;
 };
 
 #endif
