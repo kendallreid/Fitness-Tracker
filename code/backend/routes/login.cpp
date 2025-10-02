@@ -61,7 +61,11 @@ void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3*
         std::string password = passwordIt->second;
 
         if (loginManager.LogIn(username, password, db)) {
-            return crow::response(200, "Login successful!");
+            //return crow::response(200, "Login successful!");
+             crow::response res;
+            res.code = 302;                          // HTTP redirect
+            res.set_header("Location", "/home");     // or "/HomePage.html"
+            return res;
         } else {
             return crow::response(401, "Invalid username or password");
         }

@@ -51,6 +51,13 @@ int main() {
     // Hook up register routes
     setupRegisterRoutes(fitnessApp, db);
 
+//HOME PAGE//
+    // Serve home page
+    CROW_ROUTE(fitnessApp, "/home")
+    ([]{
+        return serveFile("code/frontend/HomePage.html", "text/html");
+    });
+
     // Start server
     fitnessApp.port(8080).multithreaded().run();
     sqlite3_close(db);
