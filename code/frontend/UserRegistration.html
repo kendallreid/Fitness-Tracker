@@ -163,7 +163,7 @@
         msg.className = 'success';
         msg.textContent = 'Account created!';
         // Brings to login page
-        setTimeout(()=> window.location.assign('/login'), 800);
+        setTimeout(()=> window.location.assign('/auth/login'), 800);
       }catch(err){
         msg.className = 'error';
         msg.textContent = err.message;
