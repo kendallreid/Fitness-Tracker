@@ -130,18 +130,25 @@
       return '';
     }
 
-    async function register(payload){
-      // Replace with backend 
+    async function register(payload) {
       const res = await fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if(!res.ok){
-        try { const data = await res.json(); throw new Error(data.message || 'Registration failed.'); }
-        catch(_) { throw new Error(res.status === 409 ? 'Email already in use.' : `Error ${res.status}`); }
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (_) {
+        // if backend didn't return JSON (rare in your setup)
       }
-      return res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || `Error ${res.status}`);
+      }
+
+      return data; // success JSON
     }
 
     form.addEventListener('submit', async (e) => {
