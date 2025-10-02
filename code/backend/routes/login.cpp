@@ -68,7 +68,7 @@ void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3*
             return res;
         } else {
             res.code = 302;                    
-            res.set_header("Location", "/auth/login");  // Failure - back to login page
+            res.set_header("Location", "/auth/login?error=1");  // Failure - back to login page
             return res;
             //return crow::response(401, "Invalid username or password");
         }
