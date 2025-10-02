@@ -43,7 +43,7 @@ int main() {
 
 //REGISTRATION//
     // Serve registration page
-    CROW_ROUTE(fitnessApp, "/auth/register")
+    CROW_ROUTE(fitnessApp, "/")
     ([]{
         return serveFile("code/frontend/UserRegistration.html", "text/html");
     });
