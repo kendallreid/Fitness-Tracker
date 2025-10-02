@@ -3,6 +3,7 @@
 #include "routes/register.h"
 #include <iostream>
 #include <sqlite3.h>
+#include "hash.h"
 #include <string>
 
 using std::string;
