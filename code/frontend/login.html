@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
   <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --text: #222;
+      --muted: #666;
+      --border: #8c001a44;
+      --bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #fff;
-      color: #8C001A;
+      background-color: var(--bg);
+      color: var(--text);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
     .login-box {
-      border: 2px solid #8C001A;
+      border: 2px solid var(--crimson);
       border-radius: 10px;
       padding: 30px;
-      width: 300px;
+      width: 320px;
       text-align: center;
       background-color: #fff;
     }
     .login-box h2 {
       margin-bottom: 20px;
-      color: #8C001A;
+      color: var(--crimson);
     }
     .login-box input {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
-      border: 1px solid #8C001A;
-      border-radius: 5px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
     }
     .login-box button {
       width: 100%;
       padding: 10px;
-      margin-top: 15px;
+      background-color: var(--crimson);
+      color: #fff;
       border: none;
-      border-radius: 5px;
-      background-color: #8C001A;
-      color: white;
-      font-weight: bold;
+      border-radius: 6px;
       cursor: pointer;
     }
     .login-box button:hover {
-      background-color: #a60020;
+      background-color: var(--crimson-600);
     }
     .error {
+      margin-top: 15px;
       color: red;
-      font-size: 14px;
-      margin-top: 10px;
+      font-size: 0.9rem;
       display: none;
     }
   </style>
@@ -59,22 +66,19 @@
 <body>
   <div class="login-box">
     <h2>Login</h2>
-    <form action="http://localhost:8080/login" method="POST"> 
-<input type="text" name="username" placeholder="Username" required>
-<input type="password" name="password" placeholder="Password" required>
+    <form action="/login" method="POST">
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="password" name="password" placeholder="Password" required />
       <button type="submit">Login</button>
-      <p class="error" id="errorMsg">Incorrect username or password</p>
+      <p id="errorMsg" class="error">Incorrect username or password</p>
     </form>
   </div>
-  
+
   <script>
     const params = new URLSearchParams(window.location.search);
     if (params.get("error") === "1") {
       document.getElementById("errorMsg").style.display = "block";
-    }  
+    }
   </script>
 </body>
 </html>
-
-
-
