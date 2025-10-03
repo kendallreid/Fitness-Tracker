@@ -20,16 +20,6 @@ Here are links to the issues that we completed in this sprint:
 * [URL of issue 7](https://github.com/kendallreid/Fitness-Tracker/issues/3)
 * [URL of issue 8](https://github.com/kendallreid/Fitness-Tracker/issues/17)
 
-Desirables (Remove this section when you save the file):
-* Each issue should be assigned to a milestone
-* Each completed issue should be assigned to a pull request
-* Each completed pull request should include a link to a "Before and After" video
-* All team members who contributed to the issue should be assigned to it on
-
-GitHub
-* Each issue should be assigned story points using a label
-* Story points contribution of each team member should be indicated in a comment
-
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
 * There were no issues that were started and not completed in sprint 1
