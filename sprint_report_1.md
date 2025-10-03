@@ -19,41 +19,47 @@ Here are links to the issues that we completed in this sprint:
 * [URL of issue 6](https://github.com/kendallreid/Fitness-Tracker/issues/12)
 * [URL of issue 7](https://github.com/kendallreid/Fitness-Tracker/issues/3)
 * [URL of issue 8](https://github.com/kendallreid/Fitness-Tracker/issues/17)
+
 Desirables (Remove this section when you save the file):
 * Each issue should be assigned to a milestone
 * Each completed issue should be assigned to a pull request
 * Each completed pull request should include a link to a "Before and After" video
 * All team members who contributed to the issue should be assigned to it on
+
 GitHub
 * Each issue should be assigned story points using a label
 * Story points contribution of each team member should be indicated in a comment
+
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
-* URL of issue 1 <<One sentence explanation of why issue was not completed>>
-* URL of issue 2 <<One sentence explanation of why issue was not completed>>
-* URL of issue n <<One sentence explanation of why issue was not completed>>
-Examples of explanations (Remove this section when you save the file):
-* "We ran into a complication we did not anticipate (explain briefly)."
-* "We decided that the feature did not add sufficient value for us to work on it
-in this sprint (explain briefly)."
-* "We could not reproduce the bug" (explain briefly).
-* "We did not get to this issue because..." (explain briefly)
+* There were no issues that were started and not completed in sprint 1
+
 ## Code Files for Review
 Please review the following code files, which were actively developed during this
 sprint, for quality:
-* [Name of code file 1](https://github.com/your_repo/file_extension)
-* [Name of code file 2](https://github.com/your_repo/file_extension)
-* [Name of code file 3](https://github.com/your_repo/file_extension)
+* [HomePage.html](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/frontend/HomePage.html)
+* [login.html](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/frontend/login.html)
+* [UserRegistration.html](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/frontend/UserRegistration.html)
+* [login.cpp](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/routes/login.cpp)
+* [LogIn.cpp](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/LogIn.cpp)
+* [LogIn.h](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/LogIn.h)
+* [register.h](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/routes/register.h)
+* [register.cpp](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/routes/register.cpp)
+* [main.cpp](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/main.cpp)
+* [helper.h](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/helper.h)
+* [schema.h](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/db/schema.h)
+* [schema.cpp](https://github.com/kendallreid/Fitness-Tracker/blob/main/code/backend/db/schema.cpp)
+
 ## Retrospective Summary
 Here's what went well:
-* Item 1
-* Item 2
-* Item x
+* Item 1: We created a very solid foundation
+* Item 2: We showed that we were able to handle issues efficiently, we were able to accomplish what we set out to do in a more limited amount of time
+* Item 3: 
 Here's what we'd like to improve:
-* Item 1
-* Item 2
+* Item 1: Organization, each issue should be assigned to exactly 1 person and have a corresponding branch
+* Item 2: Planning, we need to make sure that we have the resources that we need before we start working on an issue. This way we can avoid things like multiple definitions for the same thing. Making our code look more cohesive is a goal for us.
 * Item x
 Here are changes we plan to implement in the next sprint:
-* Item 1
-* Item 2
-* Item x
+* Item 1: Having a designated home page
+* Item 2: Workout/Calorie Tracking 
+* Item 3: Personalization
