@@ -18,3 +18,6 @@ CMakeCache.txt
 Makefile
 *.o
 *.d
+
+/code/backend/fitness.db
+
