@@ -43,12 +43,12 @@ sprint, for quality:
 ## Retrospective Summary
 Here's what went well:
 * Item 1: We created a very solid foundation
-* Item 2: We showed that we were able to handle issues efficiently, we were able to accomplish what we set out to do in a more limited amount of time
-* Item 3: 
+* Item 2: We showed that we were able to handle issues efficiently, we were able to accomplish what we set out to do in a more limited amount of time.
+
 Here's what we'd like to improve:
 * Item 1: Organization, each issue should be assigned to exactly 1 person and have a corresponding branch
 * Item 2: Planning, we need to make sure that we have the resources that we need before we start working on an issue. This way we can avoid things like multiple definitions for the same thing. Making our code look more cohesive is a goal for us.
-* Item x
+
 Here are changes we plan to implement in the next sprint:
 * Item 1: Having a designated home page
 * Item 2: Workout/Calorie Tracking 
