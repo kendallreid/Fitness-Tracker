@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goals – Fitness Dashboard</title>
+  <style>
+    :root{
+      --crimson:#8C001A;        
+      --crimson-600:#a30020; 
+      --bg:#ffffff; 
+      --ink:#222222; 
+      --muted:#6b7280;  
+      --card:#ffffff; 
+      --border:#8c001a33;  
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:2px solid var(--crimson)}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .title{font-weight:800;color:var(--crimson)}
+    .sub{color:var(--muted);font-size:14px}
+
+    nav{border-top:1px solid var(--border);background:#fff;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px}
+    .tab{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:999px;padding:8px 12px;text-decoration:none;color:var(--crimson);font-weight:600}
+    .tab:hover{border-color:var(--crimson);}
+
+    main .wrap{padding-top:16px}
+    .card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:20px}
+    .card h3{margin:0 0 8px;color:var(--crimson);font-size:18px}
+
+    .goal-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;}
+    .goal-item h4{margin:0;color:var(--crimson)}
+    .goal-item .muted{font-size:13px;color:var(--muted)}
+
+    form{display:grid;gap:10px;margin-top:10px;}
+    input, select{padding:8px;border:1.5px solid var(--border);border-radius:8px;width:100%;}
+    button{background:var(--crimson);color:white;border:none;border-radius:8px;padding:10px;font-weight:600;cursor:pointer;}
+    button:hover{background:var(--crimson-600);}
+    label{font-weight:600;font-size:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">Fitness Dashboard</div>
+      <div class="sub">Track and update your goals</div>
+    </div>
+    <nav>
+      <div class="wrap">
+        <div class="tabs">
+          <a class="tab" href="/index.html">Home</a>
+          <a class="tab" href="/food.html">Food</a>
+          <a class="tab" href="/exercise.html">Exercise</a>
+          <a class="tab" href="/goals.html" style="border-color:var(--crimson);">Goals</a>
+          <a class="tab" href="/weekly.html">Weekly Log</a>
+          <a class="tab" href="/profile.html">Profile</a>
+          <a class="tab" href="/social.html">Social</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="wrap">
+
+      <!-- Goals List -->
+      <section class="card" id="goals-section">
+        <h3>My Goals</h3>
+        <div id="goalsList">
+          <p class="muted">No goals yet. Add one below.</p>
+        </div>
+      </section>
+
+      <!-- Add Progress -->
+      <section class="card" id="progress-section">
+        <h3>Add Progress</h3>
+        <form id="progressForm">
+          <label for="goalSelect">Goal</label>
+          <select id="goalSelect"></select>
+
+          <label for="progressValue">Progress Value</label>
+          <input type="number" id="progressValue" placeholder="Enter progress amount" required>
+
+          <button type="submit">Add Progress</button>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p style="text-align:center;color:var(--muted);font-size:12px">Fitness Dashboard © 2025</p>
+    </div>
+  </footer>
+
+  <script>
+    const LS = { get(k,f){ try{return JSON.parse(localStorage.getItem(k)) ?? f}catch{ return f } }, set(k,v){ localStorage.setItem(k,JSON.stringify(v)); } };
+
+    function renderGoals(){
+      const goals = LS.get('goals', []);
+      const container = document.getElementById('goalsList');
+      const select = document.getElementById('goalSelect');
+
+      container.innerHTML = '';
+      select.innerHTML = '';
+
+      if(goals.length === 0){
+        container.innerHTML = '<p class="muted">No goals yet. Add one below.</p>';
+        return;
+      }
+
+      goals.forEach(g=>{
+        const div = document.createElement('div');
+        div.className = 'goal-item';
+        div.innerHTML = `
+          <h4>${g.goal_name}</h4>
+          <div class="muted">Target: ${g.target_value} | ${g.start_date} → ${g.end_date || '—'}</div>
+        `;
+        container.appendChild(div);
+
+        const opt = document.createElement('option');
+        opt.value = g.id;
+        opt.textContent = g.goal_name;
+        select.appendChild(opt);
+      });
+    }
+
+    renderGoals();
+
+    document.getElementById('progressForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const goalId = +document.getElementById('goalSelect').value;
+      const val = +document.getElementById('progressValue').value;
+      if(!goalId || isNaN(val)) return;
+
+      const key = `progress:${goalId}`;
+      const list = LS.get(key, []);
+      list.push({ date: new Date().toISOString().slice(0,10), progress_value: val });
+      LS.set(key, list);
+
+      alert('Progress added!');
+      document.getElementById('progressValue').value = '';
+    });
+  </script>
+</body>
+</html>
