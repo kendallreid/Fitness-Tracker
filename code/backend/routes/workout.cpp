@@ -23,11 +23,25 @@ void registerWorkoutRoutes(crow::SimpleApp& app, sqlite3* db)
         w.date = body["date"].s();
         w.type = body["type"].s();
         w.sets = body["sets"].i();
+        
+        if (body.has("reps") && body["reps"].t() == crow::json::type::Number)
         w.reps = body["reps"].i();
-        w.weight = body["weight"].d();
-        w.duration = body["duration"].i();
+
+        if (body.has("weight") && body["weight"].t() == crow::json::type::Number)
+            w.weight = body["weight"].d();
+        else
+            w.weight = -1.0; // mark as missing
+
+        if (body.has("duration") && body["duration"].t() == crow::json::type::Number)
+            w.duration = body["duration"].i();
+        else
+            w.duration = -1; // mark as missing
+
         w.notes = body["notes"].s();
 
+
+
+    
         // add the workout to the database
         if (addWorkout(db, w)) {
             crow::json::wvalue res;

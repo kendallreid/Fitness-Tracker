@@ -141,7 +141,7 @@
           <input type="text" id="type" placeholder="Type (e.g. Bench Press)" required>
           <input type="number" id="sets" placeholder="Sets" required>
           <input type="number" id="reps" placeholder="Reps" required>
-          <input type="number" id="weight" placeholder="Weight (lbs)" required>
+          <input type="number" id="weight" placeholder="Weight (lbs)">
           <input type="number" id="duration" placeholder="Duration (min)">
           <input type="text" id="notes" placeholder="Notes">
           <button type="submit">Add</button>
@@ -261,16 +261,20 @@
     document.getElementById("workoutForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      const weightValue = document.getElementById("weight").value.trim();
+const durationValue = document.getElementById("duration").value.trim();
+
       const workout = {
         user_id,
         date: new Date().toISOString().split("T")[0],
         type: document.getElementById("type").value,
         sets: +document.getElementById("sets").value,
         reps: +document.getElementById("reps").value,
-        weight: +document.getElementById("weight").value,
-        duration: +document.getElementById("duration").value || 0,
+        weight: weightValue === "" ? null : +weightValue,
+        duration: durationValue === "" ? null : +durationValue,
         notes: document.getElementById("notes").value
       };
+
 
       const res = await fetch(API, {
         method: "POST",

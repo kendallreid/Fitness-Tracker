@@ -16,8 +16,8 @@ struct Workout {
     std::string type;    // Exercise type (e.g., "Bench Press", "Running")
     int sets;            // Optional (can be 0 for cardio)
     int reps;            // Optional
-    double weight;       // Optional (in kg or lbs)
-    int duration;        // Total duration (in minutes)
+    double weight = -1;       // Optional (in kg or lbs)
+    int duration = -1;        // Total duration (in minutes)
     std::string notes;   // Optional comments
 };
 
