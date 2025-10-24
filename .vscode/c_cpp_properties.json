@@ -20,7 +20,8 @@
                 "/usr/include",
                 "/usr/include/x86_64-linux-gnu",
                 "/usr/include/sqlite3",
-                "/usr/include/boost"
+                "/usr/include/boost",
+                "C:\\Users\\fifth\\vcpkg\\installed\\x64-windows\\include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
