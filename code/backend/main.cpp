@@ -4,6 +4,7 @@
 #include "routes/register.h"
 #include "db/schema.h"
 #include <iostream>
+#include "routes/workout.h"
 using namespace std;
 
 int main() {
@@ -57,6 +58,17 @@ int main() {
     ([]{
         return serveFile("code/frontend/HomePage.html", "text/html");
     });
+
+//WORKOUTS//
+
+    // Serve workouts page
+    CROW_ROUTE(fitnessApp, "/home/workouts")
+    ([]{
+        return serveFile("code/frontend/workouts.html", "text/html");
+    });
+
+    // Hook up workout routes
+    registerWorkoutRoutes(fitnessApp, db);
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();

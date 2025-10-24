@@ -17,9 +17,14 @@ bool createTables(sqlite3 *db)
             user_id INTEGER NOT NULL,
             date TEXT NOT NULL,
             type TEXT NOT NULL,
-            duration INTEGER NOT NULL,
+            sets INTEGER,
+            reps INTEGER,
+            weight REAL,
+            duration INTEGER,
+            notes TEXT,
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
+
 
         CREATE TABLE IF NOT EXISTS nutrition (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
