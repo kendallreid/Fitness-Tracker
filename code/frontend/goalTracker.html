@@ -21,20 +21,16 @@
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     .title{font-weight:800;color:var(--crimson)}
     .sub{color:var(--muted);font-size:14px}
-
     nav{border-top:1px solid var(--border);background:#fff;}
     .tabs{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px}
     .tab{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:999px;padding:8px 12px;text-decoration:none;color:var(--crimson);font-weight:600}
     .tab:hover{border-color:var(--crimson);}
-
     main .wrap{padding-top:16px}
     .card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:20px}
     .card h3{margin:0 0 8px;color:var(--crimson);font-size:18px}
-
     .goal-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;}
     .goal-item h4{margin:0;color:var(--crimson)}
     .goal-item .muted{font-size:13px;color:var(--muted)}
-
     form{display:grid;gap:10px;margin-top:10px;}
     input, select{padding:8px;border:1.5px solid var(--border);border-radius:8px;width:100%;}
     button{background:var(--crimson);color:white;border:none;border-radius:8px;padding:10px;font-weight:600;cursor:pointer;}
@@ -51,10 +47,10 @@
     <nav>
       <div class="wrap">
         <div class="tabs">
-          <a class="tab" href="/index.html">Home</a>
+          <a class="tab" href="/home">Home</a>
           <a class="tab" href="/food.html">Food</a>
           <a class="tab" href="/exercise.html">Exercise</a>
-          <a class="tab" href="/goals.html" style="border-color:var(--crimson);">Goals</a>
+          <a class="tab" href="/goals-page" style="border-color:var(--crimson);">Goals</a>
           <a class="tab" href="/weekly.html">Weekly Log</a>
           <a class="tab" href="/profile.html">Profile</a>
           <a class="tab" href="/social.html">Social</a>
@@ -66,11 +62,31 @@
   <main>
     <div class="wrap">
 
+      <!-- Add New Goal -->
+      <section class="card" id="add-goal-section">
+        <h3>Add New Goal</h3>
+        <form id="goalForm">
+          <label for="goalName">Goal Name</label>
+          <input type="text" id="goalName" placeholder="Enter goal name" required>
+
+          <label for="goalTarget">Target Value</label>
+          <input type="number" id="goalTarget" placeholder="Enter target value" required>
+
+          <label for="goalStart">Start Date</label>
+          <input type="date" id="goalStart" required>
+
+          <label for="goalEnd">End Date</label>
+          <input type="date" id="goalEnd">
+
+          <button type="submit">Add Goal</button>
+        </form>
+      </section>
+
       <!-- Goals List -->
       <section class="card" id="goals-section">
         <h3>My Goals</h3>
         <div id="goalsList">
-          <p class="muted">No goals yet. Add one below.</p>
+          <p class="muted">Loading goals...</p>
         </div>
       </section>
 
@@ -98,27 +114,37 @@
   </footer>
 
   <script>
-    const LS = { get(k,f){ try{return JSON.parse(localStorage.getItem(k)) ?? f}catch{ return f } }, set(k,v){ localStorage.setItem(k,JSON.stringify(v)); } };
+    async function fetchGoals() {
+      try {
+        const res = await fetch('/goals');
+        if (!res.ok) throw new Error('Failed to fetch goals');
+        const data = await res.json();
+        return data.goals || [];
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    }
 
-    function renderGoals(){
-      const goals = LS.get('goals', []);
+    async function renderGoals() {
+      const goals = await fetchGoals();
       const container = document.getElementById('goalsList');
       const select = document.getElementById('goalSelect');
 
       container.innerHTML = '';
       select.innerHTML = '';
 
-      if(goals.length === 0){
-        container.innerHTML = '<p class="muted">No goals yet. Add one below.</p>';
+      if (goals.length === 0) {
+        container.innerHTML = '<p class="muted">No goals yet. Add one using the form above.</p>';
         return;
       }
 
-      goals.forEach(g=>{
+      goals.forEach(g => {
         const div = document.createElement('div');
         div.className = 'goal-item';
         div.innerHTML = `
           <h4>${g.goal_name}</h4>
-          <div class="muted">Target: ${g.target_value} | ${g.start_date} → ${g.end_date || '—'}</div>
+          <div class="muted">Start: ${g.start_date} | End: ${g.end_date || '—'} | Target: ${g.target_value}</div>
         `;
         container.appendChild(div);
 
@@ -129,22 +155,53 @@
       });
     }
 
-    renderGoals();
+    document.getElementById('goalForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const goal_name = document.getElementById('goalName').value.trim();
+      const target_value = parseFloat(document.getElementById('goalTarget').value);
+      const start_date = document.getElementById('goalStart').value;
+      const end_date = document.getElementById('goalEnd').value;
 
-    document.getElementById('progressForm').addEventListener('submit', e=>{
+      if (!goal_name || !start_date || isNaN(target_value)) return;
+
+      try {
+        const res = await fetch('/goals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal_name, target_value, start_date, end_date })
+        });
+        if (!res.ok) throw new Error('Failed to add goal');
+        alert('✅ Goal added!');
+        document.getElementById('goalForm').reset();
+        renderGoals();
+      } catch (err) {
+        console.error(err);
+        alert('❌ Error adding goal');
+      }
+    });
+
+    document.getElementById('progressForm').addEventListener('submit', async e => {
       e.preventDefault();
       const goalId = +document.getElementById('goalSelect').value;
       const val = +document.getElementById('progressValue').value;
-      if(!goalId || isNaN(val)) return;
+      if (!goalId || isNaN(val) || val <= 0) return;
 
-      const key = `progress:${goalId}`;
-      const list = LS.get(key, []);
-      list.push({ date: new Date().toISOString().slice(0,10), progress_value: val });
-      LS.set(key, list);
-
-      alert('Progress added!');
-      document.getElementById('progressValue').value = '';
+      try {
+        const res = await fetch('/goal-progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal_id: goalId, progress_value: val })
+        });
+        if (!res.ok) throw new Error('Failed to add progress');
+        alert('✅ Progress added!');
+        document.getElementById('progressValue').value = '';
+      } catch (err) {
+        console.error(err);
+        alert('❌ Error adding progress');
+      }
     });
+
+    renderGoals();
   </script>
 </body>
 </html>
