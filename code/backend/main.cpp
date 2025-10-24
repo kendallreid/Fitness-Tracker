@@ -58,6 +58,8 @@ int main() {
         return serveFile("code/frontend/HomePage.html", "text/html");
     });
 
+    setupCalorieTrackerRoutes(fitnessApp, db);
+
     // Start server
     fitnessApp.port(8080).multithreaded().run();
     sqlite3_close(db);
