@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <chrono>
 #include <ctime>
-#include <json/json.h>
 
 void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
     CROW_ROUTE(app, "/calorie-tracker")
@@ -64,10 +63,9 @@ void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
 
 crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& req) {
     try {
-        Json::Value json_data;
-        Json::Reader reader;
+        auto json_data = crow::json::load(req.body);
         
-        if (!reader.parse(req.body, json_data)) {
+        if (!json_data) {
             crow::response res(400);
             res.body = "{\"error\":\"Invalid JSON\"}";
             res.set_header("Content-Type", "application/json");
@@ -82,12 +80,12 @@ crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& r
             return res;
         }
 
-        int user_id = json_data["user_id"].asInt();
-        std::string date = json_data.get("date", getCurrentDate()).asString();
-        std::string meal_type = json_data["meal_type"].asString();
-        std::string meal_name = json_data["meal_name"].asString();
-        int calories = json_data["calories"].asInt();
-        double protein = json_data.get("protein", 0.0).asDouble();
+        int user_id = json_data["user_id"].i();
+        std::string date = json_data.has("date") ? json_data["date"].s() : getCurrentDate();
+        std::string meal_type = json_data["meal_type"].s();
+        std::string meal_name = json_data["meal_name"].s();
+        int calories = json_data["calories"].i();
+        double protein = json_data.has("protein") ? json_data["protein"].d() : 0.0;
         std::string created_at = getCurrentDateTime();
 
         std::string sql = "INSERT INTO nutrition (user_id, date, meal_type, meal_name, calories, protein, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -153,9 +151,9 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, const crow::request& 
         sqlite3_bind_int(stmt, 1, user_id);
         sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
 
-        Json::Value meals(Json::arrayValue);
+        crow::json::wvalue meals = crow::json::wvalue::list();
         while (sqlite3_step(stmt) == SQLITE_ROW) {
-            Json::Value meal;
+            crow::json::wvalue meal;
             meal["id"] = sqlite3_column_int(stmt, 0);
             meal["user_id"] = sqlite3_column_int(stmt, 1);
             meal["date"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
@@ -164,13 +162,12 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, const crow::request& 
             meal["calories"] = sqlite3_column_int(stmt, 5);
             meal["protein"] = sqlite3_column_double(stmt, 6);
             meal["created_at"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
-            meals.append(meal);
+            meals.push_back(meal);
         }
 
         sqlite3_finalize(stmt);
 
-        Json::StreamWriterBuilder builder;
-        std::string response_body = Json::writeString(builder, meals);
+        std::string response_body = meals.dump();
 
         crow::response res(200);
         res.body = response_body;
@@ -191,10 +188,9 @@ crow::response updateMeal(crow::SimpleApp& app, sqlite3* db, const crow::request
         size_t last_slash = url.find_last_of('/');
         int meal_id = std::stoi(url.substr(last_slash + 1));
 
-        Json::Value json_data;
-        Json::Reader reader;
+        auto json_data = crow::json::load(req.body);
         
-        if (!reader.parse(req.body, json_data)) {
+        if (!json_data) {
             crow::response res(400);
             res.body = "{\"error\":\"Invalid JSON\"}";
             res.set_header("Content-Type", "application/json");
@@ -209,10 +205,10 @@ crow::response updateMeal(crow::SimpleApp& app, sqlite3* db, const crow::request
             return res;
         }
 
-        std::string meal_type = json_data["meal_type"].asString();
-        std::string meal_name = json_data["meal_name"].asString();
-        int calories = json_data["calories"].asInt();
-        double protein = json_data.get("protein", 0.0).asDouble();
+        std::string meal_type = json_data["meal_type"].s();
+        std::string meal_name = json_data["meal_name"].s();
+        int calories = json_data["calories"].i();
+        double protein = json_data.has("protein") ? json_data["protein"].d() : 0.0;
 
         std::string sql = "UPDATE nutrition SET meal_type = ?, meal_name = ?, calories = ?, protein = ? WHERE id = ?";
         
@@ -356,7 +352,7 @@ crow::response getUserGoals(crow::SimpleApp& app, sqlite3* db, const crow::reque
 
         sqlite3_bind_int(stmt, 1, user_id);
 
-        Json::Value goals;
+        crow::json::wvalue goals;
         if (sqlite3_step(stmt) == SQLITE_ROW) {
             goals["id"] = sqlite3_column_int(stmt, 0);
             goals["user_id"] = sqlite3_column_int(stmt, 1);
@@ -374,8 +370,7 @@ crow::response getUserGoals(crow::SimpleApp& app, sqlite3* db, const crow::reque
 
         sqlite3_finalize(stmt);
 
-        Json::StreamWriterBuilder builder;
-        std::string response_body = Json::writeString(builder, goals);
+        std::string response_body = goals.dump();
 
         crow::response res(200);
         res.body = response_body;
@@ -396,10 +391,9 @@ crow::response updateUserGoals(crow::SimpleApp& app, sqlite3* db, const crow::re
         size_t last_slash = url.find_last_of('/');
         int user_id = std::stoi(url.substr(last_slash + 1));
 
-        Json::Value json_data;
-        Json::Reader reader;
+        auto json_data = crow::json::load(req.body);
         
-        if (!reader.parse(req.body, json_data)) {
+        if (!json_data) {
             crow::response res(400);
             res.body = "{\"error\":\"Invalid JSON\"}";
             res.set_header("Content-Type", "application/json");
@@ -414,8 +408,8 @@ crow::response updateUserGoals(crow::SimpleApp& app, sqlite3* db, const crow::re
             return res;
         }
 
-        int daily_calorie_goal = json_data["daily_calorie_goal"].asInt();
-        double daily_protein_goal = json_data["daily_protein_goal"].asDouble();
+        int daily_calorie_goal = json_data["daily_calorie_goal"].i();
+        double daily_protein_goal = json_data["daily_protein_goal"].d();
         std::string updated_at = getCurrentDateTime();
 
         std::string check_sql = "SELECT id FROM user_goals WHERE user_id = ?";
@@ -504,33 +498,33 @@ std::string getCurrentDateTime() {
     return oss.str();
 }
 
-bool validateMealData(const Json::Value& data, std::string& error) {
-    if (!data.isMember("user_id") || !data["user_id"].isInt()) {
+bool validateMealData(const crow::json::rvalue& data, std::string& error) {
+    if (!data.has("user_id") || data["user_id"].t() != crow::json::type::Number) {
         error = "user_id is required and must be an integer";
         return false;
     }
     
-    if (!data.isMember("meal_name") || !data["meal_name"].isString() || data["meal_name"].asString().empty()) {
+    if (!data.has("meal_name") || data["meal_name"].t() != crow::json::type::String || data["meal_name"].s().empty()) {
         error = "meal_name is required";
         return false;
     }
     
-    if (!data.isMember("calories") || !data["calories"].isInt() || data["calories"].asInt() <= 0) {
+    if (!data.has("calories") || data["calories"].t() != crow::json::type::Number || data["calories"].i() <= 0) {
         error = "calories is required and must be a positive integer";
         return false;
     }
     
-    if (data["calories"].asInt() > 10000) {
+    if (data["calories"].i() > 10000) {
         error = "calories value seems too high (max 10000)";
         return false;
     }
     
-    if (!data.isMember("meal_type") || !data["meal_type"].isString() || data["meal_type"].asString().empty()) {
+    if (!data.has("meal_type") || data["meal_type"].t() != crow::json::type::String || data["meal_type"].s().empty()) {
         error = "meal_type is required";
         return false;
     }
     
-    if (data.isMember("protein") && (!data["protein"].isNumeric() || data["protein"].asDouble() < 0)) {
+    if (data.has("protein") && (data["protein"].t() != crow::json::type::Number || data["protein"].d() < 0)) {
         error = "protein must be a not a negative number";
         return false;
     }
@@ -538,23 +532,23 @@ bool validateMealData(const Json::Value& data, std::string& error) {
     return true;
 }
 
-bool validateGoalsData(const Json::Value& data, std::string& error) {
-    if (!data.isMember("daily_calorie_goal") || !data["daily_calorie_goal"].isInt() || data["daily_calorie_goal"].asInt() <= 0) {
+bool validateGoalsData(const crow::json::rvalue& data, std::string& error) {
+    if (!data.has("daily_calorie_goal") || data["daily_calorie_goal"].t() != crow::json::type::Number || data["daily_calorie_goal"].i() <= 0) {
         error = "daily_calorie_goal is required and must be a positive";
         return false;
     }
     
-    if (data["daily_calorie_goal"].asInt() > 10000) {
+    if (data["daily_calorie_goal"].i() > 10000) {
         error = "daily_calorie_goal seems too high (max 10000)";
         return false;
     }
     
-    if (!data.isMember("daily_protein_goal") || !data["daily_protein_goal"].isNumeric() || data["daily_protein_goal"].asDouble() < 0) {
+    if (!data.has("daily_protein_goal") || data["daily_protein_goal"].t() != crow::json::type::Number || data["daily_protein_goal"].d() < 0) {
         error = "daily_protein_goal is required and must be a non-negative number";
         return false;
     }
     
-    if (data["daily_protein_goal"].asDouble() > 1000) {
+    if (data["daily_protein_goal"].d() > 1000) {
         error = "daily_protein_goal seems too high (max 1000)";
         return false;
     }

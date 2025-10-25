@@ -3,7 +3,6 @@
 #include <sqlite3.h>
 #include <string>
 #include <vector>
-#include <json/json.h>
 
 struct MealEntry {
     int id;
@@ -44,5 +43,5 @@ crow::response updateUserGoals(crow::SimpleApp& app, sqlite3* db, const crow::re
 // Utility functions
 std::string getCurrentDate();
 std::string getCurrentDateTime();
-bool validateMealData(const Json::Value& data, std::string& error);
-bool validateGoalsData(const Json::Value& data, std::string& error);
+bool validateMealData(const crow::json::rvalue& data, std::string& error);
+bool validateGoalsData(const crow::json::rvalue& data, std::string& error);
