@@ -4,6 +4,7 @@
 #include "routes/register.h"
 #include "db/schema.h"
 #include <iostream>
+#include "routes/calorie_tracker.h"
 using namespace std;
 
 int main() {

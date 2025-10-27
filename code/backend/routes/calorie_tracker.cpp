@@ -151,7 +151,7 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, const crow::request& 
         sqlite3_bind_int(stmt, 1, user_id);
         sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
 
-        crow::json::wvalue meals = crow::json::wvalue::list();
+        std::vector<crow::json::wvalue> meals_vec;
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             crow::json::wvalue meal;
             meal["id"] = sqlite3_column_int(stmt, 0);
@@ -162,8 +162,9 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, const crow::request& 
             meal["calories"] = sqlite3_column_int(stmt, 5);
             meal["protein"] = sqlite3_column_double(stmt, 6);
             meal["created_at"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
-            meals.push_back(meal);
+            meals_vec.push_back(std::move(meal));
         }
+        crow::json::wvalue response_json(meals_vec);
 
         sqlite3_finalize(stmt);
 
@@ -531,6 +532,7 @@ bool validateMealData(const crow::json::rvalue& data, std::string& error) {
     
     return true;
 }
+
 
 bool validateGoalsData(const crow::json::rvalue& data, std::string& error) {
     if (!data.has("daily_calorie_goal") || data["daily_calorie_goal"].t() != crow::json::type::Number || data["daily_calorie_goal"].i() <= 0) {
