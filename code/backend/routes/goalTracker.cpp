@@ -23,6 +23,7 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
             goal["target_value"] = g.target_value;
             goal["start_date"] = g.start_date;
             goal["end_date"] = g.end_date;
+            goal["completed"] = g.completed;
             arr.push_back(std::move(goal));
         }
 
@@ -87,5 +88,25 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
             return makeSuccess(201, "Progress added successfully");
         else
             return makeError(500, "Database error");
+    });
+
+    // --- PATCH /goals/complete/<goal_id> ---
+    CROW_ROUTE(app, "/goals/complete/<int>").methods("PATCH"_method)([db](int goal_id) {
+        const char* sql = "UPDATE goals SET completed = 1 WHERE id = ?;";
+        sqlite3_stmt* stmt;
+
+        if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+            std::cerr << "Failed to prepare completeGoal: " << sqlite3_errmsg(db) << std::endl;
+            return makeError(500, "Database error");
+        }
+
+        sqlite3_bind_int(stmt, 1, goal_id);
+        bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+        sqlite3_finalize(stmt);
+
+        if (success)
+            return makeSuccess(200, "Goal marked complete");
+        else
+            return makeError(500, "Failed to mark goal complete");
     });
 }

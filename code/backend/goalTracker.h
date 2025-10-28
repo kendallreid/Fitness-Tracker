@@ -13,6 +13,7 @@ struct Goal {
     double target_value;
     std::string start_date;
     std::string end_date;
+    int completed;
 };
 
 // Backend logic

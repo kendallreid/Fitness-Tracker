@@ -144,17 +144,35 @@
         div.className = 'goal-item';
         div.innerHTML = `
           <h4>${g.goal_name}</h4>
-          <div class="muted">Start: ${g.start_date} | End: ${g.end_date || '—'} | Target: ${g.target_value}</div>
+          <div class="muted">
+            Start: ${g.start_date} | End: ${g.end_date || '—'} | Target: ${g.target_value}
+          </div>
+          ${g.completed ? 
+            `<p style="color:green;font-weight:600;">✅ Completed</p>` : 
+            `<button class="complete-btn" data-id="${g.id}">Mark Complete</button>`}
         `;
         container.appendChild(div);
 
-        const opt = document.createElement('option');
-        opt.value = g.id;
-        opt.textContent = g.goal_name;
-        select.appendChild(opt);
+        // Only show active goals in dropdown
+        if (!g.completed) {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = g.goal_name;
+          select.appendChild(opt);
+        }
+      });
+
+      // Handle mark complete
+      document.querySelectorAll('.complete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          await fetch(`/goals/complete/${id}`, { method: 'PATCH' });
+          renderGoals(); // refresh list
+        });
       });
     }
 
+    // Add new goal
     document.getElementById('goalForm').addEventListener('submit', async e => {
       e.preventDefault();
       const goal_name = document.getElementById('goalName').value.trim();
@@ -170,16 +188,16 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ goal_name, target_value, start_date, end_date })
         });
-        if (!res.ok) throw new Error('Failed to add goal');
-        alert('✅ Goal added!');
-        document.getElementById('goalForm').reset();
-        renderGoals();
+        if (res.ok) {
+          document.getElementById('goalForm').reset();
+          renderGoals();
+        }
       } catch (err) {
         console.error(err);
-        alert('❌ Error adding goal');
       }
     });
 
+    // Add progress
     document.getElementById('progressForm').addEventListener('submit', async e => {
       e.preventDefault();
       const goalId = +document.getElementById('goalSelect').value;
@@ -192,12 +210,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ goal_id: goalId, progress_value: val })
         });
-        if (!res.ok) throw new Error('Failed to add progress');
-        alert('✅ Progress added!');
-        document.getElementById('progressValue').value = '';
+        if (res.ok) {
+          document.getElementById('progressValue').value = '';
+        }
       } catch (err) {
         console.error(err);
-        alert('❌ Error adding progress');
       }
     });
 
