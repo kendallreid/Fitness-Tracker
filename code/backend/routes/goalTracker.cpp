@@ -93,23 +93,53 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
             return makeError(500, "Database error");
     });
 
-    // --- PATCH /goals/complete/<goal_id> ---
-    CROW_ROUTE(app, "/goals/complete/<int>").methods("PATCH"_method)([db](int goal_id) {
-        const char* sql = "UPDATE goals SET completed = 1 WHERE id = ?;";
-        sqlite3_stmt* stmt;
+    // PATCH /goals/toggle-complete/<goal_id>
+    CROW_ROUTE(app, "/goals/toggle-complete/<int>").methods("PATCH"_method)([db](int goal_id) {
+        // Get current completed state
+        int completed = 0;
+        const char* selectSql = "SELECT completed FROM goals WHERE id = ?;";
+        sqlite3_stmt* selectStmt;
+        if (sqlite3_prepare_v2(db, selectSql, -1, &selectStmt, nullptr) != SQLITE_OK)
+            return makeError(500, "Database error");
 
+        sqlite3_bind_int(selectStmt, 1, goal_id);
+        if (sqlite3_step(selectStmt) == SQLITE_ROW)
+            completed = sqlite3_column_int(selectStmt, 0);
+        sqlite3_finalize(selectStmt);
+
+        // Toggle
+        int newState = completed ? 0 : 1;
+
+        const char* updateSql = "UPDATE goals SET completed = ? WHERE id = ?;";
+        sqlite3_stmt* updateStmt;
+        if (sqlite3_prepare_v2(db, updateSql, -1, &updateStmt, nullptr) != SQLITE_OK)
+            return makeError(500, "Database error");
+
+        sqlite3_bind_int(updateStmt, 1, newState);
+        sqlite3_bind_int(updateStmt, 2, goal_id);
+        bool success = (sqlite3_step(updateStmt) == SQLITE_DONE);
+        sqlite3_finalize(updateStmt);
+
+        if (success)
+            return makeSuccess(200, newState ? "Goal marked complete" : "Goal marked incomplete");
+        else
+            return makeError(500, "Failed to toggle goal complete");
+    });
+
+    CROW_ROUTE(app, "/goals/<int>").methods("DELETE"_method)([db](int goal_id) {
+        const char* sql = "DELETE FROM goals WHERE id = ?;";
+        sqlite3_stmt* stmt;
         if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
-            std::cerr << "Failed to prepare completeGoal: " << sqlite3_errmsg(db) << std::endl;
             return makeError(500, "Database error");
         }
-
         sqlite3_bind_int(stmt, 1, goal_id);
         bool success = (sqlite3_step(stmt) == SQLITE_DONE);
         sqlite3_finalize(stmt);
 
         if (success)
-            return makeSuccess(200, "Goal marked complete");
+            return makeSuccess(200, "Goal deleted successfully");
         else
-            return makeError(500, "Failed to mark goal complete");
+            return makeError(500, "Failed to delete goal");
     });
+
 }

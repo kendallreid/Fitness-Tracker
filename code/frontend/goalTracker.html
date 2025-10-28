@@ -31,10 +31,13 @@ main .wrap{padding-top:16px}
 .goal-item{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;}
 .goal-item h4{margin:0;color:var(--crimson)}
 .goal-item .muted{font-size:13px;color:var(--muted)}
+.goal-buttons{margin-top:8px;display:flex;gap:8px;}
 form{display:grid;gap:10px;margin-top:10px;}
 input, select{padding:8px;border:1.5px solid var(--border);border-radius:8px;width:100%;}
 button{background:var(--crimson);color:white;border:none;border-radius:8px;padding:10px;font-weight:600;cursor:pointer;}
 button:hover{background:var(--crimson-600);}
+button.delete-btn{background:#aaa;color:white;}
+button.delete-btn:hover{background:#888;}
 label{font-weight:600;font-size:14px}
 .progress-container{background:#eee;border-radius:8px;overflow:hidden;height:16px;margin:6px 0;}
 .progress-bar{background:#8C001A;height:100%;width:0%;transition:width 0.5s;text-align:center;color:white;font-size:12px;line-height:16px;}
@@ -154,9 +157,12 @@ async function renderGoals() {
       <div class="progress-container">
         <div class="progress-bar" style="width:${progressPercent}%">${Math.round(progressPercent)}%</div>
       </div>
-      ${g.completed ? 
-        `<p style="color:green;font-weight:600;">✅ Completed</p>` : 
-        `<button class="complete-btn" data-id="${g.id}">Mark Complete</button>`}
+      <div class="goal-buttons">
+        <button class="complete-btn" data-id="${g.id}">
+          ${g.completed ? "Mark Incomplete" : "Mark Complete"}
+        </button>
+        <button class="delete-btn" data-id="${g.id}">Delete</button>
+      </div>
     `;
     container.appendChild(div);
 
@@ -171,7 +177,18 @@ async function renderGoals() {
   document.querySelectorAll('.complete-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.getAttribute('data-id');
-      await fetch(`/goals/complete/${id}`, { method: 'PATCH' });
+      await fetch(`/goals/toggle-complete/${id}`, { method: 'PATCH' });
+      renderGoals();
+    });
+  });
+
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const confirmed = confirm("Are you sure you want to delete this goal?");
+      if (!confirmed) return;
+
+      await fetch(`/goals/${id}`, { method: 'DELETE' });
       renderGoals();
     });
   });
@@ -217,7 +234,7 @@ document.getElementById('progressForm').addEventListener('submit', async e => {
     });
     if (res.ok) {
       document.getElementById('progressValue').value = '';
-      renderGoals(); // ← this is the snippet you asked about
+      renderGoals();
     }
   } catch (err) {
     console.error(err);
