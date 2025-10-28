@@ -26,7 +26,20 @@ bool createTables(sqlite3 *db)
             user_id INTEGER NOT NULL,
             date TEXT NOT NULL,
             meal_type TEXT NOT NULL,
+            meal_name TEXT NOT NULL,
             calories INTEGER NOT NULL,
+            protein REAL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS user_goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            daily_calorie_goal INTEGER DEFAULT 2000,
+            daily_protein_goal REAL DEFAULT 150.0,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
 

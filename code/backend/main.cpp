@@ -5,6 +5,7 @@
 #include "goalTracker.h"
 #include "db/schema.h"
 #include <iostream>
+#include "routes/calorie_tracker.h"
 using namespace std;
 
 int main() {
@@ -72,6 +73,9 @@ int main() {
 
 
         // Start server
+    setupCalorieTrackerRoutes(fitnessApp, db);
+
+    // Start server
     fitnessApp.port(8080).multithreaded().run();
     sqlite3_close(db);
 
