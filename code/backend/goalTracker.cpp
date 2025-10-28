@@ -25,6 +25,7 @@ std::vector<Goal> getAllGoals(sqlite3* db) {
         const unsigned char* endText = sqlite3_column_text(stmt, 5);
         g.end_date = endText ? reinterpret_cast<const char*>(endText) : "";
 
+        g.total_progress = getGoalTotalProgress(db, g.id);
         goals.push_back(std::move(g));
     }
 
@@ -100,4 +101,22 @@ bool addGoalProgress(sqlite3* db, int goal_id, double value) {
 
     sqlite3_finalize(stmt);
     return success;
+}
+
+double getGoalTotalProgress(sqlite3* db, int goal_id) {
+    const char* sql = "SELECT SUM(progress_value) FROM goal_progress WHERE goal_id = ?;";
+    sqlite3_stmt* stmt;
+    double total = 0.0;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        return 0.0;
+
+    sqlite3_bind_int(stmt, 1, goal_id);
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        total = sqlite3_column_double(stmt, 0);
+    }
+
+    sqlite3_finalize(stmt);
+    return total;
 }

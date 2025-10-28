@@ -15,7 +15,8 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
         crow::json::wvalue result;
         std::vector<crow::json::wvalue> arr;
 
-        for (const auto& g : goals) {
+        for (auto& g : goals) {
+            g.total_progress = getGoalTotalProgress(db, g.id);
             crow::json::wvalue goal;
             goal["id"] = g.id;
             goal["user_id"] = g.user_id;
@@ -24,6 +25,8 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
             goal["start_date"] = g.start_date;
             goal["end_date"] = g.end_date;
             goal["completed"] = g.completed;
+            goal["total_progress"] = g.total_progress; 
+
             arr.push_back(std::move(goal));
         }
 
