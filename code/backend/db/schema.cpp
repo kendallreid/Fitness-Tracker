@@ -42,7 +42,25 @@ bool createTables(sqlite3 *db)
             updated_at TEXT NOT NULL,
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
-    )";
+
+        CREATE TABLE IF NOT EXISTS goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            goal_name TEXT NOT NULL,
+            target_value REAL NOT NULL,
+            start_date TEXT NOT NULL,
+            end_date TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS goal_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            goal_id INTEGER NOT NULL,
+            date TEXT NOT NULL,
+            progress_value REAL NOT NULL,
+            FOREIGN KEY(goal_id) REFERENCES goals(id)
+        );
+)";
 
     // sqlite3_exec executes the queries that are provided to it in the message above. In this case, it will create the tables if they do not already exist.
     // sqlite3_free is used to free the memory allocated for the error message if an error occurs. Otherwise it will leak memory.
