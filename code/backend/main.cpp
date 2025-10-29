@@ -5,6 +5,9 @@
 #include "goalTracker.h"
 #include "db/schema.h"
 #include <iostream>
+#include "routes/workout.h"
+#include "routes/session.h"
+
 #include "routes/calorie_tracker.h"
 using namespace std;
 
@@ -17,6 +20,9 @@ int main() {
         cerr << "Can't open database: " << sqlite3_errmsg(db) << endl;
         return 1;
     }
+
+    // Turn on foreign key support
+    sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
 
     if (!createTables(db)) {
     cerr << "Failed to create tables" << endl;
@@ -60,6 +66,23 @@ int main() {
         return serveFile("code/frontend/HomePage.html", "text/html");
     });
 
+//SESSIONS//
+
+    // Serve sessions page
+    CROW_ROUTE(fitnessApp, "/sessions")
+    ([]{
+        return serveFile("code/frontend/sessions.html", "text/html");
+    });
+
+    // Serve workouts page
+    CROW_ROUTE(fitnessApp, "/workouts.html")
+    ([]{
+        return serveFile("code/frontend/workouts.html", "text/html");
+    });
+
+    // Hook up session/workout routes
+    setupSessionRoutes(fitnessApp, db);
+    registerWorkoutRoutes(fitnessApp, db);
 
 //GOALS//
     // Serve goals page
