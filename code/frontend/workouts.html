@@ -16,8 +16,13 @@
       --shadow: rgba(140, 0, 26, 0.15);
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; font-family: "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
-
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
     header {
       background: var(--crimson);
       color: #fff;
@@ -25,16 +30,20 @@
       box-shadow: 0 3px 8px var(--shadow);
     }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
-
     .title { font-weight: 800; font-size: 1.8rem; }
     .sub { color: #ffeaea; font-size: 14px; }
-
     nav {
       background: #fff;
       border-bottom: 2px solid var(--crimson);
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px; justify-content: center; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px 16px;
+      justify-content: center;
+    }
     .tab {
       display: inline-flex;
       align-items: center;
@@ -74,6 +83,7 @@
       gap: 10px;
       margin-bottom: 16px;
     }
+
     input, select, button {
       padding: 10px;
       border: 1.5px solid var(--border);
@@ -96,11 +106,7 @@
       border-bottom: 1px solid var(--border);
       text-align: left;
     }
-    th {
-      color: var(--crimson);
-      background: #fef3f3;
-      font-weight: 700;
-    }
+    th { color: var(--crimson); background: #fef3f3; font-weight: 700; }
     tr:hover { background-color: #fff5f5; }
 
     footer {
@@ -109,42 +115,53 @@
       font-size: 12px;
       margin: 40px 0;
     }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      color: var(--crimson);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
       <div class="title">Workouts</div>
-      <div class="sub">Track and review your exercise sessions.</div>
+      <div id="sessionInfo" class="sub">Track and review your exercises.</div>
     </div>
   </header>
 
   <nav>
     <div class="wrap">
       <div class="tabs">
-        <a class="tab" href="/index.html">Dashboard</a>
         <a class="tab" href="/food.html">Food</a>
-        <a class="tab" href="/exercise.html">Exercise</a>
+        <a class="tab active" href="/workouts.html">Exercise</a>
         <a class="tab" href="/goals.html">Goals</a>
-        <a class="tab active" href="/workouts.html">Workouts</a>
         <a class="tab" href="/weekly.html">Weekly Log</a>
         <a class="tab" href="/profile.html">Profile</a>
+        <a class="tab" href="/social.html">Social</a>
+        <a class="tab" href="/notifications.html">Notifications</a>
       </div>
     </div>
   </nav>
 
   <main>
     <div class="wrap">
+      <a href="/sessions" class="back-link">← Back to Sessions</a>
+
       <section class="card">
         <h3>Add Workout</h3>
         <form id="workoutForm" class="form-grid">
-          <input type="text" id="type" placeholder="Type (e.g. Bench Press)" required>
-          <input type="number" id="sets" placeholder="Sets" required>
-          <input type="number" id="reps" placeholder="Reps" required>
+          <input type="text" id="type" placeholder="Exercise Type (e.g. Bench Press)" required>
+          <input type="number" id="sets" placeholder="Sets">
+          <input type="number" id="reps" placeholder="Reps">
           <input type="number" id="weight" placeholder="Weight (lbs)">
           <input type="number" id="duration" placeholder="Duration (min)">
           <input type="text" id="notes" placeholder="Notes">
-          <button type="submit">Add</button>
+          <button type="submit">Add Workout</button>
         </form>
       </section>
 
@@ -168,183 +185,86 @@
 
   <script>
     const API = "http://localhost:8080/api/workouts";
-    const user_id = 1;
+    const params = new URLSearchParams(window.location.search);
+    const session_id = params.get("session_id");
 
+    // Show which session we're viewing
+    const info = document.getElementById("sessionInfo");
+    info.textContent = session_id
+      ? `Viewing Workouts for Session #${session_id}`
+      : "Viewing All Workouts";
+
+    // Fetch workouts (for session if given)
+    async function fetchWorkouts() {
+      const url = session_id ? `${API}?session_id=${session_id}` : API;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) {
+        console.error("Failed to fetch workouts");
+        return;
+      }
+      const data = await res.json();
+      renderWorkouts(data.workouts);
+    }
 
     function renderWorkouts(list) {
-        const tbody = document.getElementById("workoutTableBody");
-        tbody.innerHTML = "";
-
-        list.forEach(w => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-            <td>${w.date}</td>
-            <td>${w.type}</td>
-            <td>${w.sets}</td>
-            <td>${w.reps}</td>
-            <td>${w.weight}</td>
-            <td>${w.duration}</td>
-            <td>${w.notes}</td>
-            <td>
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn" style="background:#aaa">Delete</button>
-            </td>
-            `;
-
-            const [editBtn, deleteBtn] = row.querySelectorAll("button");
-
-            // Delete listener
-            deleteBtn.addEventListener("click", () => deleteWorkout(w.id));
-
-            // Edit listener
-            editBtn.addEventListener("click", () => {
-            // Convert row cells to inputs
-            const cells = row.querySelectorAll("td");
-            cells[1].innerHTML = `<input value="${w.type}" />`;
-            cells[2].innerHTML = `<input type="number" value="${w.sets}" />`;
-            cells[3].innerHTML = `<input type="number" value="${w.reps}" />`;
-            cells[4].innerHTML = `<input type="number" value="${w.weight}" />`;
-            cells[5].innerHTML = `<input type="number" value="${w.duration}" />`;
-            cells[6].innerHTML = `<input value="${w.notes}" />`;
-
-            // Replace buttons with Save/Cancel
-            cells[7].innerHTML = `
-                <button class="save-btn" style="background:green">Save</button>
-                <button class="cancel-btn" style="background:gray">Cancel</button>
-            `;
-
-            const saveBtn = row.querySelector(".save-btn");
-            const cancelBtn = row.querySelector(".cancel-btn");
-
-            saveBtn.addEventListener("click", async () => {
-                const updated = {
-                id: w.id,
-                user_id,
-                date: w.date, // keep same date
-                type: cells[1].querySelector("input").value,
-                sets: +cells[2].querySelector("input").value,
-                reps: +cells[3].querySelector("input").value,
-                weight: +cells[4].querySelector("input").value,
-                duration: +cells[5].querySelector("input").value,
-                notes: cells[6].querySelector("input").value
-                };
-
-                const res = await fetch(API, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updated)
-                });
-
-                if (res.ok) {
-                fetchWorkouts(); // reload table
-                } else {
-                const data = await res.json().catch(() => ({}));
-                alert(`Failed to update workout: ${data.message || res.status}`);
-                }
-            });
-
-            cancelBtn.addEventListener("click", () => fetchWorkouts());
-            });
-
-            tbody.appendChild(row);
-        });
+      const tbody = document.getElementById("workoutTableBody");
+      tbody.innerHTML = "";
+      list.forEach(w => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${w.date}</td>
+          <td>${w.type}</td>
+          <td>${w.sets ?? "N/A"}</td>
+          <td>${w.reps ?? "N/A"}</td>
+          <td>${w.weight ?? "N/A"}</td>
+          <td>${w.duration ?? "N/A"}</td>
+          <td>${w.notes ?? ""}</td>
+          <td><button class="delete-btn" style="background:#aaa">Delete</button></td>
+        `;
+        row.querySelector(".delete-btn").addEventListener("click", () => deleteWorkout(w.id));
+        tbody.appendChild(row);
+      });
     }
 
-
-
-    async function fetchWorkouts() {
-        const res = await fetch(`${API}?user_id=${user_id}`);
-        const data = await res.json();
-        renderWorkouts(data.workouts); // call the renderer here
-    }
-
+    // Add new workout
     document.getElementById("workoutForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      const weightValue = document.getElementById("weight").value.trim();
-const durationValue = document.getElementById("duration").value.trim();
-
       const workout = {
-        user_id,
+        session_id: session_id ? +session_id : 0,
         date: new Date().toISOString().split("T")[0],
         type: document.getElementById("type").value,
-        sets: +document.getElementById("sets").value,
-        reps: +document.getElementById("reps").value,
-        weight: weightValue === "" ? null : +weightValue,
-        duration: durationValue === "" ? null : +durationValue,
+        sets: +document.getElementById("sets").value || 0,
+        reps: +document.getElementById("reps").value || 0,
+        weight: +document.getElementById("weight").value || -1,
+        duration: +document.getElementById("duration").value || -1,
         notes: document.getElementById("notes").value
       };
-
-
       const res = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(workout)
       });
-
-      const json = await res.json();
-      alert(json.message);
-      e.target.reset();
-      fetchWorkouts();
+      if (res.ok) {
+        e.target.reset();
+        fetchWorkouts();
+      } else {
+        alert("Failed to add workout.");
+      }
     });
 
-    fetchWorkouts();
-
-    // Delete a workout
+    // Delete workout
     async function deleteWorkout(id) {
-        if (!confirm("Are you sure you want to delete this workout?")) return;
-
-        const res = await fetch(`${API}/${id}?user_id=${user_id}`, {
-            method: "DELETE",
-        });
-
-        if (res.ok) {
-            alert("Workout deleted successfully!");
-            fetchWorkouts(); // refresh table
-        } else {
-            const data = await res.json().catch(() => ({}));
-            alert(`Failed to delete workout: ${data.message || res.status}`);
-        }
+      if (!confirm("Delete this workout?")) return;
+      const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
+      if (res.ok) {
+        fetchWorkouts();
+      } else {
+        alert("Failed to delete workout.");
+      }
     }
 
-    // Edit an existing workout
-    async function editWorkout(w) {
-        const newType = prompt("Type:", w.type);
-        if (!newType) return; // cancelled
-
-        const newSets = prompt("Sets:", w.sets);
-        const newReps = prompt("Reps:", w.reps);
-        const newWeight = prompt("Weight (kg):", w.weight);
-        const newDuration = prompt("Duration (min):", w.duration);
-        const newNotes = prompt("Notes:", w.notes || "");
-
-        const updated = {
-            id: w.id,
-            user_id: user_id,
-            date: new Date().toISOString().split("T")[0],
-            type: newType,
-            sets: +newSets,
-            reps: +newReps,
-            weight: +newWeight,
-            duration: +newDuration,
-            notes: newNotes
-        };
-
-        const res = await fetch(API, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updated)
-        });
-
-        if (res.ok) {
-            alert("Workout updated successfully!");
-            fetchWorkouts();
-        } else {
-            const data = await res.json().catch(() => ({}));
-            alert(`Failed to update workout: ${data.message || res.status}`);
-        }
-    }
-
+    fetchWorkouts();
   </script>
 </body>
 </html>

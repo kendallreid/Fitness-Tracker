@@ -62,10 +62,27 @@ void setupLoginRoutes(crow::SimpleApp& app, LogInManager& loginManager, sqlite3*
 
         crow::response res;
         if (loginManager.LogIn(username, password, db)) {
+
+            sqlite3_stmt* stmt;
+            const char* sql = "SELECT id FROM users WHERE username = ?;";
+            int user_id = 0;
+
+            if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) == SQLITE_OK) {
+                sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+                if (sqlite3_step(stmt) == SQLITE_ROW) {
+                    user_id = sqlite3_column_int(stmt, 0);
+                }
+                sqlite3_finalize(stmt);
+            }
+
             //return crow::response(200, "Login successful!");
             res.code = 302;                          // HTTP redirect
             res.set_header("Location", "/home");
+
+            res.add_header("Set-Cookie",
+                "user_id=" + std::to_string(user_id) + "; Path=/; HttpOnly");
             return res;
+            
         } else {
             res.code = 302;                    
             res.set_header("Location", "/auth/login?error=1");  // Failure - back to login page

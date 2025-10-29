@@ -1,4 +1,6 @@
 #include "schema.h"
+#include <iostream>
+using namespace std;
 
 bool createTables(sqlite3 *db)
 {
@@ -12,6 +14,18 @@ bool createTables(sqlite3 *db)
             email TEXT UNIQUE NOT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            date TEXT NOT NULL,
+            notes TEXT,
+            duration INTEGER,
+            created_at TEXT DEFAULT (datetime('now')),
+            updated_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+
         CREATE TABLE IF NOT EXISTS workouts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -21,11 +35,12 @@ bool createTables(sqlite3 *db)
             reps INTEGER,
             weight REAL,
             duration INTEGER,
+            session_id INTEGER,
             notes TEXT,
+            FOREIGN KEY(session_id) REFERENCES sessions(id),
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
-
-
+ 
         CREATE TABLE IF NOT EXISTS nutrition (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -42,6 +57,7 @@ bool createTables(sqlite3 *db)
     char *errMsg = nullptr;
     int status = sqlite3_exec(db, sql, nullptr, nullptr, &errMsg);
     if (status != SQLITE_OK) {
+        std::cerr << "Error creating tables: " << errMsg << std::endl;
         sqlite3_free(errMsg);
         return false;
     }
