@@ -1,6 +1,18 @@
 {
     "configurations": [
         {
+            "name": "Windows",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/fifth/vcpkg/installed/x64-windows/include"
+            ],
+            "defines": [],
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/<version>/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        },
+        {
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
@@ -8,7 +20,8 @@
                 "/usr/include",
                 "/usr/include/x86_64-linux-gnu",
                 "/usr/include/sqlite3",
-                "/usr/include/boost"
+                "/usr/include/boost",
+                "C:\\Users\\fifth\\vcpkg\\installed\\x64-windows\\include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

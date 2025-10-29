@@ -2,11 +2,13 @@
 #include "LogIn.h"
 #include <sodium.h>
 #include "routes/register.h"
+#include "goalTracker.h"
 #include "db/schema.h"
 #include <iostream>
 #include "routes/workout.h"
 #include "routes/session.h"
 
+#include "routes/calorie_tracker.h"
 using namespace std;
 
 int main() {
@@ -82,9 +84,24 @@ int main() {
     setupSessionRoutes(fitnessApp, db);
     registerWorkoutRoutes(fitnessApp, db);
 
+//GOALS//
+    // Serve goals page
+    CROW_ROUTE(fitnessApp, "/goals-page.html")
+    ([]{
+        return serveFile("code/frontend/goalTracker.html", "text/html");
+    });
+
+    // Hook up goal routes
+    setupGoalRoutes(fitnessApp, db);
+
+
+        // Start server
+    setupCalorieTrackerRoutes(fitnessApp, db);
+
     // Start server
     fitnessApp.port(8080).multithreaded().run();
     sqlite3_close(db);
 
+    
     return 0;
 }
