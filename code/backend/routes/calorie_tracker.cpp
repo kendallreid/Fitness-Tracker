@@ -44,7 +44,7 @@ void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
     });
 
     CROW_ROUTE(app, "/api/goals/<int>").methods("PUT"_method)
-    ([&app, db](int user_id, const crow::request& req) {
+    ([&app, db](const crow::request& req, int user_id) {
         return updateUserGoals(app, db, user_id, req);
     });
 }
@@ -174,4 +174,34 @@ crow::response clearDayMeals(crow::SimpleApp& app, sqlite3* db, int user_id, con
     sqlite3_finalize(stmt);
 
     return ok ? crow::response(200, "Cleared") : crow::response(500, "Failed to clear meals");
+}
+
+crow::response getUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id)
+{
+    return crow::response();
+}
+
+crow::response updateUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id, const crow::request &req)
+{
+    return crow::response();
+}
+
+std::string getCurrentDate()
+{
+    return std::string();
+}
+
+std::string getCurrentDateTime()
+{
+    return std::string();
+}
+
+bool validateMealData(const crow::json::rvalue &data, std::string &error)
+{
+    return false;
+}
+
+bool validateGoalsData(const crow::json::rvalue &data, std::string &error)
+{
+    return false;
 }
