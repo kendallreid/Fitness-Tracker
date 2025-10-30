@@ -4,7 +4,7 @@ project(FitnessApp)
 set(CMAKE_CXX_STANDARD 17)
 
 # Must be BEFORE add_subdirectory
-option(CROW_USE_BOOST "Use Boost.Asio instead of standalone Asio" ON)
+option(CROW_USE_BOOST "Use Boost.Asio instead of standalone Asio" OFF)
 
 # Add Crow from external/ (uses its own CMakeLists.txt)
 add_subdirectory(external/crow)
