@@ -15,9 +15,7 @@
       --shadow: rgba(0, 0, 0, 0.1);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -39,15 +37,8 @@
       padding: 0 1rem;
     }
 
-    header .title {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    header .sub {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
 
     nav {
       background: #fff;
@@ -77,19 +68,10 @@
       transition: 0.2s;
     }
 
-    .tab:hover {
-      background: var(--crimson);
-      color: #fff;
-    }
+    .tab:hover { background: var(--crimson); color: #fff; }
+    .tab.active { background: var(--crimson); color: #fff; }
 
-    .tab.active {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    main {
-      padding: 2rem 1rem;
-    }
+    main { padding: 2rem 1rem; }
 
     .card {
       background: var(--card);
@@ -103,6 +85,9 @@
     .card h3 {
       margin: 0 0 1rem;
       color: var(--crimson);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .form-grid {
@@ -133,8 +118,38 @@
       font-weight: 600;
     }
 
-    button:hover {
-      background: var(--crimson-dark);
+    button:hover { background: var(--crimson-dark); }
+
+    .see-all-btn {
+      display: none;
+      margin-top: 1rem;
+      width: 100%;
+      background: var(--crimson);
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 0.8rem;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .see-all-btn:hover { background: var(--crimson-dark); }
+
+    .sort-btn {
+      background: #fff;
+      color: var(--crimson);
+      border: 1.5px solid var(--crimson);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .sort-btn:hover {
+      background: var(--crimson);
+      color: #fff;
     }
 
     table {
@@ -155,9 +170,7 @@
       font-weight: 700;
     }
 
-    tr:hover {
-      background: #fff6f7;
-    }
+    tr:hover { background: #fff6f7; }
 
     .delete-btn {
       background: #aaa;
@@ -169,9 +182,7 @@
       transition: 0.2s;
     }
 
-    .delete-btn:hover {
-      background: #888;
-    }
+    .delete-btn:hover { background: #888; }
 
     footer {
       text-align: center;
@@ -216,7 +227,11 @@
       </section>
 
       <section class="card">
-        <h3>Your Sessions</h3>
+        <h3>
+          Your Sessions
+          <button id="sortBtn" class="sort-btn">Sort: Newest → Oldest</button>
+        </h3>
+
         <table>
           <thead>
             <tr>
@@ -229,6 +244,8 @@
           </thead>
           <tbody id="sessionTableBody"></tbody>
         </table>
+
+        <button id="seeAllBtn" class="see-all-btn">See All</button>
       </section>
     </div>
   </main>
@@ -239,6 +256,9 @@
 
   <script>
     const API = "http://localhost:8080/api/sessions";
+    let showingAll = false;
+    let allSessions = [];
+    let sortAscending = false; // default newest → oldest
 
     async function fetchSessions() {
       const res = await fetch(`${API}/user`, { credentials: "include" });
@@ -247,13 +267,35 @@
         return;
       }
       const data = await res.json();
-      renderSessions(data.sessions || []);
+      allSessions = data.sessions || [];
+      renderSessions();
     }
 
-    function renderSessions(list) {
+    function renderSessions() {
       const tbody = document.getElementById("sessionTableBody");
+      const seeAllBtn = document.getElementById("seeAllBtn");
+      const sortBtn = document.getElementById("sortBtn");
       tbody.innerHTML = "";
-      list.forEach((s) => {
+
+      if (allSessions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#666">No sessions yet.</td></tr>`;
+        seeAllBtn.style.display = "none";
+        return;
+      }
+
+      // Sort sessions by date
+      allSessions.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return sortAscending ? dateA - dateB : dateB - dateA;
+      });
+
+      // Toggle sort button label
+      sortBtn.textContent = sortAscending ? "Sort: Oldest → Newest" : "Sort: Newest → Oldest";
+
+      const visibleSessions = showingAll ? allSessions : allSessions.slice(0, 7);
+
+      visibleSessions.forEach((s) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${s.name}</td>
@@ -262,23 +304,35 @@
           <td>${s.duration || "N/A"}</td>
           <td><button class="delete-btn">Delete</button></td>
         `;
+
         row.addEventListener("click", (e) => {
           if (e.target.classList.contains("delete-btn")) return;
           window.location.href = `workouts.html?session_id=${s.id}`;
         });
-        const del = row.querySelector(".delete-btn");
-        del.addEventListener("click", async () => {
+
+        row.querySelector(".delete-btn").addEventListener("click", async () => {
           if (!confirm("Delete this session?")) return;
           const res = await fetch(`${API}/${s.id}`, { method: "DELETE", credentials: "include" });
-          if (res.ok) {
-            fetchSessions();
-          } else {
-            alert("Failed to delete session.");
-          }
+          if (res.ok) fetchSessions();
+          else alert("Failed to delete session.");
         });
+
         tbody.appendChild(row);
       });
+
+      seeAllBtn.style.display = allSessions.length > 7 ? "block" : "none";
+      seeAllBtn.textContent = showingAll ? "Show Less" : "See All";
     }
+
+    document.getElementById("sortBtn").addEventListener("click", () => {
+      sortAscending = !sortAscending;
+      renderSessions();
+    });
+
+    document.getElementById("seeAllBtn").addEventListener("click", () => {
+      showingAll = !showingAll;
+      renderSessions();
+    });
 
     document.getElementById("sessionForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -306,3 +360,4 @@
   </script>
 </body>
 </html>
+
