@@ -17,7 +17,7 @@
       --warning: #f59e0b;
       --error: #ef4444;
     }
-    
+
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
     body {
@@ -25,13 +25,23 @@
       background: var(--bg);
       color: var(--ink);
     }
-    
+
+    /* Navigation Bar */
+    header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:2px solid var(--crimson)}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .title{font-weight:800;color:var(--crimson)}
+    .sub{color:var(--muted);font-size:14px}
+    nav{border-top:1px solid var(--border);background:#fff;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px}
+    .tab{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--border);border-radius:999px;padding:8px 12px;text-decoration:none;color:var(--crimson);font-weight:600}
+    .tab:hover{border-color:var(--crimson);}
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
-    
+
     .header {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -39,475 +49,310 @@
       padding: 20px;
       margin-bottom: 20px;
     }
-    
+
     .header h1 {
       margin: 0 0 10px;
       color: var(--crimson);
       font-size: 28px;
     }
-    
+
     .header p {
       margin: 0;
       color: var(--muted);
       font-size: 16px;
     }
-    
+
     .main-content {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
-    
+
     .card {
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 20px;
     }
-    
+
     .card h2 {
       margin: 0 0 20px;
       color: var(--crimson);
       font-size: 20px;
     }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-    
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display:block;margin-bottom:5px;font-weight:600;color:var(--ink); }
     .form-group input, .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color 0.2s;
+      width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px;
     }
-    
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: var(--crimson);
-    }
-    
-    .btn {
-      background: var(--crimson);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    
-    .btn:hover {
-      background: var(--crimson-600);
-    }
-    
-    .btn-secondary {
-      background: var(--muted);
-    }
-    
-    .btn-secondary:hover {
-      background: #4b5563;
-    }
-    
-    .btn-danger {
-      background: var(--error);
-    }
-    
-    .btn-danger:hover {
-      background: #dc2626;
-    }
-    
-    .progress-section {
-      margin-bottom: 20px;
-    }
-    
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background: #e5e7eb;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--success), #34d399);
-      transition: width 0.3s ease;
-    }
-    
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    
-    
-    .meals-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    
-    .meal-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 10px;
-      background: #f9fafb;
-    }
-    
-    .meal-info {
-      flex: 1;
-    }
-    
-    .meal-name {
-      font-weight: 600;
-      color: var(--ink);
-      margin-bottom: 4px;
-    }
-    
-    .meal-details {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    
-    .meal-actions {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-    
-    .error-message {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: var(--error);
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-    
-    .success-message {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      color: var(--success);
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-    
-    .hidden {
-      display: none;
-    }
-    
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--crimson); }
+
+    .btn { background: var(--crimson); color:white; border:none; padding:12px 24px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn:hover { background: var(--crimson-600); }
+    .btn-secondary { background: var(--muted); }
+    .btn-secondary:hover { background:#4b5563; }
+    .btn-danger { background: var(--error); }
+    .btn-danger:hover { background: #dc2626; }
+
+    .progress-section { margin-bottom:20px; }
+    .progress-bar { width:100%; height:20px; background:#e5e7eb; border-radius:10px; overflow:hidden; margin-bottom:10px; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--success),#34d399); transition:width .3s ease; }
+    .progress-text { display:flex; justify-content:space-between; font-size:14px; color:var(--muted); }
+
+    .meals-list { max-height:400px; overflow-y:auto; }
+    .meal-item { display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:8px; background:#f9fafb; margin-bottom:10px; }
+    .meal-name { font-weight:600; }
+    .meal-details { font-size:12px; color:var(--muted); }
+    .btn-small { padding:6px 12px; font-size:12px; }
+
+    .error-message, .success-message { border-radius:8px; margin-bottom:15px; padding:10px; font-size:14px; }
+    .error-message { background:#fef2f2; border:1px solid #fecaca; color:var(--error); }
+    .success-message { background:#f0fdf4; border:1px solid #bbf7d0; color:var(--success); }
+    .hidden { display:none; }
+
+    @media(max-width:768px){ .main-content { grid-template-columns:1fr; } }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Calorie Tracker</h1>
-      <p>Track your daily calorie intake and monitor your nutrition goals</p>
-    </div>
-    
-    <div class="main-content">
-      <!-- Input Form -->
-      <div class="card">
-        <h2>Add Meal</h2>
-        
-        <div id="errorMessage" class="error-message hidden"></div>
-        <div id="successMessage" class="success-message hidden"></div>
-        
-        <form id="mealForm">
-          <div class="form-group">
-            <label for="mealName">Meal Name</label>
-            <input type="text" id="mealName" name="mealName" placeholder="e.g., Grilled Chicken Breast" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="calories">Calories</label>
-            <input type="number" id="calories" name="calories" placeholder="e.g., 250" min="1" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="protein">Protein (grams)</label>
-            <input type="number" id="protein" name="protein" placeholder="e.g., 30" min="0" step="0.1">
-          </div>
-          
-          <div class="form-group">
-            <label for="mealType">Meal Type</label>
-            <select id="mealType" name="mealType" required>
-              <option value="">Select meal type</option>
-              <option value="breakfast">Breakfast</option>
-              <option value="lunch">Lunch</option>
-              <option value="dinner">Dinner</option>
-              <option value="snack">Snack</option>
-            </select>
-          </div>
-          
-          <button type="submit" class="btn">Add Meal</button>
-        </form>
-      </div>
-      
-      <!-- Progress and Stats -->
-      <div class="card">
-        <h2>Today's Progress</h2>
-        
-        <div class="progress-section">
-          <div class="progress-text">
-            <span>Calories: <span id="currentCalories">0</span> / <span id="calorieGoal">2000</span></span>
-            <span id="caloriePercentage">0%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="calorieProgressBar" style="width: 0%"></div>
-          </div>
-        </div>
-        
-        <div class="progress-section">
-          <div class="progress-text">
-            <span>Protein: <span id="currentProtein">0</span>g / <span id="proteinGoal">150</span>g</span>
-            <span id="proteinPercentage">0%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="proteinProgressBar" style="width: 0%"></div>
-          </div>
-        </div>
-        
-        
-        <div style="margin-top: 20px;">
-          <button class="btn btn-secondary" onclick="clearAllMeals()">Clear All Meals</button>
-        </div>
+
+<header>
+  <div class="wrap">
+    <div class="title">Fitness Dashboard</div>
+    <div class="sub">Track your meals & nutrition</div>
+  </div>
+  <nav>
+    <div class="wrap">
+      <div class="tabs">
+        <a class="tab" href="/home">Home</a>
+        <a class="tab" href="/calorie-tracker" style="border-color:var(--crimson);">Food</a>
+        <a class="tab" href="/exercise.html">Exercise</a>
+        <a class="tab" href="/goals-page">Goals</a>
+        <a class="tab" href="/weekly.html">Weekly Log</a>
+        <a class="tab" href="/profile.html">Profile</a>
+        <a class="tab" href="/social.html">Social</a>
       </div>
     </div>
-    
-    <!-- Meals List -->
-    <div class="card" style="margin-top: 20px;">
-      <h2>Today's Meals</h2>
-      <div id="mealsList" class="meals-list">
-        <p style="text-align: center; color: var(--muted); padding: 20px;">No meals added today. Add your first meal above!</p>
+  </nav>
+</header>
+
+<div class="container">
+
+  <div class="header">
+    <h1>Calorie Tracker</h1>
+    <p>Track your daily calorie intake and monitor your nutrition goals</p>
+  </div>
+
+  <div class="main-content">
+    <!-- INPUT FORM -->
+    <div class="card">
+      <h2>Add Meal</h2>
+
+      <div id="errorMessage" class="error-message hidden"></div>
+      <div id="successMessage" class="success-message hidden"></div>
+
+      <form id="mealForm">
+        <div class="form-group">
+          <label for="mealName">Meal Name</label>
+          <input type="text" id="mealName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="calories">Calories</label>
+          <input type="number" id="calories" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="protein">Protein (grams)</label>
+          <input type="number" id="protein" min="0" step="0.1">
+        </div>
+
+        <div class="form-group">
+          <label for="mealType">Meal Type</label>
+          <select id="mealType" required>
+            <option value="">Select meal type</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn">Add Meal</button>
+      </form>
+    </div>
+
+    <!-- PROGRESS CARD -->
+    <div class="card">
+      <h2>Today's Progress</h2>
+
+      <div class="progress-section">
+        <div class="progress-text">
+          <span>Calories: <span id="currentCalories">0</span> / <span id="calorieGoal">2000</span></span>
+          <span id="caloriePercentage">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="calorieProgressBar"></div></div>
       </div>
+
+      <div class="progress-section">
+        <div class="progress-text">
+          <span>Protein: <span id="currentProtein">0</span>g / <span id="proteinGoal">150</span>g</span>
+          <span id="proteinPercentage">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="proteinProgressBar"></div></div>
+      </div>
+
+      <button class="btn btn-secondary" onclick="clearAllMeals()">Clear All Meals</button>
     </div>
   </div>
 
-  <script>
-    const CALORIE_GOAL = 2000;
-    const PROTEIN_GOAL = 150;
+  <!-- MEALS LIST -->
+  <div class="card" style="margin-top:20px;">
+    <h2>Today's Meals</h2>
+    <div id="mealsList" class="meals-list">
+      <p style="text-align:center;color:var(--muted);padding:20px;">No meals yet — add one above!</p>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const CALORIE_GOAL = 2000;
+  const PROTEIN_GOAL = 150;
+  
+  let meals = [];
+  let currentUser = null;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    loadUserData();
+    loadMeals();
+    render();
+    setupEventListeners();
+  });
+
+  function loadUserData() {
+    currentUser = JSON.parse(localStorage.getItem('currentUser')) || { id: 1, username: 'demo_user' };
+  }
+
+  function loadMeals() {
+    const today = new Date().toISOString().split('T')[0];
+    meals = JSON.parse(localStorage.getItem(`meals_${currentUser.id}_${today}`)) || [];
+  }
+
+  function saveMeals() {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem(`meals_${currentUser.id}_${today}`, JSON.stringify(meals));
+  }
+
+  function setupEventListeners() {
+    document.getElementById('mealForm').addEventListener('submit', handleMealSubmit);
+  }
+
+  function handleMealSubmit(e) {
+    e.preventDefault();
     
-    let meals = [];
-    let currentUser = null;
-    
-    document.addEventListener('DOMContentLoaded', function() {
-      loadUserData();
-      loadMeals();
-      render();
-      setupEventListeners();
-    });
-    
-    function loadUserData() {
-      currentUser = JSON.parse(localStorage.getItem('currentUser')) || { id: 1, username: 'demo_user' };
+    const mealData = {
+      id: Date.now(),
+      name: mealName.value.trim(),
+      calories: parseInt(calories.value),
+      protein: parseFloat(protein.value) || 0,
+      mealType: mealType.value,
+      timestamp: new Date().toISOString()
+    };
+
+    if (!validateMeal(mealData)) return;
+
+    meals.push(mealData);
+    saveMeals();
+    render();
+    mealForm.reset();
+    showMessage('Meal added successfully!', 'success');
+  }
+
+  function validateMeal(meal) {
+    if (!meal.name) return showMessage('Enter a meal name.', 'error') && false;
+    if (!meal.calories || meal.calories <= 0) return showMessage('Enter a valid calorie amount.', 'error') && false;
+    if (meal.protein < 0) return showMessage('Protein cannot be negative.', 'error') && false;
+    if (!meal.mealType) return showMessage('Select a meal type.', 'error') && false;
+    return true;
+  }
+
+  function showMessage(message, type) {
+    const errorDiv = document.getElementById('errorMessage');
+    const successDiv = document.getElementById('successMessage');
+
+    errorDiv.classList.add('hidden');
+    successDiv.classList.add('hidden');
+
+    if (type === 'error') {
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+    } else {
+      successDiv.textContent = message;
+      successDiv.classList.remove('hidden');
     }
-    
-    function loadMeals() {
-      const today = new Date().toISOString().split('T')[0];
-      meals = JSON.parse(localStorage.getItem(`meals_${currentUser.id}_${today}`)) || [];
-    }
-    
-    function saveMeals() {
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.setItem(`meals_${currentUser.id}_${today}`, JSON.stringify(meals));
-    }
-    
-    function setupEventListeners() {
-      document.getElementById('mealForm').addEventListener('submit', handleMealSubmit);
-    }
-    
-    function handleMealSubmit(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(e.target);
-      const mealData = {
-        id: Date.now(),
-        name: formData.get('mealName').trim(),
-        calories: parseInt(formData.get('calories')),
-        protein: parseFloat(formData.get('protein')) || 0,
-        mealType: formData.get('mealType'),
-        timestamp: new Date().toISOString()
-      };
-      
-      if (!validateMeal(mealData)) {
-        return;
-      }
-      
-      meals.push(mealData);
-      saveMeals();
-      render();
-      
-      e.target.reset();
-      
-      showMessage('Meal added successfully!', 'success');
-    }
-    
-    function validateMeal(meal) {
-      if (!meal.name) {
-        showMessage('Please enter a meal name.', 'error');
-        return false;
-      }
-      
-      if (!meal.calories || meal.calories <= 0) {
-        showMessage('Please enter a valid calorie amount (greater than 0).', 'error');
-        return false;
-      }
-      
-      if (meal.calories > 10000) {
-        showMessage('Calorie amount seems too high. Please check your input.', 'error');
-        return false;
-      }
-      
-      if (meal.protein < 0) {
-        showMessage('Protein amount cannot be negative.', 'error');
-        return false;
-      }
-      
-      if (!meal.mealType) {
-        showMessage('Please select a meal type.', 'error');
-        return false;
-      }
-      
-      return true;
-    }
-    
-    function showMessage(message, type) {
-      const errorDiv = document.getElementById('errorMessage');
-      const successDiv = document.getElementById('successMessage');
-      
+
+    setTimeout(() => {
       errorDiv.classList.add('hidden');
       successDiv.classList.add('hidden');
-      
-      if (type === 'error') {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-      } else {
-        successDiv.textContent = message;
-        successDiv.classList.remove('hidden');
-      }
-      
-      setTimeout(() => {
-        errorDiv.classList.add('hidden');
-        successDiv.classList.add('hidden');
-      }, 3000);
-    }
-    
-    function render() {
-      updateProgress();
-      renderMealsList();
-    }
-    
-    function updateProgress() {
-      const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0);
-      const totalProtein = meals.reduce((sum, meal) => sum + meal.protein, 0);
-      
-      const caloriePercentage = Math.min((totalCalories / CALORIE_GOAL) * 100, 100);
-      document.getElementById('currentCalories').textContent = totalCalories;
-      document.getElementById('calorieGoal').textContent = CALORIE_GOAL;
-      document.getElementById('caloriePercentage').textContent = Math.round(caloriePercentage) + '%';
-      document.getElementById('calorieProgressBar').style.width = caloriePercentage + '%';
-      
-      const proteinPercentage = Math.min((totalProtein / PROTEIN_GOAL) * 100, 100);
-      document.getElementById('currentProtein').textContent = Math.round(totalProtein);
-      document.getElementById('proteinGoal').textContent = PROTEIN_GOAL;
-      document.getElementById('proteinPercentage').textContent = Math.round(proteinPercentage) + '%';
-      document.getElementById('proteinProgressBar').style.width = proteinPercentage + '%';
-    }
-    
-    
-    function renderMealsList() {
-      const mealsList = document.getElementById('mealsList');
-      
-      if (meals.length === 0) {
-        mealsList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">No meals added today. Add your first meal above!</p>';
-        return;
-      }
-      
-      mealsList.innerHTML = meals.map(meal => `
+    }, 3000);
+  }
+
+  function render() {
+    updateProgress();
+    renderMealsList();
+  }
+
+  function updateProgress() {
+    const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0);
+    const totalProtein = meals.reduce((sum, m) => sum + m.protein, 0);
+
+    const caloriePercent = Math.min((totalCalories / CALORIE_GOAL) * 100, 100);
+    document.getElementById('currentCalories').textContent = totalCalories;
+    document.getElementById('calorieProgressBar').style.width = caloriePercent + "%";
+    document.getElementById('caloriePercentage').textContent = Math.round(caloriePercent) + "%";
+
+    const proteinPercent = Math.min((totalProtein / PROTEIN_GOAL) * 100, 100);
+    document.getElementById('currentProtein').textContent = Math.round(totalProtein);
+    document.getElementById('proteinProgressBar').style.width = proteinPercent + "%";
+    document.getElementById('proteinPercentage').textContent = Math.round(proteinPercent) + "%";
+  }
+
+  function renderMealsList() {
+    const mealsList = document.getElementById('mealsList');
+    mealsList.innerHTML = meals.length === 0
+      ? '<p style="text-align:center;color:var(--muted);padding:20px;">No meals yet</p>'
+      : meals.map(m => `
         <div class="meal-item">
-          <div class="meal-info">
-            <div class="meal-name">${escapeHtml(meal.name)}</div>
-            <div class="meal-details">
-              ${meal.calories} cal • ${meal.protein}g protein • ${meal.mealType}
-            </div>
+          <div>
+            <div class="meal-name">${m.name}</div>
+            <div class="meal-details">${m.calories} cal • ${m.protein}g • ${m.mealType}</div>
           </div>
           <div class="meal-actions">
-            <button class="btn btn-small btn-secondary" onclick="editMeal(${meal.id})">Edit</button>
-            <button class="btn btn-small btn-danger" onclick="deleteMeal(${meal.id})">Delete</button>
+            <button class="btn btn-small btn-danger" onclick="deleteMeal(${m.id})">Delete</button>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
+  }
+
+  function deleteMeal(id) {
+    meals = meals.filter(m => m.id !== id);
+    saveMeals();
+    render();
+    showMessage("Meal deleted!", "success");
+  }
+
+  function clearAllMeals() {
+    if (confirm("Clear all meals for today?")) {
+      meals = [];
+      saveMeals();
+      render();
+      showMessage("Meals cleared!", "success");
     }
-    
-    function deleteMeal(mealId) {
-      if (confirm('Are you sure you want to delete this meal?')) {
-        meals = meals.filter(meal => meal.id !== mealId);
-        saveMeals();
-        render();
-        showMessage('Meal deleted successfully!', 'success');
-      }
-    }
-    
-    function editMeal(mealId) {
-      const meal = meals.find(m => m.id === mealId);
-      if (meal) {
-        document.getElementById('mealName').value = meal.name;
-        document.getElementById('calories').value = meal.calories;
-        document.getElementById('protein').value = meal.protein;
-        document.getElementById('mealType').value = meal.mealType;
-        
-        meals = meals.filter(m => m.id !== mealId);
-        saveMeals();
-        render();
-        
-        showMessage('Meal loaded for editing. Make changes and click Add Meal.', 'success');
-      }
-    }
-    
-    function clearAllMeals() {
-      if (confirm('Are you sure you want to clear all meals for today?')) {
-        meals = [];
-        saveMeals();
-        render();
-        showMessage('All meals cleared!', 'success');
-      }
-    }
-    
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-  </script>
+  }
+
+  function escapeHtml(text) { return text.replace(/[<>]/g, c => ({'<':'&lt;','>':'&gt;'}[c])); }
+</script>
+
 </body>
 </html>
