@@ -35,4 +35,14 @@ inline crow::response serveFile(const string& filepath, const string& contentTyp
     return res;
 }
 
+inline std::string getCookieValue(const std::string& cookieHeader, const std::string& key)
+{
+    size_t start = cookieHeader.find(key + "=");
+    if (start == std::string::npos) return "";
+
+    start += key.size() + 1;
+    size_t end = cookieHeader.find(";", start);
+    return cookieHeader.substr(start, end - start);
+}
+
 #endif // HELPERS_H
