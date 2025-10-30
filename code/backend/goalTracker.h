@@ -13,12 +13,12 @@ struct Goal {
     double target_value;
     std::string start_date;
     std::string end_date;
-    int completed;
+    std::string status;
     double total_progress;
 };
 
 // Backend logic
-std::vector<Goal> getAllGoals(sqlite3* db);
+std::vector<Goal> getAllGoals(sqlite3* db, int user_id, const std::string& status_filter);
 bool addGoal(sqlite3* db, int user_id, const std::string& goal_name,
              double target_value, const std::string& start_date, const std::string& end_date);
 bool addGoalProgress(sqlite3* db, int goal_id, double value);

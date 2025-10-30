@@ -60,17 +60,21 @@ bool createTables(sqlite3 *db)
             daily_protein_goal REAL DEFAULT 150.0,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL,
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS goals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             goal_name TEXT NOT NULL,
-            target_value REAL NOT NULL,
-            start_date TEXT NOT NULL,
+            target_value REAL,
+            current_value REAL DEFAULT 0,
+            status TEXT DEFAULT 'active',
+            frequency TEXT DEFAULT 'none',
+            start_date TEXT DEFAULT (datetime('now')),
             end_date TEXT,
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            updated_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS goal_progress (
@@ -78,7 +82,7 @@ bool createTables(sqlite3 *db)
             goal_id INTEGER NOT NULL,
             date TEXT NOT NULL,
             progress_value REAL NOT NULL,
-            FOREIGN KEY(goal_id) REFERENCES goals(id)
+            FOREIGN KEY(goal_id) REFERENCES goals(id) ON DELETE CASCADE
         );
 )";
 

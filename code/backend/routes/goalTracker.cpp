@@ -5,33 +5,38 @@
 #include <vector>
 #include <ctime>
 #include <iostream>
+#include "helper.h"
 
 void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
 
-    // --- GET /goals ---
-    CROW_ROUTE(app, "/goals").methods("GET"_method)([db]() {
-        auto goals = getAllGoals(db); // now returns full Goal objects
+    // --- GET /goals/active ---
+    CROW_ROUTE(app, "/goals/active").methods("GET"_method)([db](const crow::request& req) {
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+        auto goals = getAllGoals(db, user_id, "active"); // now returns full Goal objects
 
         crow::json::wvalue result;
         std::vector<crow::json::wvalue> arr;
 
-        for (auto& g : goals) {
-            g.total_progress = getGoalTotalProgress(db, g.id);
-            crow::json::wvalue goal;
-            goal["id"] = g.id;
-            goal["user_id"] = g.user_id;
-            goal["goal_name"] = g.goal_name;
-            goal["target_value"] = g.target_value;
-            goal["start_date"] = g.start_date;
-            goal["end_date"] = g.end_date;
-            goal["completed"] = g.completed;
-            goal["total_progress"] = g.total_progress; 
+        return crow::response(serializeGoals(goals, db));
+    });
 
-            arr.push_back(std::move(goal));
+    // --- Get /goals/completed ---
+    CROW_ROUTE(app, "/goals/completed").methods("GET"_method)([db](const crow::request& req) {
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
         }
 
-        result["goals"] = std::move(arr);
-        return result;
+        int user_id = std::stoi(user_id_str);
+        auto goals = getAllGoals(db, user_id, "completed"); // now returns full Goal objects
+
+        return crow::response(serializeGoals(goals, db));
     });
 
     // --- POST /goals ---
@@ -40,11 +45,14 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
         if (!body)
             return makeError(400, "Invalid JSON");
 
-        // Default user_id = 1 if not provided
-        int user_id = 1;
-        if (body.has("user_id"))
-            user_id = static_cast<int>(body["user_id"].i());
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
 
+        int user_id = std::stoi(user_id_str);
+        
         std::string goal_name = "";
         if (body.has("goal_name"))
             goal_name = body["goal_name"].s();
@@ -95,33 +103,33 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
 
     // PATCH /goals/toggle-complete/<goal_id>
     CROW_ROUTE(app, "/goals/toggle-complete/<int>").methods("PATCH"_method)([db](int goal_id) {
-        // Get current completed state
-        int completed = 0;
-        const char* selectSql = "SELECT completed FROM goals WHERE id = ?;";
+        // Get current status
+        std::string status;
+        const char* selectSql = "SELECT status FROM goals WHERE id = ?;";
         sqlite3_stmt* selectStmt;
         if (sqlite3_prepare_v2(db, selectSql, -1, &selectStmt, nullptr) != SQLITE_OK)
             return makeError(500, "Database error");
 
         sqlite3_bind_int(selectStmt, 1, goal_id);
         if (sqlite3_step(selectStmt) == SQLITE_ROW)
-            completed = sqlite3_column_int(selectStmt, 0);
+            status = reinterpret_cast<const char*>(sqlite3_column_text(selectStmt, 0));
         sqlite3_finalize(selectStmt);
 
         // Toggle
-        int newState = completed ? 0 : 1;
+        std::string newState = (status == "active") ? "completed" : "active";
 
-        const char* updateSql = "UPDATE goals SET completed = ? WHERE id = ?;";
+        const char* updateSql = "UPDATE goals SET status = ? WHERE id = ?;";
         sqlite3_stmt* updateStmt;
         if (sqlite3_prepare_v2(db, updateSql, -1, &updateStmt, nullptr) != SQLITE_OK)
             return makeError(500, "Database error");
 
-        sqlite3_bind_int(updateStmt, 1, newState);
+        sqlite3_bind_text(updateStmt, 1, newState.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(updateStmt, 2, goal_id);
         bool success = (sqlite3_step(updateStmt) == SQLITE_DONE);
         sqlite3_finalize(updateStmt);
 
         if (success)
-            return makeSuccess(200, newState ? "Goal marked complete" : "Goal marked incomplete");
+            return makeSuccess(200, newState == "completed" ? "Goal marked complete" : "Goal marked incomplete");
         else
             return makeError(500, "Failed to toggle goal complete");
     });
@@ -130,16 +138,34 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
         const char* sql = "DELETE FROM goals WHERE id = ?;";
         sqlite3_stmt* stmt;
         if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+
+            std::cerr << sqlite3_errmsg(db) << std::endl;
             return makeError(500, "Database error");
         }
         sqlite3_bind_int(stmt, 1, goal_id);
         bool success = (sqlite3_step(stmt) == SQLITE_DONE);
         sqlite3_finalize(stmt);
 
-        if (success)
+        if (success){
             return makeSuccess(200, "Goal deleted successfully");
-        else
+        } else {
+            std::cerr << sqlite3_errmsg(db) << std::endl;
             return makeError(500, "Failed to delete goal");
+        }
     });
+
+    CROW_ROUTE(app, "/goals/<int>/complete").methods("POST"_method)([db](int goal_id) {
+        const char* sql = "UPDATE goals SET status = 'completed', updated_at = datetime('now') WHERE id = ?;";
+        sqlite3_stmt* stmt;
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+        sqlite3_bind_int(stmt, 1, goal_id);
+        int rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+        if (rc == SQLITE_DONE)
+            return makeSuccess(200, "Goal marked as completed");
+        else
+            return makeError(500, sqlite3_errmsg(db));
+    });
+
 
 }
