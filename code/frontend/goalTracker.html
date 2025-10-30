@@ -6,79 +6,127 @@
   <title>Goals – Fitness Dashboard</title>
   <style>
     :root {
-      --crimson:#8C001A;        
-      --crimson-600:#a30020; 
-      --bg:#ffffff; 
-      --ink:#222222; 
-      --muted:#6b7280;  
-      --card:#ffffff; 
-      --border:#8c001a33;  
+      --crimson: #8C001A;
+      --crimson-dark: #6b0014;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
     }
+
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
-      color: var(--ink);
+      color: #222;
     }
+
+    /* --- HEADER (matches sessions/workouts) --- */
     header {
+      background: var(--crimson);
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    header .title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    header .sub {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
       position: sticky;
       top: 0;
       z-index: 10;
-      background: var(--card);
-      border-bottom: 2px solid var(--crimson);
     }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
-    .title { font-weight: 800; color: var(--crimson); }
-    .sub { color: var(--muted); font-size: 14px; }
-    nav { border-top: 1px solid var(--border); background: #fff; }
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0.8rem 0;
+    }
+
     .tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1.5px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 12px;
       text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--crimson);
       color: var(--crimson);
       font-weight: 600;
+      background: #fff;
+      transition: 0.2s;
     }
-    .tab:hover { border-color: var(--crimson); }
-    main .wrap { padding-top: 16px; }
+
+    .tab:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    .tab.active {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    /* --- BODY --- */
+    main {
+      padding: 2rem 1rem;
+    }
+
     .card {
       background: var(--card);
-      border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 20px;
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-top: 3px solid var(--crimson);
     }
-    .card h3 { margin: 0 0 8px; color: var(--crimson); font-size: 18px; }
-    .goal-item {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
+
+    .card h3 {
+      margin: 0 0 1rem;
+      color: var(--crimson);
     }
-    .goal-item.visible {
-      opacity: 1;
-      transform: translateY(0);
+
+    form {
+      display: grid;
+      gap: 10px;
     }
-    .goal-item h4 { margin: 0; color: var(--crimson); }
-    .goal-item .muted { font-size: 13px; color: var(--muted); }
-    .goal-buttons { margin-top: 8px; display: flex; gap: 8px; }
-    form { display: grid; gap: 10px; margin-top: 10px; }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
     input, select {
       padding: 8px;
-      border: 1.5px solid var(--border);
+      border: 1.5px solid #ccc;
       border-radius: 8px;
       width: 100%;
     }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--crimson);
+      box-shadow: 0 0 0 2px rgba(140, 0, 26, 0.1);
+    }
+
     button {
       background: var(--crimson);
       color: white;
@@ -89,10 +137,31 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    button:hover { background: var(--crimson-600); }
-    button.delete-btn { background: #aaa; color: white; }
+
+    button:hover { background: var(--crimson-dark); }
+    button.delete-btn { background: #aaa; }
     button.delete-btn:hover { background: #888; }
-    label { font-weight: 600; font-size: 14px; }
+
+    .goal-item {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .goal-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .goal-item h4 { margin: 0; color: var(--crimson); }
+    .goal-item .muted { font-size: 13px; color: var(--muted); }
+
+    .goal-buttons { margin-top: 8px; display: flex; gap: 8px; }
+
     .progress-container {
       background: #eee;
       border-radius: 8px;
@@ -100,8 +169,9 @@
       height: 16px;
       margin: 6px 0;
     }
+
     .progress-bar {
-      background: #8C001A;
+      background: var(--crimson);
       height: 100%;
       width: 0%;
       transition: width 0.5s;
@@ -110,33 +180,42 @@
       font-size: 12px;
       line-height: 16px;
     }
+
     #seeAllBtn {
       display: none;
       margin-top: 10px;
       width: 100%;
     }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem 0;
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="title">Fitness Dashboard</div>
-    <div class="sub">Track and update your goals</div>
-  </div>
-  <nav>
+
+  <header>
     <div class="wrap">
-      <div class="tabs">
-        <a class="tab" href="/home">Home</a>
-        <a class="tab" href="/calorie-tracker">Food</a>
-        <a class="tab" href="/exercise.html">Exercise</a>
-        <a class="tab" href="/goals-page" style="border-color:var(--crimson);">Goals</a>
-        <a class="tab" href="/weekly.html">Weekly Log</a>
-        <a class="tab" href="/profile.html">Profile</a>
-        <a class="tab" href="/social.html">Social</a>
-      </div>
+      <div class="title">Goals Dashboard</div>
+      <div class="sub">Track and update your fitness goals.</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tabs">
+      <a class="tab" href="/home">Home</a>
+      <a class="tab" href="/calorie-tracker">Food</a>
+      <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab active" href="/goals-page.html">Goals</a>
+      <a class="tab" href="/weekly.html">Weekly Log</a>
+      <a class="tab" href="/profile.html">Profile</a>
+      <a class="tab" href="/social.html">Social</a>
+      <a class="tab" href="/notifications.html">Notifications</a>
     </div>
   </nav>
-</header>
 
   <main>
     <div class="wrap">
@@ -160,13 +239,12 @@
           <button type="submit">Add Goal</button>
         </form>
 
-        <!-- Button to navigate to completed goals page -->
         <button id="viewCompletedBtn" style="margin-top:10px;width:100%;background:#555;">
           View Completed Goals
         </button>
       </section>
 
-      <!-- List of active goals -->
+      <!-- Active Goals -->
       <section class="card" id="goals-section">
         <h3>My Goals</h3>
         <div id="goalsList">
@@ -175,7 +253,7 @@
         <button id="seeAllBtn">See All</button>
       </section>
 
-      <!-- Add progress section -->
+      <!-- Progress Section -->
       <section class="card" id="progress-section">
         <h3>Add Progress</h3>
         <form id="progressForm">
@@ -193,18 +271,13 @@
   </main>
 
   <footer>
-    <div class="wrap">
-      <p style="text-align:center;color:var(--muted);font-size:12px">
-        Fitness Dashboard © 2025
-      </p>
-    </div>
+    <p>© 2025 FitnessApp</p>
   </footer>
 
   <script>
     let showingAll = false;
     let allGoals = [];
 
-    // Fetch all active goals
     async function fetchGoals() {
       try {
         const res = await fetch('/goals/active');
@@ -217,7 +290,6 @@
       }
     }
 
-    // Render goals on screen
     async function renderGoals() {
       const container = document.getElementById('goalsList');
       const select = document.getElementById('goalSelect');
@@ -272,7 +344,6 @@
 
       seeAllBtn.style.display = allGoals.length > 5 ? "inline-block" : "none";
 
-      // Button handlers
       document.querySelectorAll('.complete-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id');
@@ -297,7 +368,6 @@
       renderGoals();
     });
 
-    // Add new goal
     document.getElementById('goalForm').addEventListener('submit', async e => {
       e.preventDefault();
       const goal_name = document.getElementById('goalName').value.trim();
@@ -323,7 +393,6 @@
       }
     });
 
-    // Add progress
     document.getElementById('progressForm').addEventListener('submit', async e => {
       e.preventDefault();
       const goalId = +document.getElementById('goalSelect').value;
@@ -345,7 +414,6 @@
       }
     });
 
-    // Navigate to completed goals page
     document.getElementById('viewCompletedBtn').addEventListener('click', () => {
       window.location.href = '/completedGoals.html';
     });

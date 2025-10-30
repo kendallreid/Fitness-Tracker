@@ -303,16 +303,16 @@ void registerWorkoutRoutes(crow::SimpleApp& app, sqlite3* db)
         for (const auto& w : workouts)
         {
             crow::json::wvalue item;
-            item["id"]        = w.id;
-            item["user_id"]   = w.user_id;
-            item["date"]      = w.date;
-            item["type"]      = w.type;
-            item["sets"]      = w.sets;
-            item["reps"]      = w.reps;
-            item["weight"]    = w.weight;
-            item["duration"]  = w.duration;
-            item["notes"]     = w.notes;
-            item["session_id"]= w.session_id;   
+            item["id"] = w.id;
+            item["user_id"] = w.user_id;
+            item["date"] = w.date;
+            item["type"] = w.type;
+            item["sets"] = w.sets;
+            item["reps"] = w.reps;
+            item["weight"] = w.weight;
+            item["duration"] = w.duration;
+            item["notes"] = w.notes;
+            item["session_id"] = w.session_id;
 
             arr.push_back(std::move(item));
         }
@@ -340,16 +340,16 @@ void registerWorkoutRoutes(crow::SimpleApp& app, sqlite3* db)
             return makeError(400, "Missing required fields");
 
         Workout w;
-        w.id        = body["id"].i();
-        w.user_id   = user_id;
-        w.date      = body["date"].s();
-        w.type      = body["type"].s();
-        w.sets      = body.has("sets") ? body["sets"].i() : 0;
-        w.reps      = body.has("reps") ? body["reps"].i() : 0;
-        w.weight    = body.has("weight") ? body["weight"].d() : -1.0;
-        w.duration  = body.has("duration") ? body["duration"].i() : -1;
-        w.notes     = body.has("notes") ? body["notes"].s() : std::string("");
-        w.session_id= body.has("session_id") ? body["session_id"].i() : 0;
+        w.id = body["id"].i();
+        w.user_id = user_id;
+        w.date = body["date"].s();
+        w.type = body["type"].s();
+        w.sets = body.has("sets") ? body["sets"].i() : 0;
+        w.reps = body.has("reps") ? body["reps"].i() : 0;
+        w.weight = body.has("weight") ? body["weight"].d() : -1.0;
+        w.duration = body.has("duration") ? body["duration"].i() : -1;
+        w.notes = body.has("notes") ? body["notes"].s() : std::string("");
+        w.session_id = body.has("session_id") ? body["session_id"].i() : 0;
 
         if (updateWorkout(db, w))
             return crow::response(200, crow::json::wvalue{{"message", "Workout updated successfully"}});
