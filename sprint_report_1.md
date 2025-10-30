@@ -11,14 +11,10 @@ In this sprint, we concentrated on integrating the database into our backend in 
 N/A
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
-* [URL of issue 1](https://github.com/kendallreid/Fitness-Tracker/issues/18)
-* [URL of issue 2](https://github.com/kendallreid/Fitness-Tracker/issues/11)
-* [URL of issue 3](https://github.com/kendallreid/Fitness-Tracker/issues/9)
-* [URL of issue 4](https://github.com/kendallreid/Fitness-Tracker/issues/16)
-* [URL of issue 5](https://github.com/kendallreid/Fitness-Tracker/issues/4)
-* [URL of issue 6](https://github.com/kendallreid/Fitness-Tracker/issues/12)
-* [URL of issue 7](https://github.com/kendallreid/Fitness-Tracker/issues/3)
-* [URL of issue 8](https://github.com/kendallreid/Fitness-Tracker/issues/17)
+* [URL of issue 1](https://github.com/kendallreid/Fitness-Tracker/issues/1)
+* [URL of issue 2](https://github.com/kendallreid/Fitness-Tracker/issues/7)
+* [URL of issue 3](https://github.com/kendallreid/Fitness-Tracker/issues/8)
+* [URL of issue 4](https://github.com/kendallreid/Fitness-Tracker/issues/20)
 
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
