@@ -1,16 +1,26 @@
 #include "goalTracker.h"
 #include <iostream>
 
-std::vector<Goal> getAllGoals(sqlite3* db) {
+std::vector<Goal> getAllGoals(sqlite3* db, int user_id, const std::string& status_filter) {
     std::vector<Goal> goals;
 
-    const char* sql = "SELECT id, user_id, goal_name, target_value, start_date, end_date, completed FROM goals;";
+    const char* sql;
     sqlite3_stmt* stmt;
+
+    if (status_filter == "active") {
+        sql = "SELECT id, user_id, goal_name, target_value, start_date, end_date, status FROM goals WHERE user_id = ? AND status = 'active' ORDER BY start_date DESC;";
+    } else if (status_filter == "completed") {
+        sql = "SELECT id, user_id, goal_name, target_value, start_date, end_date, status FROM goals WHERE user_id = ? AND status = 'completed' ORDER BY start_date DESC;";
+    } else {
+        sql = "SELECT id, user_id, goal_name, target_value, start_date, end_date, status FROM goals WHERE user_id = ? ORDER BY start_date DESC;";
+    }
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
         std::cerr << "Failed to prepare getAllGoals: " << sqlite3_errmsg(db) << std::endl;
         return goals;
     }
+
+    sqlite3_bind_int(stmt, 1, user_id);
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         Goal g;
@@ -19,11 +29,14 @@ std::vector<Goal> getAllGoals(sqlite3* db) {
         g.goal_name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         g.target_value = sqlite3_column_double(stmt, 3);
         g.start_date = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        g.completed = sqlite3_column_int(stmt, 6);
 
+        
         // end_date can be NULL in DB
         const unsigned char* endText = sqlite3_column_text(stmt, 5);
         g.end_date = endText ? reinterpret_cast<const char*>(endText) : "";
+
+        const unsigned char* statusText = sqlite3_column_text(stmt, 6);
+        g.status = statusText ? reinterpret_cast<const char*>(statusText) : "active";
 
         g.total_progress = getGoalTotalProgress(db, g.id);
         goals.push_back(std::move(g));
@@ -59,14 +72,15 @@ bool addGoal(sqlite3* db, int user_id, const std::string& goal_name,
 }
 
 bool addGoalProgress(sqlite3* db, int goal_id, double value) {
-    const char* checkSql = "SELECT completed FROM goals WHERE id = ?;";
+    const char* checkSql = "SELECT status FROM goals WHERE id = ?;";
     sqlite3_stmt* checkStmt;
     if (sqlite3_prepare_v2(db, checkSql, -1, &checkStmt, nullptr) == SQLITE_OK) {
         sqlite3_bind_int(checkStmt, 1, goal_id);
         if (sqlite3_step(checkStmt) == SQLITE_ROW) {
-            int completed = sqlite3_column_int(checkStmt, 0);
+            const unsigned char* statusText = sqlite3_column_text(checkStmt, 0);
+            std::string status = statusText ? reinterpret_cast<const char*>(statusText) : "active";
             sqlite3_finalize(checkStmt);
-            if (completed == 1) {
+            if (status == "completed") {
                 std::cerr << "Goal already completed, cannot add progress.\n";
                 return false;
             }

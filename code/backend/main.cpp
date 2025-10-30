@@ -21,8 +21,17 @@ int main() {
         return 1;
     }
 
-    // Turn on foreign key support
-    sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+    int rc = sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Failed to enable foreign keys: " << sqlite3_errmsg(db) << std::endl;
+    }
+
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db, "PRAGMA foreign_keys;", -1, &stmt, nullptr);
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        std::cout << "Foreign keys enabled: " << sqlite3_column_int(stmt, 0) << std::endl;
+    }
+    sqlite3_finalize(stmt);
 
     if (!createTables(db)) {
     cerr << "Failed to create tables" << endl;
@@ -91,6 +100,11 @@ int main() {
         return serveFile("code/frontend/goalTracker.html", "text/html");
     });
 
+    CROW_ROUTE(fitnessApp, "/completedGoals.html")
+    ([]{
+        return serveFile("code/frontend/completedGoals.html", "text/html");
+    });
+    
     // Hook up goal routes
     setupGoalRoutes(fitnessApp, db);
 
@@ -100,6 +114,7 @@ int main() {
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();
+
     sqlite3_close(db);
 
     

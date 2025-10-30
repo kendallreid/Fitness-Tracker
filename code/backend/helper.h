@@ -2,9 +2,12 @@
 #define HELPERS_H
 
 #include <crow.h>
+#include <sqlite3.h>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "goalTracker.h"
+
 using namespace std;
 
 inline crow::response makeError(int code, const string& message) {
@@ -43,6 +46,33 @@ inline std::string getCookieValue(const std::string& cookieHeader, const std::st
     start += key.size() + 1;
     size_t end = cookieHeader.find(";", start);
     return cookieHeader.substr(start, end - start);
+}
+
+inline crow::json::wvalue serializeGoals(const std::vector<Goal>& goals, sqlite3* db) {
+    crow::json::wvalue result;
+    std::vector<crow::json::wvalue> arr;
+    arr.reserve(goals.size());
+
+    for (const auto& g : goals) {
+        crow::json::wvalue goal;
+        goal["id"] = g.id;
+        goal["user_id"] = g.user_id;
+        goal["goal_name"] = g.goal_name;
+        goal["target_value"] = g.target_value;
+        goal["start_date"] = g.start_date;
+
+        // end_date might be empty string in your struct; that's fine
+        goal["end_date"] = g.end_date;
+        goal["status"] = g.status;
+
+        // Keep computing total_progress exactly like your handlers do
+        goal["total_progress"] = getGoalTotalProgress(db, g.id);
+
+        arr.push_back(std::move(goal));
+    }
+
+    result["goals"] = std::move(arr);
+    return result;
 }
 
 #endif // HELPERS_H
