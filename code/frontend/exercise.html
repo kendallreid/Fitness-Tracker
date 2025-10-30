@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Workouts</title>
+  <title>Exercise</title>
   <style>
     :root {
       --crimson: #8C001A;
@@ -129,7 +129,7 @@
 <body>
   <header>
     <div class="wrap">
-      <div class="title">Workouts</div>
+      <div class="title">Exercises</div>
       <div id="sessionInfo" class="sub">Track and review your exercises.</div>
     </div>
   </header>
@@ -138,7 +138,7 @@
     <div class="wrap">
       <div class="tabs">
         <a class="tab" href="/food.html">Food</a>
-        <a class="tab active" href="/workouts.html">Exercise</a>
+        <a class="tab active" href="/exercises.html">Exercise</a>
         <a class="tab" href="/goals.html">Goals</a>
         <a class="tab" href="/weekly.html">Weekly Log</a>
         <a class="tab" href="/profile.html">Profile</a>
@@ -153,27 +153,27 @@
       <a href="/sessions" class="back-link">← Back to Sessions</a>
 
       <section class="card">
-        <h3>Add Workout</h3>
-        <form id="workoutForm" class="form-grid">
+        <h3>Add Exercise</h3>
+        <form id="exerciseForm" class="form-grid">
           <input type="text" id="type" placeholder="Exercise Type (e.g. Bench Press)" required>
           <input type="number" id="sets" placeholder="Sets">
           <input type="number" id="reps" placeholder="Reps">
           <input type="number" id="weight" placeholder="Weight (lbs)">
           <input type="number" id="duration" placeholder="Duration (min)">
           <input type="text" id="notes" placeholder="Notes">
-          <button type="submit">Add Workout</button>
+          <button type="submit">Add Exercise</button>
         </form>
       </section>
 
       <section class="card">
-        <h3>Workout Log</h3>
+        <h3>Exercise Log</h3>
         <table>
           <thead>
             <tr>
               <th>Date</th><th>Type</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Duration</th><th>Notes</th><th>Actions</th>
             </tr>
           </thead>
-          <tbody id="workoutTableBody"></tbody>
+          <tbody id="exerciseTableBody"></tbody>
         </table>
       </section>
     </div>
@@ -184,30 +184,30 @@
   </footer>
 
   <script>
-    const API = "http://localhost:8080/api/workouts";
+    const API = "http://localhost:8080/api/exercises";
     const params = new URLSearchParams(window.location.search);
     const session_id = params.get("session_id");
 
     // Show which session we're viewing
     const info = document.getElementById("sessionInfo");
     info.textContent = session_id
-      ? `Viewing Workouts for Session #${session_id}`
-      : "Viewing All Workouts";
+      ? `Viewing Exercises for Session #${session_id}`
+      : "Viewing All Exercises";
 
-    // Fetch workouts (for session if given)
-    async function fetchWorkouts() {
+    // Fetch exercises (for session if given)
+    async function fetchExercises() {
       const url = session_id ? `${API}?session_id=${session_id}` : API;
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) {
-        console.error("Failed to fetch workouts");
+        console.error("Failed to fetch exercises");
         return;
       }
       const data = await res.json();
-      renderWorkouts(data.workouts);
+      renderExercises(data.exercises);
     }
 
-    function renderWorkouts(list) {
-      const tbody = document.getElementById("workoutTableBody");
+    function renderExercises(list) {
+      const tbody = document.getElementById("exerciseTableBody");
       tbody.innerHTML = "";
       list.forEach(w => {
         const row = document.createElement("tr");
@@ -221,15 +221,15 @@
           <td>${w.notes ?? ""}</td>
           <td><button class="delete-btn" style="background:#aaa">Delete</button></td>
         `;
-        row.querySelector(".delete-btn").addEventListener("click", () => deleteWorkout(w.id));
+        row.querySelector(".delete-btn").addEventListener("click", () => deleteExercise(w.id));
         tbody.appendChild(row);
       });
     }
 
-    // Add new workout
-    document.getElementById("workoutForm").addEventListener("submit", async (e) => {
+    // Add new exercise
+    document.getElementById("exerciseForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const workout = {
+      const exercise = {
         session_id: session_id ? +session_id : 0,
         date: new Date().toISOString().split("T")[0],
         type: document.getElementById("type").value,
@@ -243,28 +243,28 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(workout)
+        body: JSON.stringify(exercise)
       });
       if (res.ok) {
         e.target.reset();
-        fetchWorkouts();
+        fetchExercises();
       } else {
-        alert("Failed to add workout.");
+        alert("Failed to add exercise.");
       }
     });
 
-    // Delete workout
-    async function deleteWorkout(id) {
-      if (!confirm("Delete this workout?")) return;
+    // Delete exercise
+    async function deleteExercise(id) {
+      if (!confirm("Delete this exercise?")) return;
       const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
       if (res.ok) {
-        fetchWorkouts();
+        fetchExercises();
       } else {
-        alert("Failed to delete workout.");
+        alert("Failed to delete exercise.");
       }
     }
 
-    fetchWorkouts();
+    fetchExercises();
   </script>
 </body>
 </html>

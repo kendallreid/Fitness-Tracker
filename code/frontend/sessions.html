@@ -195,7 +195,7 @@
 <body>
   <header>
     <div class="wrap">
-      <div class="title">Workout Sessions</div>
+      <div class="title">Exercise Sessions</div>
       <div class="sub">Create, view, and manage your fitness sessions.</div>
     </div>
   </header>
@@ -306,7 +306,7 @@
 
         row.addEventListener("click", (e) => {
           if (e.target.classList.contains("delete-btn")) return;
-          window.location.href = `workouts.html?session_id=${s.id}`;
+          window.location.href = `exercises.html?session_id=${s.id}`;
         });
 
         row.querySelector(".delete-btn").addEventListener("click", async () => {
