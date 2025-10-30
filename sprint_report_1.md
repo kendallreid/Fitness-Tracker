@@ -1,4 +1,4 @@
-# Sprint 1 Report
+# Sprint 2 Report
 Video Link:
 ## What's New (User Facing)
 * Exercise Tracking
@@ -22,7 +22,7 @@ Here are links to the issues that we completed in this sprint:
 
 ## Incomplete Issues/User Stories
 Here are links to issues we worked on but did not complete in this sprint:
-* There were no issues that were started and not completed in sprint 1
+* There were no issues that were started and not completed in sprint 2
 
 ## Code Files for Review
 Please review the following code files, which were actively developed during this
