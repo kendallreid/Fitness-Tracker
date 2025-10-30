@@ -6,42 +6,103 @@
   <title>Completed Goals – Fitness Dashboard</title>
   <style>
     :root {
-      --crimson:#8C001A;
-      --crimson-600:#a30020;
-      --bg:#ffffff;
-      --ink:#222222;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --border:#8c001a33;
+      --crimson: #8C001A;
+      --crimson-dark: #6b0014;
+      --bg: #fafafa;
+      --card: #ffffff;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
-      color: var(--ink);
+      color: #222;
     }
+
+    /* === HEADER === */
     header {
+      background: var(--crimson);
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    header .title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    header .sub {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    /* === NAV === */
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
       position: sticky;
       top: 0;
-      background: var(--card);
-      border-bottom: 2px solid var(--crimson);
       z-index: 10;
     }
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0.8rem 0;
     }
-    .title { font-weight: 800; color: var(--crimson); }
-    .sub { color: var(--muted); font-size: 14px; }
+
+    .tab {
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--crimson);
+      color: var(--crimson);
+      font-weight: 600;
+      background: #fff;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    .tab.active {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    /* === MAIN CONTENT === */
+    main {
+      padding: 2rem 1rem;
+    }
+
     .card {
       background: var(--card);
-      border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 20px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-top: 3px solid var(--crimson);
     }
+
     button {
       background: var(--crimson);
       color: white;
@@ -52,17 +113,36 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-    button:hover { background: var(--crimson-600); }
-    button.delete-btn { background: #aaa; }
-    button.delete-btn:hover { background: #888; }
+
+    button:hover {
+      background: var(--crimson-dark);
+    }
+
+    button.delete-btn {
+      background: #aaa;
+    }
+
+    button.delete-btn:hover {
+      background: #888;
+    }
+
     .goal-item {
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px;
       margin-bottom: 10px;
     }
-    .goal-item h4 { margin: 0; color: var(--crimson); }
-    .goal-item .muted { font-size: 13px; color: var(--muted); }
+
+    .goal-item h4 {
+      margin: 0;
+      color: var(--crimson);
+    }
+
+    .goal-item .muted {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     .progress-container {
       background: #eee;
       border-radius: 8px;
@@ -70,6 +150,7 @@
       height: 16px;
       margin: 6px 0;
     }
+
     .progress-bar {
       background: var(--crimson);
       height: 100%;
@@ -79,40 +160,44 @@
       line-height: 16px;
       transition: width 0.5s;
     }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem 0;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <div class="title">Fitness Dashboard</div>
-      <div class="sub">Completed Goals</div>
+      <div class="title">Completed Goals</div>
+      <div class="sub">Review all goals you've achieved</div>
     </div>
   </header>
 
   <main>
     <div class="wrap">
-      <!-- Back button to return to goals page -->
+      <!-- Back to goals -->
       <button onclick="window.location.href='/goals-page.html';" style="margin-bottom:16px;">
         ← Back to Goals
       </button>
 
-      <!-- Container for all completed goals -->
-      <div id="completedGoalsList">
-        <p class="muted">Loading completed goals...</p>
+      <!-- Completed Goals List -->
+      <div class="card">
+        <div id="completedGoalsList">
+          <p class="muted">Loading completed goals...</p>
+        </div>
       </div>
     </div>
   </main>
 
   <footer>
-    <div class="wrap">
-      <p style="text-align:center;color:var(--muted);font-size:12px">
-        Fitness Dashboard © 2025
-      </p>
-    </div>
+    <p>© 2025 FitnessApp</p>
   </footer>
 
   <script>
-    // Fetch all completed goals from the server
     async function fetchCompletedGoals() {
       try {
         const res = await fetch('/goals/completed');
@@ -125,7 +210,6 @@
       }
     }
 
-    // Render completed goals on the page
     async function renderCompletedGoals() {
       const container = document.getElementById('completedGoalsList');
       container.innerHTML = '';
@@ -162,7 +246,6 @@
         container.appendChild(div);
       });
 
-      // Event handlers for buttons
       document.querySelectorAll('.complete-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const id = btn.getAttribute('data-id');
@@ -185,4 +268,3 @@
   </script>
 </body>
 </html>
-
