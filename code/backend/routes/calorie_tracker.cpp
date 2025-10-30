@@ -7,47 +7,62 @@
 #include <ctime>
 
 void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
+    // Serve the calorie tracker page
     CROW_ROUTE(app, "/calorie-tracker")
     ([] {
         return serveFile("code/frontend/CalorieTracker.html", "text/html");
     });
 
+    // Add meal
     CROW_ROUTE(app, "/api/meals").methods("POST"_method)
-    ([&app, db](const crow::request& req) {
-    return addMeal(app, db, req);
+    ([&app, db](const crow::request& req, crow::response& res) {
+        res = addMeal(app, db, req);
+        res.end();
     });
 
+    // Get meals for a specific user + date
     CROW_ROUTE(app, "/api/meals/<int>/<string>").methods("GET"_method)
-    ([&app, db](const crow::request& req, int user_id, const std::string& date) {
-    return getMeals(app, db, user_id, date);
+    ([&app, db](const crow::request& req, crow::response& res, int user_id, const std::string& date) {
+        res = getMeals(app, db, user_id, date);
+        res.end();
     });
 
+    // Update a meal
     CROW_ROUTE(app, "/api/meals/<int>").methods("PUT"_method)
-    ([&app, db](const crow::request& req, int meal_id) {
-        return updateMeal(app, db, meal_id, req);
+    ([&app, db](const crow::request& req, crow::response& res, int meal_id) {
+        res = updateMeal(app, db, meal_id, req);
+        res.end();
     });
 
+    // Delete a meal
     CROW_ROUTE(app, "/api/meals/<int>").methods("DELETE"_method)
-    ([&app, db](int meal_id) {
-       return deleteMeal(app, db, meal_id);
+    ([&app, db](const crow::request& req, crow::response& res, int meal_id) {
+        res = deleteMeal(app, db, meal_id);
+        res.end();
     });
 
+    // Clear all meals for a day
     CROW_ROUTE(app, "/api/meals/clear/<int>/<string>").methods("DELETE"_method)
-    ([&app, db](int user_id, const std::string& date) {
-       return clearDayMeals(app, db, user_id, date);
+    ([&app, db](const crow::request& req, crow::response& res, int user_id, const std::string& date) {
+        res = clearDayMeals(app, db, user_id, date);
+        res.end();
     });
 
-
+    // Get user goals
     CROW_ROUTE(app, "/api/goals/<int>").methods("GET"_method)
-    ([&app, db](int user_id) {
-        return getUserGoals(app, db, user_id);
+    ([&app, db](const crow::request& req, crow::response& res, int user_id) {
+        res = getUserGoals(app, db, user_id);
+        res.end();
     });
 
+    // Update user goals
     CROW_ROUTE(app, "/api/goals/<int>").methods("PUT"_method)
-    ([&app, db](const crow::request& req, int user_id) {
-        return updateUserGoals(app, db, user_id, req);
+    ([&app, db](const crow::request& req, crow::response& res, int user_id) {
+        res = updateUserGoals(app, db, user_id, req);
+        res.end();
     });
 }
+
 
 
 crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& req) {
