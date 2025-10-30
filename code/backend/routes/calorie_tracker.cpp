@@ -191,30 +191,30 @@ crow::response clearDayMeals(crow::SimpleApp& app, sqlite3* db, int user_id, con
     return ok ? crow::response(200, "Cleared") : crow::response(500, "Failed to clear meals");
 }
 
-crow::response getUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id)
-{
-    return crow::response();
-}
+// crow::response getUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id)
+// {
+//     return crow::response();
+// }
 
-crow::response updateUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id, const crow::request &req)
-{
-    return crow::response();
-}
+// crow::response updateUserGoals(crow::SimpleApp &app, sqlite3 *db, int user_id, const crow::request &req)
+// {
+//     return crow::response();
+// }
 
-std::string getCurrentDate()
-{
-    return std::string();
-}
+// std::string getCurrentDate()
+// {
+//     return std::string();
+// }
 
-std::string getCurrentDateTime()
-{
-    return std::string();
-}
+// std::string getCurrentDateTime()
+// {
+//     return std::string();
+// }
 
-bool validateMealData(const crow::json::rvalue &data, std::string &error)
-{
-    return false;
-}
+// bool validateMealData(const crow::json::rvalue &data, std::string &error)
+// {
+//     return false;
+// }
 
 bool validateGoalsData(const crow::json::rvalue &data, std::string &error)
 {

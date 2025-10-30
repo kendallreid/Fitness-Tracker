@@ -20,4 +20,4 @@ crow::response updateUserGoals(crow::SimpleApp& app, sqlite3* db, int user_id, c
 std::string getCurrentDate();
 std::string getCurrentDateTime();
 bool validateMealData(const crow::json::rvalue& data, std::string& error);
-bool validateGoalsData(const crow::json::rvalue& data, std::string& error);
+// bool validateGoalsData(const crow::json::rvalue& data, std::string& error);
