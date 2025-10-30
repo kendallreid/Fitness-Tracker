@@ -5,7 +5,7 @@
 #include "goalTracker.h"
 #include "db/schema.h"
 #include <iostream>
-#include "routes/workout.h"
+#include "routes/exercise.h"
 #include "routes/session.h"
 
 #include "routes/calorie_tracker.h"
@@ -83,15 +83,15 @@ int main() {
         return serveFile("code/frontend/sessions.html", "text/html");
     });
 
-    // Serve workouts page
-    CROW_ROUTE(fitnessApp, "/workouts.html")
+    // Serve exercises page
+    CROW_ROUTE(fitnessApp, "/exercises.html")
     ([]{
-        return serveFile("code/frontend/workouts.html", "text/html");
+        return serveFile("code/frontend/exercise.html", "text/html");
     });
 
-    // Hook up session/workout routes
+    // Hook up session/exercise routes
     setupSessionRoutes(fitnessApp, db);
-    registerWorkoutRoutes(fitnessApp, db);
+    registerExerciseRoutes(fitnessApp, db);
 
 //GOALS//
     // Serve goals page

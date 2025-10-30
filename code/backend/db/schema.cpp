@@ -26,7 +26,7 @@ bool createTables(sqlite3 *db)
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
 
-        CREATE TABLE IF NOT EXISTS workouts (
+        CREATE TABLE IF NOT EXISTS exercises (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             date TEXT NOT NULL,
