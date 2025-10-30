@@ -124,6 +124,9 @@
       text-decoration: none;
     }
     .back-link:hover { text-decoration: underline; }
+
+    .edit-btn { background: #4b5563; color: #fff; margin-right: 6px; }
+    .edit-btn:hover { background: #374151; }
   </style>
 </head>
 <body>
@@ -134,26 +137,12 @@
     </div>
   </header>
 
-  <nav>
-    <div class="wrap">
-      <div class="tabs">
-        <a class="tab" href="/food.html">Food</a>
-        <a class="tab active" href="/workouts.html">Exercise</a>
-        <a class="tab" href="/goals.html">Goals</a>
-        <a class="tab" href="/weekly.html">Weekly Log</a>
-        <a class="tab" href="/profile.html">Profile</a>
-        <a class="tab" href="/social.html">Social</a>
-        <a class="tab" href="/notifications.html">Notifications</a>
-      </div>
-    </div>
-  </nav>
-
   <main>
     <div class="wrap">
       <a href="/sessions" class="back-link">← Back to Sessions</a>
 
       <section class="card">
-        <h3>Add Workout</h3>
+        <h3 id="formTitle">Add Workout</h3>
         <form id="workoutForm" class="form-grid">
           <input type="text" id="type" placeholder="Exercise Type (e.g. Bench Press)" required>
           <input type="number" id="sets" placeholder="Sets">
@@ -161,7 +150,7 @@
           <input type="number" id="weight" placeholder="Weight (lbs)">
           <input type="number" id="duration" placeholder="Duration (min)">
           <input type="text" id="notes" placeholder="Notes">
-          <button type="submit">Add Workout</button>
+          <button type="submit" id="submitBtn">Add Workout</button>
         </form>
       </section>
 
@@ -187,14 +176,16 @@
     const API = "http://localhost:8080/api/workouts";
     const params = new URLSearchParams(window.location.search);
     const session_id = params.get("session_id");
+    let editingId = null;
 
-    // Show which session we're viewing
+    // Display helper for -1/null → "N/A"
+    const display = (v) => (v === null || v === -1 || v === "" ? "N/A" : v);
+
     const info = document.getElementById("sessionInfo");
     info.textContent = session_id
       ? `Viewing Workouts for Session #${session_id}`
       : "Viewing All Workouts";
 
-    // Fetch workouts (for session if given)
     async function fetchWorkouts() {
       const url = session_id ? `${API}?session_id=${session_id}` : API;
       const res = await fetch(url, { credentials: "include" });
@@ -214,46 +205,71 @@
         row.innerHTML = `
           <td>${w.date}</td>
           <td>${w.type}</td>
-          <td>${w.sets ?? "N/A"}</td>
-          <td>${w.reps ?? "N/A"}</td>
-          <td>${w.weight ?? "N/A"}</td>
-          <td>${w.duration ?? "N/A"}</td>
-          <td>${w.notes ?? ""}</td>
-          <td><button class="delete-btn" style="background:#aaa">Delete</button></td>
+          <td>${display(w.sets)}</td>
+          <td>${display(w.reps)}</td>
+          <td>${display(w.weight)}</td>
+          <td>${display(w.duration)}</td>
+          <td>${w.notes || ""}</td>
+          <td>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn" style="background:#aaa">Delete</button>
+          </td>
         `;
+
+        // Edit button handler
+        row.querySelector(".edit-btn").addEventListener("click", () => {
+          editingId = w.id;
+          document.getElementById("type").value = w.type;
+          document.getElementById("sets").value = w.sets === -1 ? "" : w.sets;
+          document.getElementById("reps").value = w.reps === -1 ? "" : w.reps;
+          document.getElementById("weight").value = w.weight === -1 ? "" : w.weight;
+          document.getElementById("duration").value = w.duration === -1 ? "" : w.duration;
+          document.getElementById("notes").value = w.notes || "";
+          document.getElementById("formTitle").textContent = "Edit Workout";
+          document.getElementById("submitBtn").textContent = "Save Changes";
+        });
+
+        // Delete button handler
         row.querySelector(".delete-btn").addEventListener("click", () => deleteWorkout(w.id));
+
         tbody.appendChild(row);
       });
     }
 
-    // Add new workout
+    // Add or edit workout
     document.getElementById("workoutForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const workout = {
+        id: editingId,
         session_id: session_id ? +session_id : 0,
         date: new Date().toISOString().split("T")[0],
         type: document.getElementById("type").value,
-        sets: +document.getElementById("sets").value || 0,
-        reps: +document.getElementById("reps").value || 0,
+        sets: +document.getElementById("sets").value || -1,
+        reps: +document.getElementById("reps").value || -1,
         weight: +document.getElementById("weight").value || -1,
         duration: +document.getElementById("duration").value || -1,
         notes: document.getElementById("notes").value
       };
+
+      const method = editingId ? "PUT" : "POST";
       const res = await fetch(API, {
-        method: "POST",
+        method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(workout)
       });
+
       if (res.ok) {
         e.target.reset();
+        editingId = null;
+        document.getElementById("formTitle").textContent = "Add Workout";
+        document.getElementById("submitBtn").textContent = "Add Workout";
         fetchWorkouts();
       } else {
-        alert("Failed to add workout.");
+        alert("Failed to save workout.");
       }
     });
 
-    // Delete workout
     async function deleteWorkout(id) {
       if (!confirm("Delete this workout?")) return;
       const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
