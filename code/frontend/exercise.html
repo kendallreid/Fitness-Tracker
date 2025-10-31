@@ -16,114 +16,29 @@
       --shadow: rgba(140, 0, 26, 0.15);
     }
     * { box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-    }
-    header {
-      background: var(--crimson);
-      color: #fff;
-      padding: 16px;
-      box-shadow: 0 3px 8px var(--shadow);
-    }
+    html, body { height: 100%; margin: 0; font-family: "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+    header { background: var(--crimson); color: #fff; padding: 16px; box-shadow: 0 3px 8px var(--shadow); }
     .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
     .title { font-weight: 800; font-size: 1.8rem; }
     .sub { color: #ffeaea; font-size: 14px; }
-    nav {
-      background: #fff;
-      border-bottom: 2px solid var(--crimson);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 10px 16px;
-      justify-content: center;
-    }
-    .tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1.5px solid var(--border);
-      text-decoration: none;
-      color: var(--crimson);
-      font-weight: 600;
-      background: #fff;
-      transition: 0.2s;
-    }
-    .tab:hover { background: var(--crimson); color: white; }
-    .tab.active { background: var(--crimson); color: #fff; border-color: var(--crimson); }
-
-    main { padding: 30px 0; }
-    .card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 10px var(--shadow);
-      margin-bottom: 24px;
-    }
-    .card h3 {
-      margin: 0 0 12px;
-      font-size: 1.4rem;
-      color: var(--crimson);
-      border-left: 4px solid var(--crimson);
-      padding-left: 8px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    input, select, button {
-      padding: 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    button {
-      background: var(--crimson);
-      color: white;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover { background: var(--crimson-600); }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid var(--border);
-      text-align: left;
-    }
-    th { color: var(--crimson); background: #fef3f3; font-weight: 700; }
-    tr:hover { background-color: #fff5f5; }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      margin: 40px 0;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 16px;
-      color: var(--crimson);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .back-link:hover { text-decoration: underline; }
+    .back-link { display:inline-block;margin-bottom:16px;color:var(--crimson);font-weight:600;text-decoration:none; }
+    .back-link:hover{text-decoration:underline;}
+    .card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 4px 10px var(--shadow);margin-bottom:24px;}
+    .card h3{margin:0 0 12px;font-size:1.4rem;color:var(--crimson);border-left:4px solid var(--crimson);padding-left:8px;}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+    input,select,button{padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;}
+    button{background:var(--crimson);color:white;font-weight:600;border:none;cursor:pointer;transition:background 0.2s;}
+    button:hover{background:var(--crimson-600);}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;}
+    th{color:var(--crimson);background:#fef3f3;font-weight:700;}
+    tr:hover{background-color:#fff5f5;}
+    footer{text-align:center;color:var(--muted);font-size:12px;margin:40px 0;}
+    .action-btn{padding:6px 12px;font-size:12px;border:none;border-radius:6px;color:#fff;cursor:pointer;}
+    .delete-btn{background:#aaa;}
+    .edit-btn{background:var(--crimson);}
+    .delete-btn:hover{background:#888;}
+    .edit-btn:hover{background:var(--crimson-600);}
   </style>
 </head>
 <body>
@@ -139,7 +54,7 @@
       <a href="/sessions" class="back-link">← Back to Sessions</a>
 
       <section class="card">
-        <h3>Add Exercise</h3>
+        <h3 id="formTitle">Add Exercise</h3>
         <form id="exerciseForm" class="form-grid">
           <input type="text" id="type" placeholder="Exercise Type (e.g. Bench Press)" required>
           <input type="number" id="sets" placeholder="Sets">
@@ -147,7 +62,7 @@
           <input type="number" id="weight" placeholder="Weight (lbs)">
           <input type="number" id="duration" placeholder="Duration (min)">
           <input type="text" id="notes" placeholder="Notes">
-          <button type="submit">Add Exercise</button>
+          <button type="submit" id="submitBtn">Add Exercise</button>
         </form>
       </section>
 
@@ -165,54 +80,74 @@
     </div>
   </main>
 
-  <footer>
-    <p>© 2025 FitnessApp</p>
-  </footer>
+  <footer><p>© 2025 FitnessApp</p></footer>
 
   <script>
     const API = "http://localhost:8080/api/exercises";
     const params = new URLSearchParams(window.location.search);
     const session_id = params.get("session_id");
 
-    // Show which session we're viewing
-    const info = document.getElementById("sessionInfo");
-    info.textContent = session_id
-      ? `Viewing Exercises for Session #${session_id}`
-      : "Viewing All Exercises";
+    let editId = null;
 
-    // Fetch exercises (for session if given)
+    const info = document.getElementById("sessionInfo");
+    info.textContent = session_id ? `Viewing Exercises for Session #${session_id}` : "Viewing All Exercises";
+
     async function fetchExercises() {
       const url = session_id ? `${API}?session_id=${session_id}` : API;
       const res = await fetch(url, { credentials: "include" });
-      if (!res.ok) {
-        console.error("Failed to fetch exercises");
-        return;
-      }
+      if (!res.ok) return console.error("Failed to fetch exercises");
       const data = await res.json();
       renderExercises(data.exercises);
+    }
+
+    function formatValue(v, allowZero=false) {
+      if (v === null || v === undefined) return "N/A";
+      if (!allowZero && (v <= 0 || v === -1)) return "N/A";
+      return v;
     }
 
     function renderExercises(list) {
       const tbody = document.getElementById("exerciseTableBody");
       tbody.innerHTML = "";
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:12px;">No exercises yet.</td></tr>`;
+        return;
+      }
+
       list.forEach(w => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${w.date}</td>
-          <td>${w.type}</td>
-          <td>${w.sets ?? "N/A"}</td>
-          <td>${w.reps ?? "N/A"}</td>
-          <td>${w.weight ?? "N/A"}</td>
-          <td>${w.duration ?? "N/A"}</td>
-          <td>${w.notes ?? ""}</td>
-          <td><button class="delete-btn" style="background:#aaa">Delete</button></td>
+          <td>${w.type || "N/A"}</td>
+          <td>${formatValue(w.sets, true)}</td>
+          <td>${formatValue(w.reps, true)}</td>
+          <td>${formatValue(w.weight)}</td>
+          <td>${formatValue(w.duration)}</td>
+          <td>${w.notes?.trim() || "N/A"}</td>
+          <td>
+            <button class="action-btn edit-btn">Edit</button>
+            <button class="action-btn delete-btn">Delete</button>
+          </td>
         `;
+        row.querySelector(".edit-btn").addEventListener("click", () => loadExerciseForEdit(w));
         row.querySelector(".delete-btn").addEventListener("click", () => deleteExercise(w.id));
         tbody.appendChild(row);
       });
     }
 
-    // Add new exercise
+    function loadExerciseForEdit(w) {
+      document.getElementById("type").value = w.type;
+      document.getElementById("sets").value = w.sets > 0 ? w.sets : "";
+      document.getElementById("reps").value = w.reps > 0 ? w.reps : "";
+      document.getElementById("weight").value = w.weight > 0 ? w.weight : "";
+      document.getElementById("duration").value = w.duration > 0 ? w.duration : "";
+      document.getElementById("notes").value = w.notes;
+      document.getElementById("submitBtn").textContent = "Update Exercise";
+      document.getElementById("formTitle").textContent = "Edit Exercise";
+      editId = w.id;
+    }
+
     document.getElementById("exerciseForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const exercise = {
@@ -225,29 +160,33 @@
         duration: +document.getElementById("duration").value || -1,
         notes: document.getElementById("notes").value
       };
-      const res = await fetch(API, {
-        method: "POST",
+
+      const method = editId ? "PUT" : "POST";
+      const url = API;
+      if (editId) exercise.id = editId;  // include the ID in the body for backend
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(exercise)
       });
       if (res.ok) {
         e.target.reset();
+        editId = null;
+        document.getElementById("submitBtn").textContent = "Add Exercise";
+        document.getElementById("formTitle").textContent = "Add Exercise";
         fetchExercises();
       } else {
-        alert("Failed to add exercise.");
+        alert("Failed to save exercise.");
       }
     });
 
-    // Delete exercise
     async function deleteExercise(id) {
       if (!confirm("Delete this exercise?")) return;
       const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
-      if (res.ok) {
-        fetchExercises();
-      } else {
-        alert("Failed to delete exercise.");
-      }
+      if (res.ok) fetchExercises();
+      else alert("Failed to delete exercise.");
     }
 
     fetchExercises();
