@@ -15,51 +15,76 @@ void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
 
     // Add meal
     CROW_ROUTE(app, "/api/meals").methods("POST"_method)
-    ([&app, db](const crow::request& req, crow::response& res) {
-        res = addMeal(app, db, req);
-        res.end();
+    ([&app, db](const crow::request& req) {
+        return addMeal(app, db, req);
     });
 
     // Get meals for a specific user + date
-    CROW_ROUTE(app, "/api/meals/<int>/<string>").methods("GET"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int user_id, const std::string& date) {
-        res = getMeals(app, db, user_id, date);
-        res.end();
+    CROW_ROUTE(app, "/api/meals/<string>").methods("GET"_method)
+    ([&app, db](const crow::request& req, const std::string& date) {
+
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return getMeals(app, db, user_id, date);
     });
 
     // Update a meal
     CROW_ROUTE(app, "/api/meals/<int>").methods("PUT"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int meal_id) {
-        res = updateMeal(app, db, meal_id, req);
-        res.end();
+    ([&app, db](const crow::request& req, int meal_id) {
+        return updateMeal(app, db, meal_id, req);
     });
 
     // Delete a meal
     CROW_ROUTE(app, "/api/meals/<int>").methods("DELETE"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int meal_id) {
-        res = deleteMeal(app, db, meal_id);
-        res.end();
+    ([&app, db](const crow::request& req, int meal_id) {
+        return deleteMeal(app, db, meal_id);
     });
 
     // Clear all meals for a day
-    CROW_ROUTE(app, "/api/meals/clear/<int>/<string>").methods("DELETE"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int user_id, const std::string& date) {
-        res = clearDayMeals(app, db, user_id, date);
-        res.end();
+    CROW_ROUTE(app, "/api/meals/clear/<string>").methods("DELETE"_method)
+    ([&app, db](const crow::request& req, const std::string& date) {
+
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return clearDayMeals(app, db, user_id, date);
     });
 
     // Get user goals
-    CROW_ROUTE(app, "/api/goals/<int>").methods("GET"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int user_id) {
-        res = getUserGoals(app, db, user_id);
-        res.end();
+    CROW_ROUTE(app, "/api/goals/").methods("GET"_method)
+    ([&app, db](const crow::request& req) {
+
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return getUserGoals(app, db, user_id);
     });
 
     // Update user goals
-    CROW_ROUTE(app, "/api/goals/<int>").methods("PUT"_method)
-    ([&app, db](const crow::request& req, crow::response& res, int user_id) {
-        res = updateUserGoals(app, db, user_id, req);
-        res.end();
+    CROW_ROUTE(app, "/api/goals").methods("PUT"_method)
+    ([&app, db](const crow::request& req) {
+
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return updateUserGoals(app, db, user_id, req);
     });
 }
 
@@ -72,7 +97,13 @@ crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& r
     std::string error;
     if (!validateMealData(data, error)) return crow::response(400, error);
 
-    int user_id = data["user_id"].i();
+    auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+
+    int user_id = std::stoi(user_id_str);
     std::string date = data.has("date") ? data["date"].s() : getCurrentDate();
     std::string meal_type = data["meal_type"].s();
     std::string meal_name = data["meal_name"].s();
@@ -94,6 +125,8 @@ crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& r
     sqlite3_bind_text(stmt, 7, created_at.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
+        const char* err = sqlite3_errmsg(db);
+        CROW_LOG_ERROR << "DB Insert error: " << err;
         sqlite3_finalize(stmt);
         return crow::response(500, "Database insert failed");
     }
@@ -115,9 +148,7 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, int user_id, const st
     sqlite3_bind_int(stmt, 1, user_id);
     sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
 
-    crow::json::wvalue meals;
     std::vector<crow::json::wvalue> meal_list;
-
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         crow::json::wvalue meal;
         meal["id"] = sqlite3_column_int(stmt, 0);
@@ -128,10 +159,13 @@ crow::response getMeals(crow::SimpleApp& app, sqlite3* db, int user_id, const st
         meal["created_at"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
         meal_list.push_back(std::move(meal));
     }
-
     sqlite3_finalize(stmt);
-    return crow::response(meals);
+
+    crow::json::wvalue result;
+    result["meals"] = std::move(meal_list);
+    return crow::response(result);
 }
+
 
 
 
