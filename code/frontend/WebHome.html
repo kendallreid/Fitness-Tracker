@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WazuFit</title>
+
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --bg: #fafafa;
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --radius-full: 999px;
+      --transition: 180ms ease-out;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Crimson header */
+    header {
+      width: 100%;
+      background: var(--crimson);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+    }
+
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.45rem 1.1rem;
+      border-radius: var(--radius-full);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--crimson);
+    }
+
+    .btn-primary:hover {
+      background: #f3f3f3;
+    }
+
+    .btn-outline {
+      border: 1px solid white;
+      color: white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: var(--crimson);
+    }
+
+    /* Mission statements */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      gap: 1.5rem;
+    }
+
+    .mission {
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--ink);
+      max-width: 600px;
+      line-height: 1.4;
+    }
+
+    .mission b {
+      color: var(--crimson);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">WazuFit</div>
+
+    <div class="nav-actions">
+      <a href="auth/register" class="btn btn-primary">Create Account</a>
+      <a href="auth/login" class="btn btn-outline">Log In</a>
+    </div>
+  </header>
+
+  <!-- Mission statements -->
+  <div class="main-content">
+    <div class="mission"><b>Track</b> your personal fitness.</div>
+    <div class="mission"><b>Accomplish</b> your goals.</div>
+    <div class="mission"><b>Compete</b> with friends.</div>
+  </div>
+
+  <footer>© <span id="year"></span> WazuFit</footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
