@@ -11,7 +11,8 @@ bool createTables(sqlite3 *db)
             last_name TEXT NOT NULL,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL
+            email TEXT UNIQUE NOT NULL,
+            score INTEGER DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS sessions (
