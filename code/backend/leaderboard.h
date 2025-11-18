@@ -7,14 +7,14 @@
 #include <string>
 
 // Backend Logic
-struct User
+struct UserSimple
 {
     std::string username;
     int score;
 };
 
 // Routes
-void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db);
-std::vector<User> getTopUsers(sqlite3* db, int limit);
+void setupLeaderboardRoutes(crow::SimpleApp& app, sqlite3* db);
+std::vector<UserSimple> getTopUsers(sqlite3* db, int limit);
 
 #endif

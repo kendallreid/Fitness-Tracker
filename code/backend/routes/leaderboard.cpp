@@ -6,8 +6,8 @@
 #include <ctime>
 #include <iostream>
 
-std::vector<User> getTopUsers(sqlite3* db, int limit) {
-    std::vector<User> users;
+std::vector<UserSimple> getTopUsers(sqlite3* db, int limit) {
+    std::vector<UserSimple> users;
     const char* sql = "SELECT username, score FROM users ORDER BY score DESC LIMIT ?;";
     sqlite3_stmt* stmt;
 
@@ -18,7 +18,7 @@ std::vector<User> getTopUsers(sqlite3* db, int limit) {
     sqlite3_bind_int(stmt, 1, limit);
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        User u;
+        UserSimple u;
         u.username = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
         u.score = sqlite3_column_int(stmt, 1);
         users.push_back(u);

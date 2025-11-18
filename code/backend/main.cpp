@@ -7,6 +7,7 @@
 #include <iostream>
 #include "routes/exercise.h"
 #include "routes/session.h"
+#include "leaderboard.h"
 
 #include "routes/calorie_tracker.h"
 using namespace std;
@@ -76,7 +77,6 @@ int main() {
     });
 
 //SESSIONS//
-
     // Serve sessions page
     CROW_ROUTE(fitnessApp, "/sessions")
     ([]{
@@ -111,6 +111,15 @@ int main() {
 
         // Start server
     setupCalorieTrackerRoutes(fitnessApp, db);
+
+//LEADERBOARD//
+    CROW_ROUTE(fitnessApp, "/leaderboard.html")
+    ([]{
+        return serveFile("code/frontend/leaderboard.html", "text/html");
+    });
+    setupLeaderboardRoutes(fitnessApp, db);
+
+//
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();

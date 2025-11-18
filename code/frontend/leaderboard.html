@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard - FitnessApp</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-dark: #6b0014;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: #222;
+    }
+
+    header {
+      background: var(--crimson);
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    header .title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    header .sub {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0.8rem 0;
+    }
+
+    .tab {
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--crimson);
+      color: var(--crimson);
+      font-weight: 600;
+      background: #fff;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    .tab.active {
+      background: var(--crimson);
+      color: #fff;
+    }
+
+    main {
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-top: 3px solid var(--crimson);
+    }
+
+    .card h3 {
+      margin: 0 0 1rem;
+      color: var(--crimson);
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .leaderboard-entry:last-child {
+      border-bottom: none;
+    }
+
+    .rank {
+      font-weight: bold;
+      width: 40px;
+      color: var(--crimson);
+    }
+
+    .score {
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrap">
+      <div class="title">Leaderboard</div>
+      <div class="sub">Top performers in FitnessApp</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tabs">
+      <a class="tab" href="/home">Home</a>
+      <a class="tab" href="/calorie-tracker">Food</a>
+      <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab" href="/goals-page.html">Goals</a>
+      <a class="tab" href="/weekly.html">Weekly Log</a>
+      <a class="tab" href="/profile.html">Profile</a>
+      <a class="tab" href="/social.html">Social</a>
+      <a class="tab" href="/notifications.html">Notifications</a>
+      <a class="tab active" href="/leaderboard.html">Leaderboard</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+      <section class="card">
+        <h3>Top 100 Users</h3>
+        <div id="leaderboardList">
+          <p style="color:var(--muted);">Loading leaderboard...</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 FitnessApp</p>
+  </footer>
+
+  <script>
+    async function loadLeaderboard() {
+      try {
+        const res = await fetch("/api/top-users?limit=100");
+        const data = await res.json();
+
+        const list = document.getElementById("leaderboardList");
+        list.innerHTML = "";
+
+        if (!data.users || data.users.length === 0) {
+          list.innerHTML = "<p>No users found.</p>";
+          return;
+        }
+
+        data.users.forEach((u, i) => {
+          const div = document.createElement("div");
+          div.className = "leaderboard-entry";
+          div.innerHTML = `
+            <span class="rank">#${i+1}</span>
+            <span>${u.username}</span>
+            <span class="score">${u.score} pts</span>
+          `;
+          list.appendChild(div);
+        });
+
+      } catch (err) {
+        document.getElementById("leaderboardList").innerHTML =
+          "<p style='color:red'>Failed to load leaderboard.</p>";
+      }
+    }
+
+    loadLeaderboard();
+  </script>
+
+</body>
+</html>
