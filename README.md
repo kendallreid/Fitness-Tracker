@@ -1,9 +1,9 @@
 # Fitness Tracker
 WSU CPTS322 Project
 
-Kendall Reid
-Ethan Karasha
-Zachary Marseglia
+Kendall Reid,
+Ethan Karasha,
+Zachary Marseglia,
 Alba Raya Sanchez
 
 A full-stack fitness tracker web app to track calories, exercises, sleep, make and complete goals, all while competing with other users.
