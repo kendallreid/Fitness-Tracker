@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sleep Tracker - Fitness Dashboard</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --bg: #ffffff;
+      --ink: #222222;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --border: #8c001a33;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+    
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      margin: 0 0 10px;
+      color: var(--crimson);
+      font-size: 28px;
+    }
+    
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    
+    .card h2 {
+      margin: 0 0 20px;
+      color: var(--crimson);
+      font-size: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--crimson);
+    }
+    
+    .btn {
+      background: var(--crimson);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn:hover {
+      background: var(--crimson-600);
+    }
+    
+    .btn-secondary {
+      background: var(--muted);
+    }
+    
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+    
+    .btn-danger {
+      background: var(--error);
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .progress-section {
+      margin-bottom: 20px;
+    }
+    
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), #34d399);
+      transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    
+    .sleeps-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .sleep-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #f9fafb;
+    }
+    
+    .sleep-info {
+      flex: 1;
+    }
+    
+    .sleep-name {
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    
+    .sleep-details {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    
+    .sleep-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--error);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: var(--success);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Sleep Tracker</h1>
+      <p>Track and monitor your weekly sleep and its quality</p>
+    </div>
+    
+    <div class="main-content">
+      <!-- Input Form -->
+      <div class="card">
+        <h2>Log Sleep</h2>
+        
+        <div id="errorMessage" class="error-message hidden"></div>
+        <div id="successMessage" class="success-message hidden"></div>
+        
+        <form id="sleepForm">
+          <div class="form-group">
+            <label for="sleepDate">Date</label>
+            <input type="text" id="sleepDate" name="sleepDate" placeholder="mm-dd-yyyy" pattern="\d{2}-\d{2}-\d{4}">
+          </div>
+          
+          <div class="form-group">
+            <label for="sleepStartTime">Time</label>
+            <input type="text" id="sleepStartTime" name="sleepStartTime"  placeholder="hh:mm" pattern="\d{2}:\d{2}">
+          </div>
+		  
+          <div class="form-group">
+            <label for="sleepDuration">Duration (minutes)</label>
+            <input type="number" id="sleepDuration" name="sleepDuration" placeholder="e.g., 480" min="1" required>
+          </div>
+                  
+          <div class="form-group">
+            <label for="sleepType">Sleep Quality</label>
+            <select id="sleepType" name="sleepType" required>
+              <option value="">Select sleep type</option>
+              <option value="very_poor">Very Poor</option>
+              <option value="poor">Poor</option>
+              <option value="fair">Fair</option>
+              <option value="good">Good</option>
+              <option value="excellent">Excellent</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn">Log Sleep</button>
+        </form>
+      </div>
+      
+      <!-- Progress and Stats -->
+      <div class="card">
+        <h2>Weekly Sleep Progress</h2>
+        
+        <div class="progress-section">
+          <div class="progress-text">
+            <span>Total sleep hours in last 7 days: <span id="weekHours">0</span> / <span id="sleepGoal">168</span></span>
+            <span id="hoursPercentage">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="hoursProgressBar" style="width: 0%"></div>
+          </div>
+        </div>
+               
+        <div style="margin-top: 20px;">
+          <button class="btn btn-secondary" onclick="clearAllSleeps()">Clear sleep logs from last 7 days</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sleeps List -->
+    <div class="card" style="margin-top: 20px;">
+      <h2>Last Week Sleep Logs</h2>
+      <div id="sleepsList" class="sleeps-list">
+        <p style="text-align: center; color: var(--muted); padding: 20px;">No sleep logs added in the last 7 days. Add your first sleep log above!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SLEEP_TIME_GOAL = 3360;
+    const QUALITY_SLEEP_GOAL = 4;
+    
+    let sleeps = [];
+    let currentUser = null;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserData();
+      loadSleeps();
+      render();
+      setupEventListeners();
+    });
+    
+    function loadUserData() {
+      currentUser = JSON.parse(localStorage.getItem('currentUser')) || { id: 1, username: 'demo_user' };
+    }
+    
+    function loadSleeps() {
+      const today = new Date().toISOString().split('T')[0];
+      sleeps = JSON.parse(localStorage.getItem(`sleeps_${currentUser.id}_${today}`)) || [];
+    }
+    
+    function saveSleeps() {
+      const today = new Date().toISOString().split('T')[0];
+      localStorage.setItem(`sleeps_${currentUser.id}_${today}`, JSON.stringify(sleeps));
+    }
+    
+    function setupEventListeners() {
+      document.getElementById('sleepForm').addEventListener('submit', handleSleepSubmit);
+    }
+    
+    function handleSleepSubmit(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const sleepData = {
+        id: Date.now(),
+        date: formData.get('sleepDate').trim(),
+        time: formData.get('sleepStartTime').trim(),		
+        duration: parseInt(formData.get('sleepDuration')),	
+        sleepType: formData.get('sleepType'),
+        timestamp: new Date().toISOString()
+      };
+      
+      if (!validateSleep(sleepData)) {
+        return;
+      }
+      
+      sleeps.push(sleepData);
+      saveSleeps();
+      render();
+      
+      e.target.reset();
+      
+      showMessage('Sleep log added successfully!', 'success');
+    }
+    
+    function validateSleep(sleep) {
+      if (!sleep.date) {
+        showMessage('Please enter a date.', 'error');
+        return false;
+      }
+      
+      if (!sleep.time) {
+        showMessage('Please enter a time.', 'error');
+        return false;
+      }
+	  
+      if (!sleep.duration || sleep.duration <= 0) {
+        showMessage('Please enter a valid duration for your sleep log (greater than 0).', 'error');
+        return false;
+      }
+      
+      
+      if (!sleep.sleepType) {
+        showMessage('Please select the quality of your sleep.', 'error');
+        return false;
+      }
+      
+      return true;
+    }
+    
+    function showMessage(message, type) {
+      const errorDiv = document.getElementById('errorMessage');
+      const successDiv = document.getElementById('successMessage');
+      
+      errorDiv.classList.add('hidden');
+      successDiv.classList.add('hidden');
+      
+      if (type === 'error') {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+      } else {
+        successDiv.textContent = message;
+        successDiv.classList.remove('hidden');
+      }
+      
+      setTimeout(() => {
+        errorDiv.classList.add('hidden');
+        successDiv.classList.add('hidden');
+      }, 3000);
+    }
+    
+    function render() {
+      updateProgress();
+      rendersleepsList();
+    }
+    
+    function updateProgress() {
+      const totalWeeklySleepDuration = sleeps.reduce((sum, sleep) => sum + sleep.duration, 0);
+      
+      const durationPercentage = Math.min((totalWeeklySleepDuration / SLEEP_TIME_GOAL) * 100, 100);
+      document.getElementById('weekHours').textContent = totalWeeklySleepDuration;
+      document.getElementById('sleepGoal').textContent = SLEEP_TIME_GOAL;
+      document.getElementById('hoursPercentage').textContent = Math.round(durationPercentage) + '%';h
+      document.getElementById('hoursProgressBar').style.width = durationPercentage + '%';
+
+    }
+    
+    
+    function rendersleepsList() {
+      const sleepsList = document.getElementById('sleepsList');
+      
+      if (sleeps.length === 0) {
+        sleepsList.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">No sleep logs added in the last 7 days. Add your first sleep log above!</p>';
+        return;
+      }
+      
+      sleepsList.innerHTML = sleeps.map(sleep => `
+        <div class="sleep-item">
+          <div class="sleep-info">
+            <div class="sleep-name">${escapeHtml(sleep.name)}</div>
+            <div class="sleep-details">
+              ${sleep.date} • ${sleep.time} • ${sleep.duration}min slept • ${sleep.sleepType}
+            </div>
+          </div>
+          <div class="sleep-actions">
+            <button class="btn btn-small btn-secondary" onclick="editSleep(${sleep.id})">Edit</button>
+            <button class="btn btn-small btn-danger" onclick="deleteSleep(${sleep.id})">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function deleteSleep(sleepId) {
+      if (confirm('Are you sure you want to delete this sleep log?')) {
+        sleeps = sleeps.filter(sleep => sleep.id !== sleepId);
+        saveSleeps();
+        render();
+        showMessage('Sleep log deleted successfully!', 'success');
+      }
+    }
+    
+    function editSleep(sleepId) {
+      const sleep = sleeps.find(m => m.id === sleepId);
+      if (sleep) {
+        document.getElementById('sleepDate').value = sleep.date;
+        document.getElementById('sleepStartTime').value = sleep.time;
+        document.getElementById('sleepDuration').value = sleep.duration;
+        document.getElementById('sleepType').value = sleep.sleepType;
+        
+        sleeps = sleeps.filter(m => m.id !== sleepId);
+        saveSleeps();
+        render();
+        
+        showMessage('Sleep log loaded for editing. Make changes and click Log Sleep.', 'success');
+      }
+    }
+    
+    function clearAllSleeps() {
+      if (confirm('Are you sure you want to clear all sleep logs for the last 7 days?')) {
+        sleeps = [];
+        saveSleeps();
+        render();
+        showMessage('Last 7 days sleep logs cleared!', 'success');
+      }
+    }
+    
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

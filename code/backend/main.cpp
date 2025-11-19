@@ -7,7 +7,7 @@
 #include <iostream>
 #include "routes/workout.h"
 #include "routes/session.h"
-
+#include "routes/sleep_tracker.h"
 #include "routes/calorie_tracker.h"
 using namespace std;
 
@@ -97,6 +97,9 @@ int main() {
 
         // Start server
     setupCalorieTrackerRoutes(fitnessApp, db);
+
+     // Start sleep tracker server
+    setupSleepTrackerRoutes(fitnessApp, db);
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();
