@@ -13,7 +13,10 @@ RUN apt update && apt install -y \
     unzip \
     tar \
     sqlite3 \
-    libsqlite3-dev
+    libsqlite3-dev \
+    autoconf \
+    automake \
+    libtool
 
 
 # ---- Install vcpkg ----
@@ -27,6 +30,8 @@ ENV CMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake
 # Install project dependencies
 RUN /opt/vcpkg/vcpkg install crow:x64-linux
 RUN /opt/vcpkg/vcpkg install sqlite3:x64-linux
+RUN /opt/vcpkg/vcpkg install libsodium:x64-linux  
+
 
 # ---- Copy project source ----
 WORKDIR /app
@@ -50,13 +55,11 @@ RUN apt update && apt install -y sqlite3 libsqlite3-0 && apt clean
 
 WORKDIR /app
 
-# Copy built executable
-COPY --from=builder /app/build/fitness-app .
+# Copy built executable and assets
+COPY --from=builder /app/build/fitness ./fitness-app
+COPY --from=builder /app/code/frontend ./code/frontend    
+COPY --from=builder /app/code/backend/fitness.db ./code/backend/fitness.db
 
-# Copy frontend or config files if needed
-COPY --from=builder /app/static ./static
-COPY --from=builder /app/config.json ./config.json
-COPY --from=builder /app/fitness.db ./fitness.db
 
 # Expose Crow port
 EXPOSE 18080

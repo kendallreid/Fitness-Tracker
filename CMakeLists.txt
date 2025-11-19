@@ -2,38 +2,39 @@ cmake_minimum_required(VERSION 3.10)
 project(FitnessApp)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Must be BEFORE add_subdirectory
-option(CROW_USE_BOOST "Use Boost.Asio instead of standalone Asio" OFF)
+# ----------------------------------------------------------------------
+# Packages from vcpkg
+# ----------------------------------------------------------------------
+find_package(SQLite3 REQUIRED)
+find_package(Threads REQUIRED)
 
-# Add Crow from external/ (uses its own CMakeLists.txt)
-add_subdirectory(external/crow)
-
-# Find libsodium
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SODIUM REQUIRED libsodium)
-
-# Collect backend source files
+# ----------------------------------------------------------------------
+# Source files
+# ----------------------------------------------------------------------
 file(GLOB_RECURSE SRC_FILES
     code/backend/*.cpp
 )
 
-# Define your app target
 add_executable(fitness ${SRC_FILES})
 
-# Make sure your target can see libsodium headers
+# ----------------------------------------------------------------------
+# Include directories
+# Crow + libsodium + sqlite3 headers all live under vcpkg include
+# ----------------------------------------------------------------------
 target_include_directories(fitness PRIVATE
-    ${SODIUM_INCLUDE_DIRS}             # libsodium headers
-    ${CMAKE_SOURCE_DIR}/code/backend   # project headers
+    ${CMAKE_SOURCE_DIR}/code/backend
     ${CMAKE_SOURCE_DIR}/code/backend/routes
+    ${VCPKG_INSTALLED_DIR}/x64-linux/include
 )
 
-# Link dependencies
-find_package(Threads REQUIRED)
-target_link_libraries(fitness
-    PRIVATE
-        ${SODIUM_LIBRARIES}
-        Crow::Crow
-        sqlite3
-        Threads::Threads
+# ----------------------------------------------------------------------
+# Link Libraries
+# libsodium is a plain library, so we link manually
+# ----------------------------------------------------------------------
+target_link_libraries(fitness PRIVATE
+    SQLite::SQLite3
+    Threads::Threads
+    ${VCPKG_INSTALLED_DIR}/x64-linux/lib/libsodium.a
 )

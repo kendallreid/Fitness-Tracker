@@ -7,10 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: fitness-backend
     ports:
-      - "18080:18080"
+      - "8080:8080"
+    environment:
+      - FITNESS_DB_PATH=/app/code/backend/fitness.db
     volumes:
-      # Persist SQLite DB so it survives rebuilds
-      - ./fitness.db:/app/fitness.db
-
-
+      - ./code/backend/fitness.db:/app/code/backend/fitness.db
     restart: unless-stopped
