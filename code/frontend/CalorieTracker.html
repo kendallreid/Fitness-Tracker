@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calorie Tracker</title>
   <style>
     :root {
@@ -18,7 +18,6 @@
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: "Segoe UI", Roboto, sans-serif;
@@ -26,7 +25,6 @@
       color: #222;
     }
 
-    /* --- HEADER (identical to sessions) --- */
     header {
       background: var(--crimson);
       color: #fff;
@@ -34,21 +32,9 @@
       box-shadow: 0 2px 6px var(--shadow);
     }
 
-    .wrap {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
-
-    header .title {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    header .sub {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
 
     nav {
       background: #fff;
@@ -77,29 +63,10 @@
       background: #fff;
       transition: 0.2s;
     }
+    .tab:hover, .tab.active { background: var(--crimson); color: #fff; }
 
-    .tab:hover {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    .tab.active {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    /* --- BODY STYLES --- */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
     .card {
       background: var(--card);
@@ -109,11 +76,7 @@
       border-top: 3px solid var(--crimson);
     }
 
-    .card h3 {
-      margin: 0 0 1rem;
-      color: var(--crimson);
-    }
-
+    .card h3 { margin: 0 0 1rem; color: var(--crimson); }
     .form-group { margin-bottom: 15px; }
     .form-group label { display:block;margin-bottom:5px;font-weight:600;color:#222; }
     .form-group input, .form-group select {
@@ -133,7 +96,7 @@
 
     .progress-section { margin-bottom:20px; }
     .progress-bar { width:100%; height:20px; background:#e5e7eb; border-radius:10px; overflow:hidden; margin-bottom:10px; }
-    .progress-fill { height:100%; background:linear-gradient(90deg,var(--success),#34d399); transition:width .3s ease; }
+    .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--success),#34d399); transition:width .3s ease; }
     .progress-text { display:flex; justify-content:space-between; font-size:14px; color:var(--muted); }
 
     .meals-list { max-height:400px; overflow-y:auto; }
@@ -149,13 +112,7 @@
     .success-message { background:#f0fdf4; border:1px solid #bbf7d0; color:var(--success); }
     .hidden { display:none; }
 
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-      padding: 2rem 0;
-    }
-
+    footer { text-align:center; color:var(--muted); font-size:0.8rem; padding:2rem 0; }
     @media(max-width:768px){ .main-content { grid-template-columns:1fr; } }
   </style>
 </head>
@@ -186,7 +143,6 @@
       <div class="main-content">
         <div class="card">
           <h3>Add Meal</h3>
-
           <div id="errorMessage" class="error-message hidden"></div>
           <div id="successMessage" class="success-message hidden"></div>
 
@@ -223,10 +179,9 @@
 
         <div class="card">
           <h3>Today's Progress</h3>
-
           <div class="progress-section">
             <div class="progress-text">
-              <span>Calories: <span id="currentCalories">0</span> / <span id="calorieGoal">2000</span></span>
+              <span>Calories: <span id="currentCalories">0</span> / 2000</span>
               <span id="caloriePercentage">0%</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="calorieProgressBar"></div></div>
@@ -234,7 +189,7 @@
 
           <div class="progress-section">
             <div class="progress-text">
-              <span>Protein: <span id="currentProtein">0</span>g / <span id="proteinGoal">150</span>g</span>
+              <span>Protein: <span id="currentProtein">0</span>g / 150g</span>
               <span id="proteinPercentage">0%</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="proteinProgressBar"></div></div>
@@ -253,144 +208,132 @@
     </div>
   </main>
 
-  <footer>
-    <p>© 2025 FitnessApp</p>
-  </footer>
+  <footer><p>© 2025 FitnessApp</p></footer>
 
   <script>
+    const API = "/api/meals";
+    const TODAY = new Date().toISOString().split("T")[0];
     const CALORIE_GOAL = 2000;
     const PROTEIN_GOAL = 150;
 
-    let meals = [];
-    let currentUser = null;
-
-    document.addEventListener('DOMContentLoaded', function() {
-      loadUserData();
-      loadMeals();
-      render();
-      setupEventListeners();
-    });
-
-    function loadUserData() {
-      currentUser = JSON.parse(localStorage.getItem('currentUser')) || { id: 1, username: 'demo_user' };
+    async function fetchMeals() {
+      try {
+        const res = await fetch(`${API}/${TODAY}`, { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch meals");
+        const data = await res.json();
+        renderMeals(data.meals || []);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("mealsList").innerHTML =
+          "<p style='text-align:center;color:var(--muted);padding:20px;'>Could not load meals.</p>";
+      }
     }
 
-    function loadMeals() {
-      const today = new Date().toISOString().split('T')[0];
-      meals = JSON.parse(localStorage.getItem(`meals_${currentUser.id}_${today}`)) || [];
-    }
-
-    function saveMeals() {
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.setItem(`meals_${currentUser.id}_${today}`, JSON.stringify(meals));
-    }
-
-    function setupEventListeners() {
-      document.getElementById('mealForm').addEventListener('submit', handleMealSubmit);
-    }
-
-    function handleMealSubmit(e) {
+    document.getElementById("mealForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const mealData = {
-        id: Date.now(),
-        name: mealName.value.trim(),
-        calories: parseInt(calories.value),
-        protein: parseFloat(protein.value) || 0,
-        mealType: mealType.value,
-        timestamp: new Date().toISOString()
+      const meal = {
+        date: TODAY,
+        meal_type: document.getElementById("mealType").value,
+        meal_name: document.getElementById("mealName").value.trim(),
+        calories: +document.getElementById("calories").value,
+        protein: +document.getElementById("protein").value || 0
       };
 
-      if (!validateMeal(mealData)) return;
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(meal)
+        });
+        if (!res.ok) throw new Error("Failed to add meal");
+        showMessage("Meal added successfully!", "success");
+        e.target.reset();
+        fetchMeals();
+      } catch (err) {
+        console.error(err);
+        showMessage("Error adding meal.", "error");
+      }
+    });
 
-      meals.push(mealData);
-      saveMeals();
-      render();
-      mealForm.reset();
-      showMessage('Meal added successfully!', 'success');
+    async function deleteMeal(id) {
+      if (!confirm("Delete this meal?")) return;
+      try {
+        const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
+        if (!res.ok) throw new Error();
+        showMessage("Meal deleted!", "success");
+        fetchMeals();
+      } catch {
+        showMessage("Failed to delete meal.", "error");
+      }
     }
 
-    function validateMeal(meal) {
-      if (!meal.name) return showMessage('Enter a meal name.', 'error') && false;
-      if (!meal.calories || meal.calories <= 0) return showMessage('Enter a valid calorie amount.', 'error') && false;
-      if (meal.protein < 0) return showMessage('Protein cannot be negative.', 'error') && false;
-      if (!meal.mealType) return showMessage('Select a meal type.', 'error') && false;
-      return true;
+    async function clearAllMeals() {
+      if (!confirm("Clear all meals for today?")) return;
+      try {
+        const res = await fetch(`${API}/clear/${TODAY}`, { method: "DELETE", credentials: "include" });
+        if (!res.ok) throw new Error();
+        showMessage("Meals cleared!", "success");
+        fetchMeals();
+      } catch {
+        showMessage("Error clearing meals.", "error");
+      }
+    }
+
+    function renderMeals(meals) {
+      const list = document.getElementById("mealsList");
+      if (meals.length === 0) {
+        list.innerHTML = "<p style='text-align:center;color:var(--muted);padding:20px;'>No meals yet — add one above!</p>";
+        updateProgress([]);
+        return;
+      }
+
+      list.innerHTML = meals.map(m => `
+        <div class="meal-item">
+          <div>
+            <div class="meal-name">${m.meal_name}</div>
+            <div class="meal-details">${m.calories} cal • ${m.protein}g • ${m.meal_type}</div>
+          </div>
+          <div class="meal-actions">
+            <button class="btn btn-small btn-danger" onclick="deleteMeal(${m.id})">Delete</button>
+          </div>
+        </div>
+      `).join("");
+
+      updateProgress(meals);
+    }
+
+    function updateProgress(meals) {
+      const totalCalories = meals.reduce((sum, m) => sum + (m.calories || 0), 0);
+      const totalProtein = meals.reduce((sum, m) => sum + (m.protein || 0), 0);
+
+      const calPercent = Math.min((totalCalories / CALORIE_GOAL) * 100, 100);
+      const protPercent = Math.min((totalProtein / PROTEIN_GOAL) * 100, 100);
+
+      document.getElementById("currentCalories").textContent = totalCalories;
+      document.getElementById("currentProtein").textContent = totalProtein;
+      document.getElementById("calorieProgressBar").style.width = calPercent + "%";
+      document.getElementById("proteinProgressBar").style.width = protPercent + "%";
+      document.getElementById("caloriePercentage").textContent = Math.round(calPercent) + "%";
+      document.getElementById("proteinPercentage").textContent = Math.round(protPercent) + "%";
     }
 
     function showMessage(message, type) {
-      const errorDiv = document.getElementById('errorMessage');
-      const successDiv = document.getElementById('successMessage');
+      const err = document.getElementById("errorMessage");
+      const ok = document.getElementById("successMessage");
+      err.classList.add("hidden");
+      ok.classList.add("hidden");
 
-      errorDiv.classList.add('hidden');
-      successDiv.classList.add('hidden');
-
-      if (type === 'error') {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-      } else {
-        successDiv.textContent = message;
-        successDiv.classList.remove('hidden');
-      }
-
-      setTimeout(() => {
-        errorDiv.classList.add('hidden');
-        successDiv.classList.add('hidden');
-      }, 3000);
+      const div = type === "error" ? err : ok;
+      div.textContent = message;
+      div.classList.remove("hidden");
+      setTimeout(() => div.classList.add("hidden"), 3000);
     }
 
-    function render() {
-      updateProgress();
-      renderMealsList();
-    }
-
-    function updateProgress() {
-      const totalCalories = meals.reduce((sum, m) => sum + m.calories, 0);
-      const totalProtein = meals.reduce((sum, m) => sum + m.protein, 0);
-
-      const caloriePercent = Math.min((totalCalories / CALORIE_GOAL) * 100, 100);
-      document.getElementById('currentCalories').textContent = totalCalories;
-      document.getElementById('calorieProgressBar').style.width = caloriePercent + "%";
-      document.getElementById('caloriePercentage').textContent = Math.round(caloriePercent) + "%";
-
-      const proteinPercent = Math.min((totalProtein / PROTEIN_GOAL) * 100, 100);
-      document.getElementById('currentProtein').textContent = Math.round(totalProtein);
-      document.getElementById('proteinProgressBar').style.width = proteinPercent + "%";
-      document.getElementById('proteinPercentage').textContent = Math.round(proteinPercent) + "%";
-    }
-
-    function renderMealsList() {
-      const mealsList = document.getElementById('mealsList');
-      mealsList.innerHTML = meals.length === 0
-        ? '<p style="text-align:center;color:var(--muted);padding:20px;">No meals yet</p>'
-        : meals.map(m => `
-          <div class="meal-item">
-            <div>
-              <div class="meal-name">${m.name}</div>
-              <div class="meal-details">${m.calories} cal • ${m.protein}g • ${m.mealType}</div>
-            </div>
-            <div class="meal-actions">
-              <button class="btn btn-small btn-danger" onclick="deleteMeal(${m.id})">Delete</button>
-            </div>
-          </div>`).join('');
-    }
-
-    function deleteMeal(id) {
-      meals = meals.filter(m => m.id !== id);
-      saveMeals();
-      render();
-      showMessage("Meal deleted!", "success");
-    }
-
-    function clearAllMeals() {
-      if (confirm("Clear all meals for today?")) {
-        meals = [];
-        saveMeals();
-        render();
-        showMessage("Meals cleared!", "success");
-      }
-    }
+    fetchMeals();
   </script>
 </body>
 </html>
+
 

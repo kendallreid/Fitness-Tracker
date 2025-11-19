@@ -1,5 +1,5 @@
 #include "session.h"
-#include "workout.h"
+#include "exercise.h"
 #include "helper.h"
 
 bool createSession(sqlite3 *db, const Session &session)
@@ -217,30 +217,30 @@ void setupSessionRoutes(crow::SimpleApp &app, sqlite3 *db)
         return crow::response{200, res};
     });
 
-    // Get workouts for a session
-    CROW_ROUTE(app, "/api/sessions/<int>/workouts").methods("GET"_method)([db](int session_id)
+    // Get exercises for a session
+    CROW_ROUTE(app, "/api/sessions/<int>/exercises").methods("GET"_method)([db](int session_id)
     {
-        auto workouts = getWorkoutsBySession(db, session_id);
+        auto exercises = getExercisesBySession(db, session_id);
 
         crow::json::wvalue res;
         crow::json::wvalue::list arr;
 
-        for (const auto& w : workouts) {
+        for (const auto& e : exercises) {
             crow::json::wvalue item;
-            item["id"] = w.id;
-            item["user_id"] = w.user_id;
-            item["session_id"] = w.session_id;
-            item["date"] = w.date;
-            item["type"] = w.type;
-            item["sets"] = w.sets;
-            item["reps"] = w.reps;
-            item["weight"] = w.weight;
-            item["duration"] = w.duration;
-            item["notes"] = w.notes;
+            item["id"] = e.id;
+            item["user_id"] = e.user_id;
+            item["session_id"] = e.session_id;
+            item["date"] = e.date;
+            item["type"] = e.type;
+            item["sets"] = e.sets;
+            item["reps"] = e.reps;
+            item["weight"] = e.weight;
+            item["duration"] = e.duration;
+            item["notes"] = e.notes;
             arr.push_back(std::move(item));
         }
 
-        res["workouts"] = std::move(arr);
+        res["exercises"] = std::move(arr);
         return crow::response(200, res);
     });
 

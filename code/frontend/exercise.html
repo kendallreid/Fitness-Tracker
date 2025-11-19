@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exercise</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --bg: #fafafa;
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --card: #ffffff;
+      --border: #8c001a33;
+      --shadow: rgba(140, 0, 26, 0.15);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+    header { background: var(--crimson); color: #fff; padding: 16px; box-shadow: 0 3px 8px var(--shadow); }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .title { font-weight: 800; font-size: 1.8rem; }
+    .sub { color: #ffeaea; font-size: 14px; }
+    .back-link { display:inline-block;margin-bottom:16px;color:var(--crimson);font-weight:600;text-decoration:none; }
+    .back-link:hover{text-decoration:underline;}
+    .card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 4px 10px var(--shadow);margin-bottom:24px;}
+    .card h3{margin:0 0 12px;font-size:1.4rem;color:var(--crimson);border-left:4px solid var(--crimson);padding-left:8px;}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+    input,select,button{padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;}
+    button{background:var(--crimson);color:white;font-weight:600;border:none;cursor:pointer;transition:background 0.2s;}
+    button:hover{background:var(--crimson-600);}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;}
+    th{color:var(--crimson);background:#fef3f3;font-weight:700;}
+    tr:hover{background-color:#fff5f5;}
+    footer{text-align:center;color:var(--muted);font-size:12px;margin:40px 0;}
+    .action-btn{padding:6px 12px;font-size:12px;border:none;border-radius:6px;color:#fff;cursor:pointer;}
+    .delete-btn{background:#aaa;}
+    .edit-btn{background:var(--crimson);}
+    .delete-btn:hover{background:#888;}
+    .edit-btn:hover{background:var(--crimson-600);}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">Exercises</div>
+      <div id="sessionInfo" class="sub">Track and review your exercises.</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <a href="/sessions" class="back-link">← Back to Sessions</a>
+
+      <section class="card">
+        <h3 id="formTitle">Add Exercise</h3>
+        <form id="exerciseForm" class="form-grid">
+          <input type="text" id="type" placeholder="Exercise Type (e.g. Bench Press)" required>
+          <input type="number" id="sets" placeholder="Sets">
+          <input type="number" id="reps" placeholder="Reps">
+          <input type="number" id="weight" placeholder="Weight (lbs)">
+          <input type="number" id="duration" placeholder="Duration (min)">
+          <input type="text" id="notes" placeholder="Notes">
+          <button type="submit" id="submitBtn">Add Exercise</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h3>Exercise Log</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Type</th><th>Sets</th><th>Reps</th><th>Weight</th><th>Duration</th><th>Notes</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="exerciseTableBody"></tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <footer><p>© 2025 FitnessApp</p></footer>
+
+  <script>
+    const API = "http://localhost:8080/api/exercises";
+    const params = new URLSearchParams(window.location.search);
+    const session_id = params.get("session_id");
+
+    let editId = null;
+
+    const info = document.getElementById("sessionInfo");
+    info.textContent = session_id ? `Viewing Exercises for Session #${session_id}` : "Viewing All Exercises";
+
+    async function fetchExercises() {
+      const url = session_id ? `${API}?session_id=${session_id}` : API;
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) return console.error("Failed to fetch exercises");
+      const data = await res.json();
+      renderExercises(data.exercises);
+    }
+
+    function formatValue(v, allowZero=false) {
+      if (v === null || v === undefined) return "N/A";
+      if (!allowZero && (v <= 0 || v === -1)) return "N/A";
+      return v;
+    }
+
+    function renderExercises(list) {
+      const tbody = document.getElementById("exerciseTableBody");
+      tbody.innerHTML = "";
+
+      if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:12px;">No exercises yet.</td></tr>`;
+        return;
+      }
+
+      list.forEach(w => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${w.date}</td>
+          <td>${w.type || "N/A"}</td>
+          <td>${formatValue(w.sets, true)}</td>
+          <td>${formatValue(w.reps, true)}</td>
+          <td>${formatValue(w.weight)}</td>
+          <td>${formatValue(w.duration)}</td>
+          <td>${w.notes?.trim() || "N/A"}</td>
+          <td>
+            <button class="action-btn edit-btn">Edit</button>
+            <button class="action-btn delete-btn">Delete</button>
+          </td>
+        `;
+        row.querySelector(".edit-btn").addEventListener("click", () => loadExerciseForEdit(w));
+        row.querySelector(".delete-btn").addEventListener("click", () => deleteExercise(w.id));
+        tbody.appendChild(row);
+      });
+    }
+
+    function loadExerciseForEdit(w) {
+      document.getElementById("type").value = w.type;
+      document.getElementById("sets").value = w.sets > 0 ? w.sets : "";
+      document.getElementById("reps").value = w.reps > 0 ? w.reps : "";
+      document.getElementById("weight").value = w.weight > 0 ? w.weight : "";
+      document.getElementById("duration").value = w.duration > 0 ? w.duration : "";
+      document.getElementById("notes").value = w.notes;
+      document.getElementById("submitBtn").textContent = "Update Exercise";
+      document.getElementById("formTitle").textContent = "Edit Exercise";
+      editId = w.id;
+    }
+
+    document.getElementById("exerciseForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const exercise = {
+        session_id: session_id ? +session_id : 0,
+        date: new Date().toISOString().split("T")[0],
+        type: document.getElementById("type").value,
+        sets: +document.getElementById("sets").value || 0,
+        reps: +document.getElementById("reps").value || 0,
+        weight: +document.getElementById("weight").value || -1,
+        duration: +document.getElementById("duration").value || -1,
+        notes: document.getElementById("notes").value
+      };
+
+      const method = editId ? "PUT" : "POST";
+      const url = API;
+      if (editId) exercise.id = editId;  // include the ID in the body for backend
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(exercise)
+      });
+      if (res.ok) {
+        e.target.reset();
+        editId = null;
+        document.getElementById("submitBtn").textContent = "Add Exercise";
+        document.getElementById("formTitle").textContent = "Add Exercise";
+        fetchExercises();
+      } else {
+        alert("Failed to save exercise.");
+      }
+    });
+
+    async function deleteExercise(id) {
+      if (!confirm("Delete this exercise?")) return;
+      const res = await fetch(`${API}/${id}`, { method: "DELETE", credentials: "include" });
+      if (res.ok) fetchExercises();
+      else alert("Failed to delete exercise.");
+    }
+
+    fetchExercises();
+  </script>
+</body>
+</html>

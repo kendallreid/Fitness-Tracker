@@ -5,8 +5,9 @@
 #include "goalTracker.h"
 #include "db/schema.h"
 #include <iostream>
-#include "routes/workout.h"
+#include "routes/exercise.h"
 #include "routes/session.h"
+#include "leaderboard.h"
 
 #include "routes/calorie_tracker.h"
 using namespace std;
@@ -76,22 +77,21 @@ int main() {
     });
 
 //SESSIONS//
-
     // Serve sessions page
     CROW_ROUTE(fitnessApp, "/sessions")
     ([]{
         return serveFile("code/frontend/sessions.html", "text/html");
     });
 
-    // Serve workouts page
-    CROW_ROUTE(fitnessApp, "/workouts.html")
+    // Serve exercises page
+    CROW_ROUTE(fitnessApp, "/exercises.html")
     ([]{
-        return serveFile("code/frontend/workouts.html", "text/html");
+        return serveFile("code/frontend/exercise.html", "text/html");
     });
 
-    // Hook up session/workout routes
+    // Hook up session/exercise routes
     setupSessionRoutes(fitnessApp, db);
-    registerWorkoutRoutes(fitnessApp, db);
+    registerExerciseRoutes(fitnessApp, db);
 
 //GOALS//
     // Serve goals page
@@ -111,6 +111,15 @@ int main() {
 
         // Start server
     setupCalorieTrackerRoutes(fitnessApp, db);
+
+//LEADERBOARD//
+    CROW_ROUTE(fitnessApp, "/leaderboard.html")
+    ([]{
+        return serveFile("code/frontend/leaderboard.html", "text/html");
+    });
+    setupLeaderboardRoutes(fitnessApp, db);
+
+//
 
     // Start server
     fitnessApp.port(8080).multithreaded().run();

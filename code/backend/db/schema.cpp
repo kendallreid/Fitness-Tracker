@@ -11,7 +11,8 @@ bool createTables(sqlite3 *db)
             last_name TEXT NOT NULL,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL
+            email TEXT UNIQUE NOT NULL,
+            score INTEGER DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS sessions (
@@ -26,7 +27,7 @@ bool createTables(sqlite3 *db)
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
 
-        CREATE TABLE IF NOT EXISTS workouts (
+        CREATE TABLE IF NOT EXISTS exercises (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             date TEXT NOT NULL,

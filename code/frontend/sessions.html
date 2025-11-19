@@ -6,303 +6,169 @@
   <title>Sessions</title>
   <style>
     :root {
-      --crimson: #8C001A;
-      --crimson-dark: #6b0014;
-      --bg: #f7f8fa;
-      --card: #ffffff;
-      --border: #ddd;
-      --muted: #666;
-      --shadow: rgba(0, 0, 0, 0.1);
+      --crimson: #8C001A; --crimson-dark: #6b0014;
+      --bg: #f7f8fa; --card: #fff; --border: #ddd; --muted: #666; --shadow: rgba(0,0,0,0.1);
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: #222;
-    }
-
-    header {
-      background: var(--crimson);
-      color: #fff;
-      padding: 1.2rem 0;
-      box-shadow: 0 2px 6px var(--shadow);
-    }
-
-    .wrap {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
-
-    header .title {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    header .sub {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
-
-    nav {
-      background: #fff;
-      border-bottom: 2px solid var(--crimson);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      padding: 0.8rem 0;
-    }
-
-    .tab {
-      text-decoration: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 999px;
-      border: 1.5px solid var(--crimson);
-      color: var(--crimson);
-      font-weight: 600;
-      background: #fff;
-      transition: 0.2s;
-    }
-
-    .tab:hover {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    .tab.active {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    main {
-      padding: 2rem 1rem;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 2px 8px var(--shadow);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border-top: 3px solid var(--crimson);
-    }
-
-    .card h3 {
-      margin: 0 0 1rem;
-      color: var(--crimson);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-    }
-
-    input, button {
-      padding: 0.8rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1.5px solid #ccc;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--crimson);
-      box-shadow: 0 0 0 2px rgba(140, 0, 26, 0.1);
-    }
-
-    button {
-      background: var(--crimson);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      font-weight: 600;
-    }
-
-    button:hover {
-      background: var(--crimson-dark);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    th, td {
-      padding: 0.8rem;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-    }
-
-    th {
-      background: #faf0f2;
-      color: var(--crimson);
-      font-weight: 700;
-    }
-
-    tr:hover {
-      background: #fff6f7;
-    }
-
-    .delete-btn {
-      background: #aaa;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      padding: 0.4rem 0.8rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .delete-btn:hover {
-      background: #888;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-      padding: 2rem 0;
-    }
+    body{margin:0;font-family:"Segoe UI",Roboto,sans-serif;background:var(--bg);color:#222;}
+    header{background:var(--crimson);color:#fff;padding:1.2rem 0;box-shadow:0 2px 6px var(--shadow);}
+    .wrap{max-width:1000px;margin:0 auto;padding:0 1rem;}
+    header .title{font-size:1.8rem;font-weight:bold;}
+    nav{background:#fff;border-bottom:2px solid var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+    .tabs{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;padding:.8rem 0;}
+    .tab{text-decoration:none;padding:.5rem 1.2rem;border-radius:999px;border:1.5px solid var(--crimson);color:var(--crimson);font-weight:600;background:#fff;transition:.2s;}
+    .tab:hover,.tab.active{background:var(--crimson);color:#fff;}
+    main{padding:2rem 1rem;}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 2px 8px var(--shadow);padding:1.5rem;margin-bottom:2rem;border-top:3px solid var(--crimson);}
+    h3{color:var(--crimson);display:flex;align-items:center;justify-content:space-between;margin:0 0 1rem;}
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;}
+    input,button{padding:.8rem;font-size:1rem;border-radius:6px;border:1.5px solid #ccc;}
+    input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 2px rgba(140,0,26,0.1);}
+    button{background:var(--crimson);color:#fff;border:none;cursor:pointer;transition:.2s;font-weight:600;}
+    button:hover{background:var(--crimson-dark);}
+    .sort-btn,.see-all-btn{border-radius:8px;padding:.5rem .9rem;font-size:.9rem;cursor:pointer;font-weight:600;}
+    .sort-btn{background:#fff;color:var(--crimson);border:1.5px solid var(--crimson);}
+    .sort-btn:hover{background:var(--crimson);color:#fff;}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;}
+    th,td{padding:.8rem;border-bottom:1px solid #eee;text-align:left;}
+    th{background:#faf0f2;color:var(--crimson);font-weight:700;}
+    tr:hover{background:#fff6f7;}
+    .action-btn{padding:.4rem .8rem;font-size:.85rem;border:none;border-radius:6px;color:#fff;cursor:pointer;margin-right:4px;}
+    .delete-btn{background:#aaa;}
+    .edit-btn{background:var(--crimson);}
+    .delete-btn:hover{background:#888;}
+    .edit-btn:hover{background:var(--crimson-dark);}
+    footer{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 0;}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <div class="title">Workout Sessions</div>
-      <div class="sub">Create, view, and manage your fitness sessions.</div>
-    </div>
-  </header>
+  <header><div class="wrap"><div class="title">Exercise Sessions</div><div class="sub">Create, view, and manage your fitness sessions.</div></div></header>
+  <nav><div class="tabs">
+    <a class="tab" href="/home">Home</a>
+    <a class="tab" href="/calorie-tracker">Food</a>
+    <a class="tab active" href="/sessions">Exercise</a>
+    <a class="tab" href="/goals-page.html">Goals</a>
+    <a class="tab" href="/weekly.html">Weekly Log</a>
+    <a class="tab" href="/profile.html">Profile</a>
+    <a class="tab" href="/social.html">Social</a>
+    <a class="tab" href="/notifications.html">Notifications</a>
+  </div></nav>
 
-  <nav>
-    <div class="tabs">
-      <a class="tab" href="/home">Home</a>
-      <a class="tab" href="/calorie-tracker">Food</a>
-      <a class="tab active" href="/sessions">Exercise</a>
-      <a class="tab" href="/goals-page.html">Goals</a>
-      <a class="tab" href="/weekly.html">Weekly Log</a>
-      <a class="tab" href="/profile.html">Profile</a>
-      <a class="tab" href="/social.html">Social</a>
-      <a class="tab" href="/notifications.html">Notifications</a>
-    </div>
-  </nav>
+  <main><div class="wrap">
+    <section class="card">
+      <h3 id="formTitle">Create a New Session</h3>
+      <form id="sessionForm" class="form-grid">
+        <input type="text" id="name" placeholder="Session Name (e.g. Push Day)" required />
+        <input type="date" id="date" required />
+        <input type="text" id="notes" placeholder="Notes (optional)" />
+        <input type="number" id="duration" placeholder="Duration (min)" />
+        <button type="submit" id="submitBtn">Add Session</button>
+      </form>
+    </section>
 
-  <main>
-    <div class="wrap">
-      <section class="card">
-        <h3>Create a New Session</h3>
-        <form id="sessionForm" class="form-grid">
-          <input type="text" id="name" placeholder="Session Name (e.g. Push Day)" required />
-          <input type="date" id="date" required />
-          <input type="text" id="notes" placeholder="Notes (optional)" />
-          <input type="number" id="duration" placeholder="Duration (min)" />
-          <button type="submit">Add Session</button>
-        </form>
-      </section>
+    <section class="card">
+      <h3>Your Sessions <button id="sortBtn" class="sort-btn">Sort: Newest → Oldest</button></h3>
+      <table><thead><tr><th>Name</th><th>Date</th><th>Notes</th><th>Duration</th><th>Actions</th></tr></thead><tbody id="sessionTableBody"></tbody></table>
+      <button id="seeAllBtn" class="see-all-btn" style="display:none">See All</button>
+    </section>
+  </div></main>
 
-      <section class="card">
-        <h3>Your Sessions</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Notes</th>
-              <th>Duration</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="sessionTableBody"></tbody>
-        </table>
-      </section>
-    </div>
-  </main>
-
-  <footer>
-    <p>© 2025 FitnessApp</p>
-  </footer>
+  <footer><p>© 2025 FitnessApp</p></footer>
 
   <script>
     const API = "http://localhost:8080/api/sessions";
+    let showingAll = false, allSessions = [], sortAscending = false, editId = null;
 
     async function fetchSessions() {
       const res = await fetch(`${API}/user`, { credentials: "include" });
-      if (!res.ok) {
-        console.error("Failed to fetch sessions");
-        return;
-      }
+      if (!res.ok) return console.error("Failed to fetch sessions");
       const data = await res.json();
-      renderSessions(data.sessions || []);
+      allSessions = data.sessions || [];
+      renderSessions();
     }
 
-    function renderSessions(list) {
+    function renderSessions() {
       const tbody = document.getElementById("sessionTableBody");
+      const seeAllBtn = document.getElementById("seeAllBtn");
+      const sortBtn = document.getElementById("sortBtn");
       tbody.innerHTML = "";
-      list.forEach((s) => {
+
+      if (allSessions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#666">No sessions yet.</td></tr>`;
+        seeAllBtn.style.display = "none";
+        return;
+      }
+
+      allSessions.sort((a, b) => sortAscending ? new Date(a.date)-new Date(b.date) : new Date(b.date)-new Date(a.date));
+      sortBtn.textContent = sortAscending ? "Sort: Oldest → Newest" : "Sort: Newest → Oldest";
+
+      const visibleSessions = showingAll ? allSessions : allSessions.slice(0,7);
+      visibleSessions.forEach(s => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${s.name}</td>
           <td>${s.date}</td>
           <td>${s.notes || "N/A"}</td>
           <td>${s.duration || "N/A"}</td>
-          <td><button class="delete-btn">Delete</button></td>
+          <td>
+            <button class="action-btn edit-btn">Edit</button>
+            <button class="action-btn delete-btn">Delete</button>
+          </td>
         `;
-        row.addEventListener("click", (e) => {
-          if (e.target.classList.contains("delete-btn")) return;
-          window.location.href = `workouts.html?session_id=${s.id}`;
-        });
-        const del = row.querySelector(".delete-btn");
-        del.addEventListener("click", async () => {
+        row.querySelector(".edit-btn").addEventListener("click", e => { e.stopPropagation(); loadSessionForEdit(s); });
+        row.querySelector(".delete-btn").addEventListener("click", async e => {
+          e.stopPropagation();
           if (!confirm("Delete this session?")) return;
-          const res = await fetch(`${API}/${s.id}`, { method: "DELETE", credentials: "include" });
-          if (res.ok) {
-            fetchSessions();
-          } else {
-            alert("Failed to delete session.");
-          }
+          const res = await fetch(`${API}/${s.id}`, { method:"DELETE", credentials:"include" });
+          if (res.ok) fetchSessions(); else alert("Failed to delete session.");
+        });
+        row.addEventListener("click", e => {
+          if (!e.target.classList.contains("action-btn")) window.location.href = `exercises.html?session_id=${s.id}`;
         });
         tbody.appendChild(row);
       });
+
+      seeAllBtn.style.display = allSessions.length > 7 ? "block" : "none";
+      seeAllBtn.textContent = showingAll ? "Show Less" : "See All";
     }
 
-    document.getElementById("sessionForm").addEventListener("submit", async (e) => {
+    function loadSessionForEdit(s) {
+      document.getElementById("name").value = s.name;
+      document.getElementById("date").value = s.date;
+      document.getElementById("notes").value = s.notes || "";
+      document.getElementById("duration").value = s.duration || "";
+      document.getElementById("submitBtn").textContent = "Update Session";
+      document.getElementById("formTitle").textContent = "Edit Session";
+      editId = s.id;
+    }
+
+    document.getElementById("sessionForm").addEventListener("submit", async e => {
       e.preventDefault();
-      const session = {
+      const s = {
         name: document.getElementById("name").value,
         date: document.getElementById("date").value,
         notes: document.getElementById("notes").value,
-        duration: +document.getElementById("duration").value || 0,
+        duration: +document.getElementById("duration").value || 0
       };
-      const res = await fetch(`${API}/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(session),
+      const method = editId ? "PUT" : "POST";
+      const url = editId ? `${API}/${editId}` : `${API}/create`;
+      const res = await fetch(url, {
+        method, headers:{"Content-Type":"application/json"}, credentials:"include", body:JSON.stringify(s)
       });
       if (res.ok) {
         e.target.reset();
+        editId = null;
+        document.getElementById("submitBtn").textContent = "Add Session";
+        document.getElementById("formTitle").textContent = "Create a New Session";
         fetchSessions();
-      } else {
-        alert("Failed to create session.");
-      }
+      } else alert("Failed to save session.");
     });
+
+    document.getElementById("sortBtn").addEventListener("click", () => { sortAscending=!sortAscending; renderSessions(); });
+    document.getElementById("seeAllBtn").addEventListener("click", () => { showingAll=!showingAll; renderSessions(); });
 
     fetchSessions();
   </script>
 </body>
 </html>
+
+

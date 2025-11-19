@@ -10,7 +10,7 @@
 
 using namespace std;
 
-struct Workout {
+struct Exercise {
     int id;              // Primary key
     int user_id;         // Foreign key to users table
     int session_id;     // Foreign key to sessions table
@@ -23,24 +23,24 @@ struct Workout {
     std::string notes;   // Optional comments
 };
 
-// Insert new workout
-bool addWorkout(sqlite3* db, const Workout& w);
+// Insert new exercise
+bool addExercise(sqlite3* db, const Exercise& w);
 
-// Get all workouts for a user
-std::vector<Workout> getUserWorkouts(sqlite3* db, int user_id);
+// Get all exercises for a user
+std::vector<Exercise> getUserExercises(sqlite3* db, int user_id);
 
-// Get workouts by session id
-std::vector<Workout> getWorkoutsBySession(sqlite3* db, int session_id);
+// Get exercises by session id
+std::vector<Exercise> getExercisesBySession(sqlite3* db, int session_id);
 
-// Get workouts filtered by date range (optional)
-std::vector<Workout> getUserWorkoutsByDate(sqlite3* db, int user_id, const std::string& startDate, const std::string& endDate);
+// Get exercises filtered by date range (optional)
+std::vector<Exercise> getUserExercisesByDate(sqlite3* db, int user_id, const std::string& startDate, const std::string& endDate);
 
-// Delete a specific workout by ID
-bool deleteWorkout(sqlite3* db, int workout_id, int user_id);
+// Delete a specific exercise by ID
+bool deleteExercise(sqlite3* db, int exercise_id, int user_id);
 
-// Update existing workout (optional)
-bool updateWorkout(sqlite3* db, const Workout& w);
+// Update existing exercise (optional)
+bool updateExercise(sqlite3* db, const Exercise& w);
 
-void registerWorkoutRoutes(crow::SimpleApp& app, sqlite3* db);
+void registerExerciseRoutes(crow::SimpleApp& app, sqlite3* db);
 
 
