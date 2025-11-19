@@ -48,8 +48,20 @@ void setupSleepTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
     });*/
 }
 
+// Get timestamp now - 7 days in ISO8601
+std::string seven_days_ago() {
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    auto past = now - hours(24 * 7);
+    std::time_t t = system_clock::to_time_t(past);
+    char buf[32];
+    std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
+    return buf;
+}
 
 crow::response addSleep(crow::SimpleApp& app, sqlite3* db, const crow::request& req) {
+    //return crow::response(200, "made it to addSleep");
+
     auto data = crow::json::load(req.body);
     if (!data) return crow::response(400, "Invalid JSON");
 
@@ -60,22 +72,22 @@ crow::response addSleep(crow::SimpleApp& app, sqlite3* db, const crow::request& 
     //int sleep_id = data.has("id") ? data["id"].s() : getCurrentDate();
     std::string date = data["date"].s();
     std::string time = data["time"].s();
+    std::string sleepStart = date + " " + time + ":00";
     int duration = data["duration"].i();
     std::string sleep_type = data["sleep_type"].s();
     std::string created_at = getCurrentDateTime();
 
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db,
-        "INSERT INTO sleep (user_id, date, time, duration, sleep_quality, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO sleepTable (user_id, sleep_start_time, duration, sleep_quality, created_at) VALUES (?, ?, ?, ?, ?)",
         -1, &stmt, nullptr);
     
     sqlite3_bind_int(stmt, 1, user_id);
     //sqlite3_bind_int(stmt, 2, sleep_id);
-    sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, time.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 4, duration);
-    sqlite3_bind_text(stmt, 5, sleep_type.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 6, created_at.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, sleepStart.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 3, duration);
+    sqlite3_bind_text(stmt, 4, sleep_type.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 5, created_at.c_str(), -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) != SQLITE_DONE) {
         sqlite3_finalize(stmt);
@@ -91,14 +103,14 @@ crow::response addSleep(crow::SimpleApp& app, sqlite3* db, const crow::request& 
 
 crow::response getSleeps(crow::SimpleApp& app, sqlite3* db, int user_id, const std::string& date) {
     sqlite3_stmt* stmt;
+    std::string sevenDaysAgo = seven_days_ago();
     sqlite3_prepare_v2(db,
-        "SELECT sleep_id, date, time, duration, sleep_quality, created_at "
-        "FROM sleep WHERE user_id=? AND date<=? AND date>=? ORDER BY created_at DESC",
+        "SELECT sleep_id, sleep_start_time, duration, sleep_quality, created_at "
+        "FROM sleepTable WHERE user_id=? AND sleep_start_time>=? ORDER BY created_at DESC",
         -1, &stmt, nullptr);
 
     sqlite3_bind_int(stmt, 1, user_id);
-    sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, date.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, sevenDaysAgo.c_str(), -1, SQLITE_STATIC);
 
     crow::json::wvalue sleeps;
     std::vector<crow::json::wvalue> sleep_list;
@@ -107,10 +119,10 @@ crow::response getSleeps(crow::SimpleApp& app, sqlite3* db, int user_id, const s
         crow::json::wvalue sleep;
         sleep["id"] = sqlite3_column_int(stmt, 0);
         sleep["date"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        sleep["time"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        sleep["duration"] = sqlite3_column_int(stmt, 3);
-        sleep["sleep_type"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        sleep["created_at"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5));
+        sleep["time"] = "";
+        sleep["duration"] = sqlite3_column_int(stmt, 2);
+        sleep["sleep_type"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        sleep["created_at"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
         sleep_list.push_back(std::move(sleep));
     }
 
@@ -120,7 +132,7 @@ crow::response getSleeps(crow::SimpleApp& app, sqlite3* db, int user_id, const s
 
 crow::response deleteSleep(crow::SimpleApp&, sqlite3* db, int sleep_id) {
     sqlite3_stmt* stmt;
-    sqlite3_prepare_v2(db, "DELETE FROM sleep WHERE user_id=? AND sleep_id=?", -1, &stmt, nullptr);
+    sqlite3_prepare_v2(db, "DELETE FROM sleepTable WHERE sleep_id=?", -1, &stmt, nullptr);
     sqlite3_bind_int(stmt, 1, sleep_id);
 
     bool ok = sqlite3_step(stmt) == SQLITE_DONE;
@@ -138,19 +150,19 @@ crow::response updateSleep(crow::SimpleApp& app, sqlite3* db, int sleep_id, cons
 
     std::string date = data["date"].s();
     std::string time = data["time"].s();
+    std::string sleepStart = date + " " + time + ":00";
     int duration = data["duration"].i();
     std::string sleep_type = data["sleep_type"].s();
 
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(db,
-        "UPDATE sleep SET date=?, time=?, duration=?, sleep_type=? WHERE sleep_id=?",
+        "UPDATE sleepTable SET sleep_start_time=?, duration=?, sleep_type=? WHERE sleep_id=?",
         -1, &stmt, nullptr);
 
-    sqlite3_bind_text(stmt, 1, date.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, time.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 3, duration);
-    sqlite3_bind_text(stmt, 4, sleep_type.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 5, sleep_id);
+    sqlite3_bind_text(stmt, 1, sleepStart.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, duration);
+    sqlite3_bind_text(stmt, 3, sleep_type.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 4, sleep_id);
 
     bool ok = sqlite3_step(stmt) == SQLITE_DONE;
     sqlite3_finalize(stmt);
@@ -161,13 +173,13 @@ crow::response updateSleep(crow::SimpleApp& app, sqlite3* db, int sleep_id, cons
 
 crow::response clearWeeklySleeps(crow::SimpleApp& app, sqlite3* db, int user_id, const std::string& date) {
     sqlite3_stmt* stmt;
+    std::string sevenDaysAgo = seven_days_ago();
     sqlite3_prepare_v2(db,
-        "DELETE FROM sleep WHERE user_id=? AND date<=? AND date>=?",
+        "DELETE FROM sleepTable WHERE user_id=? AND sleep_start_time>=?",
         -1, &stmt, nullptr);
 
     sqlite3_bind_int(stmt, 1, user_id);
-    sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, date.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, sevenDaysAgo.c_str(), -1, SQLITE_STATIC);
 
     bool ok = sqlite3_step(stmt) == SQLITE_DONE;
     sqlite3_finalize(stmt);
