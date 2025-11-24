@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social</title>
+  <style>
+    :root {
+      --crimson: #8C001A; --crimson-dark: #6b0014;
+      --bg: #f7f8fa; --card: #fff; --border: #ddd; --muted: #666; --shadow: rgba(0,0,0,0.1);
+    }
+    body{margin:0;font-family:"Segoe UI",Roboto,sans-serif;background:var(--bg);color:#222;}
+    header{background:var(--crimson);color:#fff;padding:1.2rem 0;box-shadow:0 2px 6px var(--shadow);}
+    .wrap{max-width:1000px;margin:0 auto;padding:0 1rem;}
+    header .title{font-size:1.8rem;font-weight:bold;}
+    header .sub{font-size:.95rem;color:#f7f7f7;margin-top:.2rem;}
+    nav{background:#fff;border-bottom:2px solid var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+    .tabs{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;padding:.8rem 0;}
+    .tab{text-decoration:none;padding:.5rem 1.2rem;border-radius:999px;border:1.5px solid var(--crimson);color:var(--crimson);font-weight:600;background:#fff;transition:.2s;}
+    .tab:hover,.tab.active{background:var(--crimson);color:#fff;}
+    main{padding:2rem 1rem;}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 2px 8px var(--shadow);padding:1.5rem;margin-bottom:2rem;border-top:3px solid var(--crimson);}
+    h3{color:var(--crimson);display:flex;align-items:center;justify-content:space-between;margin:0 0 1rem;}
+    input,button{padding:.8rem;font-size:1rem;border-radius:6px;border:1.5px solid #ccc;}
+    input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 2px rgba(140,0,26,0.1);}
+    button{background:var(--crimson);color:#fff;border:none;cursor:pointer;transition:.2s;font-weight:600;}
+    button:hover{background:var(--crimson-dark);}
+    footer{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 0;}
+
+    /* Social-page-specific layout */
+    .two-col {
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      gap:1.5rem;
+    }
+    @media (max-width:800px){
+      .two-col{grid-template-columns:1fr;}
+    }
+
+    .subtext {
+      font-size:.9rem;
+      color:var(--muted);
+      margin:0 0 .8rem;
+    }
+
+    .search-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+      margin-bottom:.7rem;
+    }
+    .search-row input[type="text"]{
+      flex:1;
+      min-width:180px;
+    }
+
+    /* Small secondary buttons (ghost-style) */
+    .btn-ghost{
+      background:#f5f5f5;
+      color:var(--muted);
+      border:1px solid #ddd;
+      padding:.5rem .8rem;
+      font-size:.9rem;
+      border-radius:6px;
+      font-weight:500;
+    }
+    .btn-ghost:hover{
+      background:#e5e5e5;
+      color:#333;
+    }
+
+    /* Lists for friends / invites / search results */
+    .list{margin:0;padding:0;list-style:none;}
+    .list-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:.4rem 0;
+      border-bottom:1px solid #eee;
+      font-size:.95rem;
+    }
+    .list-item:last-child{border-bottom:none;}
+    .list-main{display:flex;flex-direction:column;}
+    .list-title{font-weight:600;}
+    .list-meta{font-size:.85rem;color:var(--muted);}
+
+    .empty-state{
+      font-size:.9rem;
+      color:var(--muted);
+      margin-top:.3rem;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:.2rem .6rem;
+      border-radius:999px;
+      font-size:.8rem;
+      background:#f2f2f2;
+      color:#555;
+      font-weight:500;
+    }
+    .pill-green{background:#dcfce7;color:#166534;}
+    .pill-yellow{background:#fef9c3;color:#854d0e;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">Social</div>
+      <div class="sub">Manage your friends, invites, and connections.</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tabs">
+      <a class="tab" href="/home">Home</a>
+      <a class="tab" href="/calorie-tracker">Food</a>
+      <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab" href="/goals-page.html">Goals</a>
+      <a class="tab" href="/weekly.html">Weekly Log</a>
+      <a class="tab" href="/profile.html">Profile</a>
+      <a class="tab active" href="/social.html">Social</a>
+      <a class="tab" href="/notifications.html">Notifications</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+      <div class="two-col">
+        <!-- LEFT: Friends & Incoming Invites -->
+        <section class="card">
+          <h3>Your Friends</h3>
+          <p class="subtext">People you’re currently connected with.</p>
+
+          <ul class="list" id="friends-list"></ul>
+          <div class="empty-state" id="friends-empty" style="display:none;">
+            You don’t have any friends yet. Try searching for users on the right!
+          </div>
+
+          <hr style="margin:1rem 0;border:none;border-top:1px solid #eee;">
+
+          <h3>Incoming Invites</h3>
+          <p class="subtext">Requests from people who want to connect with you.</p>
+
+          <ul class="list" id="incoming-list"></ul>
+          <div class="empty-state" id="incoming-empty" style="display:none;">
+            No incoming invites at the moment.
+          </div>
+        </section>
+
+        <!-- RIGHT: Search -->
+        <section class="card">
+          <h3>Find Friends</h3>
+          <p class="subtext">Search for users across WazuFit by username.</p>
+
+          <div class="search-row">
+            <input type="text" id="search-username" placeholder="Search by username..." />
+            <button id="search-button">Search</button>
+          </div>
+
+          <p class="subtext" id="search-hint">
+            Type at least 2–3 characters and press Enter or Search.
+          </p>
+
+          <ul class="list" id="search-results"></ul>
+          <div class="empty-state" id="search-empty">
+            No results yet. Try searching for someone by username.
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer><p>© 2025 FitnessApp</p></footer>
+
+  <script>
+    // Helper: generic JSON fetch with cookies
+    async function apiFetch(url, options = {}) {
+      const opts = Object.assign(
+        { credentials: "include" }, // send cookies (user_id)
+        options
+      );
+
+      const res = await fetch(url, opts);
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (e) {
+        // ignore if no JSON
+      }
+
+      if (!res.ok) {
+        const msg = (data && (data.error || data.message)) || "Request failed";
+        throw new Error(msg);
+      }
+
+      return data;
+    }
+
+    // ----- Friends -----
+    async function loadFriends() {
+      const list = document.getElementById("friends-list");
+      const empty = document.getElementById("friends-empty");
+      list.innerHTML = "";
+      empty.style.display = "none";
+
+      try {
+        const data = await apiFetch("/api/friends");
+        const friends = data.friendships || [];
+
+        if (friends.length === 0) {
+          empty.style.display = "block";
+          return;
+        }
+
+        friends.forEach(friend => {
+          const li = document.createElement("li");
+          li.className = "list-item";
+
+          const main = document.createElement("div");
+          main.className = "list-main";
+
+          const title = document.createElement("span");
+          title.className = "list-title";
+          title.textContent = friend.username || `User #${friend.user_id}`;
+
+          const meta = document.createElement("span");
+          meta.className = "list-meta";
+          meta.textContent = friend.created_at
+            ? `Friend since ${friend.created_at}`
+            : "Friend";
+
+          main.appendChild(title);
+          main.appendChild(meta);
+
+          const btn = document.createElement("button");
+          btn.className = "btn-ghost";
+          btn.textContent = "Remove";
+          btn.addEventListener("click", () => removeFriend(friend.user_id));
+
+          li.appendChild(main);
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Failed to load friends:", err);
+        empty.textContent = "Failed to load friends.";
+        empty.style.display = "block";
+      }
+    }
+
+    async function removeFriend(friendId) {
+      if (!confirm("Remove this friend?")) return;
+
+      try {
+        await apiFetch(`/api/friends/remove/${friendId}`, {
+          method: "POST",
+        });
+        await loadFriends();
+      } catch (err) {
+        alert("Failed to remove friend: " + err.message);
+      }
+    }
+
+    // ----- Incoming Invites -----
+    async function loadIncoming() {
+      const list = document.getElementById("incoming-list");
+      const empty = document.getElementById("incoming-empty");
+      list.innerHTML = "";
+      empty.style.display = "none";
+
+      try {
+        const data = await apiFetch("/api/friend-requests/incoming");
+        const requests = data.requests || [];
+
+        if (requests.length === 0) {
+          empty.style.display = "block";
+          return;
+        }
+
+        requests.forEach(req => {
+          const li = document.createElement("li");
+          li.className = "list-item";
+
+          const main = document.createElement("div");
+          main.className = "list-main";
+
+          const title = document.createElement("span");
+          title.className = "list-title";
+          // backend only returns sender_id; if you later add sender_username, show that instead.
+          title.textContent = `User #${req.sender_id}`;
+
+          const meta = document.createElement("span");
+          meta.className = "list-meta";
+          meta.textContent = `Request ID ${req.id} · Status: ${req.status}`;
+
+          main.appendChild(title);
+          main.appendChild(meta);
+
+          const btnRow = document.createElement("div");
+          btnRow.style.display = "flex";
+          btnRow.style.gap = ".3rem";
+
+          const acceptBtn = document.createElement("button");
+          acceptBtn.className = "btn-ghost";
+          acceptBtn.textContent = "Accept";
+          acceptBtn.addEventListener("click", () =>
+            respondToInvite(req.id, "accept")
+          );
+
+          const rejectBtn = document.createElement("button");
+          rejectBtn.className = "btn-ghost";
+          rejectBtn.textContent = "Reject";
+          rejectBtn.addEventListener("click", () =>
+            respondToInvite(req.id, "reject")
+          );
+
+          btnRow.appendChild(acceptBtn);
+          btnRow.appendChild(rejectBtn);
+
+          li.appendChild(main);
+          li.appendChild(btnRow);
+          list.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Failed to load incoming requests:", err);
+        empty.textContent = "Failed to load incoming invites.";
+        empty.style.display = "block";
+      }
+    }
+
+    async function respondToInvite(requestId, action) {
+      try {
+        await apiFetch(`/api/friend-requests/${requestId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action }),
+        });
+        await loadIncoming();
+        await loadFriends();
+      } catch (err) {
+        alert("Failed to respond to invite: " + err.message);
+      }
+    }
+
+    // ----- Search -----
+    async function handleSearch() {
+      const input = document.getElementById("search-username");
+      const query = input.value.trim();
+      const resultsList = document.getElementById("search-results");
+      const empty = document.getElementById("search-empty");
+
+      resultsList.innerHTML = "";
+      empty.style.display = "none";
+
+      if (query.length < 2) {
+        empty.textContent = "Type at least 2 characters to search.";
+        empty.style.display = "block";
+        return;
+      }
+
+      try {
+        const data = await apiFetch(
+          `/api/friends/search?username=${encodeURIComponent(query)}`
+        );
+        const results = data.results || [];
+
+        if (results.length === 0) {
+          empty.textContent = "No users found.";
+          empty.style.display = "block";
+          return;
+        }
+
+        results.forEach(user => {
+          const li = document.createElement("li");
+          li.className = "list-item";
+
+          const main = document.createElement("div");
+          main.className = "list-main";
+
+          const title = document.createElement("span");
+          title.className = "list-title";
+          title.textContent = user.username || `User #${user.user_id}`;
+
+          const meta = document.createElement("span");
+          meta.className = "list-meta";
+          meta.textContent = `Status: ${user.friend_status}`;
+
+          main.appendChild(title);
+          main.appendChild(meta);
+
+          const actionCell = document.createElement("div");
+
+          if (user.friend_status === "none") {
+            const btn = document.createElement("button");
+            btn.className = "btn-ghost";
+            btn.textContent = "Add Friend";
+            btn.addEventListener("click", () => sendFriendRequest(user.user_id));
+            actionCell.appendChild(btn);
+          } else if (user.friend_status === "friends") {
+            const pill = document.createElement("span");
+            pill.className = "pill pill-green";
+            pill.textContent = "Friends";
+            actionCell.appendChild(pill);
+          } else if (user.friend_status === "request_sent") {
+            const pill = document.createElement("span");
+            pill.className = "pill pill-yellow";
+            pill.textContent = "Request sent";
+            actionCell.appendChild(pill);
+          } else if (user.friend_status === "request_received") {
+            const pill = document.createElement("span");
+            pill.className = "pill pill-yellow";
+            pill.textContent = "Incoming request";
+            actionCell.appendChild(pill);
+          }
+
+          li.appendChild(main);
+          li.appendChild(actionCell);
+          resultsList.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Search failed:", err);
+        empty.textContent = "Search failed. Try again.";
+        empty.style.display = "block";
+      }
+    }
+
+    async function sendFriendRequest(receiverId) {
+      try {
+        await apiFetch("/api/friend-requests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ receiver_id: receiverId }),
+        });
+        alert("Friend request sent!");
+        await handleSearch(); // refresh statuses
+      } catch (err) {
+        alert("Failed to send request: " + err.message);
+      }
+    }
+
+    // ----- Wiring -----
+    document.addEventListener("DOMContentLoaded", () => {
+      loadFriends();
+      loadIncoming();
+
+      document
+        .getElementById("search-button")
+        .addEventListener("click", handleSearch);
+
+      document
+        .getElementById("search-username")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        });
+    });
+  </script>
+</body>
+</html>
+

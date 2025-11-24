@@ -85,6 +85,46 @@ bool createTables(sqlite3 *db)
             progress_value REAL NOT NULL,
             FOREIGN KEY(goal_id) REFERENCES goals(id) ON DELETE CASCADE
         );
+
+        CREATE TABLE IF NOT EXISTS friend_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_id   INTEGER NOT NULL,
+            receiver_id INTEGER NOT NULL,
+            status      TEXT NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected', 'cancelled')),
+            created_at  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            -- Don't allow someone to send a request to themselves
+            CHECK (sender_id <> receiver_id),
+
+            -- Only one active record per ordered pair
+            UNIQUE (sender_id, receiver_id),
+
+            FOREIGN KEY (sender_id)   REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_friend_requests_receiver_status
+            ON friend_requests (receiver_id, status);
+
+        CREATE INDEX IF NOT EXISTS idx_friend_requests_sender_status
+            ON friend_requests (sender_id, status);
+
+        CREATE TABLE IF NOT EXISTS friendships (
+            user_id1   INTEGER NOT NULL,
+            user_id2   INTEGER NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            -- Enforce symmetric representation: (min, max)
+            CHECK (user_id1 < user_id2),
+
+            PRIMARY KEY (user_id1, user_id2),
+
+            FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE
+        );
+
+
+
 )";
 
     // sqlite3_exec executes the queries that are provided to it in the message above. In this case, it will create the tables if they do not already exist.
