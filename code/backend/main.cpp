@@ -8,6 +8,7 @@
 #include "routes/exercise.h"
 #include "routes/session.h"
 #include "leaderboard.h"
+#include "invites.h"
 
 #include "routes/calorie_tracker.h"
 using namespace std;
@@ -122,6 +123,16 @@ int main() {
         return serveFile("code/frontend/leaderboard.html", "text/html");
     });
     setupLeaderboardRoutes(fitnessApp, db);
+
+//
+
+//INVITES//
+    CROW_ROUTE(fitnessApp, "/social.html")
+    ([]{
+        return serveFile("code/frontend/social.html", "text/html");
+    });
+    // Hook up invite routes
+    setupInviteRoutes(fitnessApp, db);
 
 //
 
