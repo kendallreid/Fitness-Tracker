@@ -28,7 +28,7 @@
       padding: 0 1rem;
     }
 
-    /* Header – matching overall style, but with actions on the right */
+    /* Header */
     header {
       background: var(--crimson);
       color: #fff;
@@ -62,7 +62,6 @@
     .header-actions {
       display: flex;
       gap: 0.6rem;
-      flex-wrap: wrap;
     }
 
     .btn {
@@ -95,7 +94,7 @@
       color: var(--crimson);
     }
 
-    /* Main content */
+    /* Main */
     main {
       padding: 2rem 1rem 2.5rem;
     }
@@ -122,7 +121,7 @@
       color: var(--crimson);
     }
 
-    /* Feature highlights */
+    /* Features */
     .features-section {
       margin-bottom: 2.5rem;
     }
@@ -161,12 +160,12 @@
       line-height: 1.5;
     }
 
-    /* CTA block */
+    /* CTA */
     .cta-card {
       background: var(--card);
       border-radius: 12px;
       box-shadow: 0 2px 8px var(--shadow);
-      padding: 1.4rem 1.2rem;
+      padding: 1.6rem 1.2rem;
       border-top: 3px solid var(--crimson);
       text-align: center;
     }
@@ -174,15 +173,22 @@
     .cta-title {
       font-size: 1.2rem;
       font-weight: 700;
-      margin-bottom: 0.8rem;
+      margin-bottom: 1rem;
     }
 
-    .cta-actions {
-      display: flex;
-      justify-content: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      margin-top: 0.4rem;
+    /* Actual CTA button */
+    .cta-card .btn-primary {
+      background: var(--crimson);
+      color: white;
+      border: none;
+      padding: 0.45rem 1.2rem;   /* smaller */
+      font-size: 0.92rem;        /* slightly smaller text */
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .cta-card .btn-primary:hover {
+      background: var(--crimson-dark);
     }
 
     footer {
@@ -192,7 +198,7 @@
       padding: 2rem 0;
     }
 
-    /* Responsive layout for feature grid */
+    /* Responsive */
     @media (min-width: 900px) {
       .features-grid {
         grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -206,10 +212,6 @@
     }
 
     @media (max-width: 639px) {
-      header {
-        padding: 1rem 0;
-      }
-
       .header-inner {
         flex-direction: column;
         align-items: flex-start;
@@ -231,9 +233,10 @@
           <div class="title">WazuFit</div>
           <div class="sub">Track your fitness. Accomplish your goals. Compete with friends.</div>
         </div>
+
         <div class="header-actions">
-          <a href="register.html" class="btn btn-primary">Create Account</a>
-          <a href="login.html" class="btn btn-outline">Log In</a>
+          <a href="/auth/register" class="btn btn-primary">Create Account</a>
+          <a href="/auth/login" class="btn btn-outline">Log In</a>
         </div>
       </div>
     </div>
@@ -243,62 +246,50 @@
   <main>
     <div class="main-inner">
 
-      <!-- Mission statements -->
-      <section class="missions" aria-label="WazuFit mission">
+      <!-- Missions -->
+      <section class="missions">
         <div class="mission"><b>Track</b> your personal fitness.</div>
         <div class="mission"><b>Accomplish</b> your goals.</div>
         <div class="mission"><b>Compete</b> with friends.</div>
       </section>
 
-      <!-- Feature highlights -->
-      <section class="features-section" aria-label="WazuFit features">
+      <!-- Features -->
+      <section class="features-section">
         <h2 class="features-title">What WazuFit offers</h2>
 
         <div class="features-grid">
           <article class="feature-card">
             <h3 class="feature-title">Exercise Tracking</h3>
-            <p class="feature-body">
-              Log workouts, sets, reps, weight, and duration to keep your training organized.
-            </p>
+            <p class="feature-body">Log workouts, sets, reps, and session progress.</p>
           </article>
 
           <article class="feature-card">
             <h3 class="feature-title">Food Tracking</h3>
-            <p class="feature-body">
-              Record meals and calories so your nutrition supports your training.
-            </p>
+            <p class="feature-body">Record meals and calories to support performance.</p>
           </article>
 
           <article class="feature-card">
             <h3 class="feature-title">Goal Tracking</h3>
-            <p class="feature-body">
-              Set clear fitness goals and follow your progress over time.
-            </p>
+            <p class="feature-body">Set goals and follow your progress over time.</p>
           </article>
 
           <article class="feature-card">
             <h3 class="feature-title">Sleep Tracking</h3>
-            <p class="feature-body">
-              Keep an eye on your sleep to improve recovery and performance.
-            </p>
+            <p class="feature-body">Monitor sleep habits for better recovery.</p>
           </article>
 
           <article class="feature-card">
             <h3 class="feature-title">Compete With Friends</h3>
-            <p class="feature-body">
-              Compare progress and stay accountable with friends who use WazuFit.
-            </p>
+            <p class="feature-body">Compare progress and stay motivated together.</p>
           </article>
         </div>
       </section>
 
-      <!-- Call to action -->
-      <section class="cta-card" aria-label="Get started">
-        <div class="cta-title">Ready to start using WazuFit?</div>
-        <div class="cta-actions">
-          <a href="register.html" class="btn btn-primary">Create Account</a>
-          <a href="login.html" class="btn btn-outline">Log In</a>
-        </div>
+      <!-- CTA -->
+      <section class="cta-card">
+        <div class="cta-title">Ready to start your fitness journey?</div>
+
+        <a href="/auth/register" class="btn-primary">Create Account</a>
       </section>
 
     </div>
@@ -310,3 +301,4 @@
 
 </body>
 </html>
+
