@@ -3,100 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WazuFit</title>
-
+  <title>WazuFit Home</title>
   <style>
     :root {
       --crimson: #8C001A;
-      --crimson-600: #a30020;
-      --bg: #fafafa;
-      --ink: #1a1a1a;
-      --muted: #6b7280;
-      --card: #ffffff;
-      --radius-full: 999px;
-      --transition: 180ms ease-out;
+      --crimson-dark: #6b0014;
+      --bg: #f7f8fa;
+      --card: #fff;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0,0,0,0.1);
     }
 
     body {
       margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-family: "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
-      color: var(--ink);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      color: #222;
     }
 
-    /* Crimson header */
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Header – matching overall style, but with actions on the right */
     header {
-      width: 100%;
       background: var(--crimson);
-      color: white;
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .header-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
-    }
-
-    .brand {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-    }
-
-    .nav-actions {
-      display: flex;
       gap: 1rem;
-      align-items: center;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .sub {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     .btn {
-      padding: 0.45rem 1.1rem;
-      border-radius: var(--radius-full);
+      display: inline-block;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
-      transition: var(--transition);
-      border: 1px solid transparent;
+      border: 1.5px solid #fff;
+      transition: 0.2s;
     }
 
     .btn-primary {
-      background: white;
+      background: #fff;
       color: var(--crimson);
     }
 
     .btn-primary:hover {
-      background: #f3f3f3;
+      background: #f4f4f4;
     }
 
     .btn-outline {
-      border: 1px solid white;
-      color: white;
+      background: transparent;
+      color: #fff;
     }
 
     .btn-outline:hover {
-      background: white;
+      background: #fff;
       color: var(--crimson);
     }
 
+    /* Main content */
+    main {
+      padding: 2rem 1rem 2.5rem;
+    }
+
+    .main-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
     /* Mission statements */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    .missions {
       text-align: center;
-      padding: 2rem;
-      gap: 1.5rem;
+      margin-bottom: 2.5rem;
     }
 
     .mission {
       font-size: 1.6rem;
       font-weight: 400;
-      color: var(--ink);
-      max-width: 600px;
+      margin: 0.8rem 0;
       line-height: 1.4;
     }
 
@@ -104,39 +122,191 @@
       color: var(--crimson);
     }
 
+    /* Feature highlights */
+    .features-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .features-title {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: var(--crimson);
+    }
+
+    .features-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1rem;
+      border-top: 3px solid var(--crimson);
+    }
+
+    .feature-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--crimson-dark);
+    }
+
+    .feature-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* CTA block */
+    .cta-card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.4rem 1.2rem;
+      border-top: 3px solid var(--crimson);
+      text-align: center;
+    }
+
+    .cta-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+    }
+
     footer {
       text-align: center;
-      padding: 1rem 0;
-      font-size: 0.8rem;
       color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem 0;
+    }
+
+    /* Responsive layout for feature grid */
+    @media (min-width: 900px) {
+      .features-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 640px) and (max-width: 899px) {
+      .features-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 639px) {
+      header {
+        padding: 1rem 0;
+      }
+
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .features-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   </style>
 </head>
-
 <body>
 
   <!-- Header -->
   <header>
-    <div class="brand">WazuFit</div>
-
-    <div class="nav-actions">
-      <a href="auth/register" class="btn btn-primary">Create Account</a>
-      <a href="auth/login" class="btn btn-outline">Log In</a>
+    <div class="wrap">
+      <div class="header-inner">
+        <div class="title-block">
+          <div class="title">WazuFit</div>
+          <div class="sub">Track your fitness. Accomplish your goals. Compete with friends.</div>
+        </div>
+        <div class="header-actions">
+          <a href="register.html" class="btn btn-primary">Create Account</a>
+          <a href="login.html" class="btn btn-outline">Log In</a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- Mission statements -->
-  <div class="main-content">
-    <div class="mission"><b>Track</b> your personal fitness.</div>
-    <div class="mission"><b>Accomplish</b> your goals.</div>
-    <div class="mission"><b>Compete</b> with friends.</div>
-  </div>
+  <!-- Main -->
+  <main>
+    <div class="main-inner">
 
-  <footer>© <span id="year"></span> WazuFit</footer>
+      <!-- Mission statements -->
+      <section class="missions" aria-label="WazuFit mission">
+        <div class="mission"><b>Track</b> your personal fitness.</div>
+        <div class="mission"><b>Accomplish</b> your goals.</div>
+        <div class="mission"><b>Compete</b> with friends.</div>
+      </section>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+      <!-- Feature highlights -->
+      <section class="features-section" aria-label="WazuFit features">
+        <h2 class="features-title">What WazuFit offers</h2>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <h3 class="feature-title">Exercise Tracking</h3>
+            <p class="feature-body">
+              Log workouts, sets, reps, weight, and duration to keep your training organized.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title">Food Tracking</h3>
+            <p class="feature-body">
+              Record meals and calories so your nutrition supports your training.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title">Goal Tracking</h3>
+            <p class="feature-body">
+              Set clear fitness goals and follow your progress over time.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title">Sleep Tracking</h3>
+            <p class="feature-body">
+              Keep an eye on your sleep to improve recovery and performance.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title">Compete With Friends</h3>
+            <p class="feature-body">
+              Compare progress and stay accountable with friends who use WazuFit.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Call to action -->
+      <section class="cta-card" aria-label="Get started">
+        <div class="cta-title">Ready to start using WazuFit?</div>
+        <div class="cta-actions">
+          <a href="register.html" class="btn btn-primary">Create Account</a>
+          <a href="login.html" class="btn btn-outline">Log In</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    © 2025 WazuFit
+  </footer>
 
 </body>
 </html>
