@@ -51,6 +51,13 @@ int main() {
         return 1; // don’t continue if init fails
     }
 
+//WEBHOME//
+    // Serve WebHome page
+    CROW_ROUTE(fitnessApp, "/")
+    ([]{
+        return serveFile("code/frontend/WebHome.html", "text/html");
+    });
+
 //LOGIN//
     // Serve Login page
     CROW_ROUTE(fitnessApp, "/auth/login")
@@ -66,7 +73,7 @@ int main() {
 
 //REGISTRATION//
     // Serve registration page
-    CROW_ROUTE(fitnessApp, "/")
+    CROW_ROUTE(fitnessApp, "/auth/register")
     ([]{
         return serveFile("code/frontend/UserRegistration.html", "text/html");
     });
