@@ -16,5 +16,6 @@ struct UserSimple
 // Routes
 void setupLeaderboardRoutes(crow::SimpleApp& app, sqlite3* db);
 std::vector<UserSimple> getTopUsers(sqlite3* db, int limit);
+std::vector<UserSimple> getTopFriends(sqlite3* db, int userId, int limit);
 
 #endif

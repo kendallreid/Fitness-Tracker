@@ -36,15 +36,8 @@
       padding: 0 1rem;
     }
 
-    header .title {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    header .sub {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
 
     nav {
       background: #fff;
@@ -74,19 +67,10 @@
       transition: 0.2s;
     }
 
-    .tab:hover {
-      background: var(--crimson);
-      color: #fff;
-    }
+    .tab:hover { background: var(--crimson); color: #fff; }
+    .tab.active { background: var(--crimson); color: #fff; }
 
-    .tab.active {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    main {
-      padding: 2rem 1rem;
-    }
+    main { padding: 2rem 1rem; }
 
     .card {
       background: var(--card);
@@ -97,33 +81,12 @@
       border-top: 3px solid var(--crimson);
     }
 
-    .card h3 {
-      margin: 0 0 1rem;
-      color: var(--crimson);
-    }
+    .card h3 { margin: 0 0 1rem; color: var(--crimson); }
 
-    .row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .kpi {
-      border: 1.5px solid #eee;
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .kpi .num {
-      font-weight: 800;
-      font-size: 22px;
-    }
-
-    .tag {
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi { border: 1.5px solid #eee; border-radius: 10px; padding: 12px; text-align: center; }
+    .kpi .num { font-weight: 800; font-size: 22px; }
+    .tag { font-size: 12px; color: var(--muted); }
 
     .badge {
       display: inline-flex;
@@ -137,13 +100,7 @@
       color: var(--muted);
     }
 
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--crimson);
-    }
-
+    .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--crimson); }
     .btn {
       display: inline-block;
       padding: 10px 16px;
@@ -156,16 +113,7 @@
       transition: 0.2s;
     }
 
-    .btn:hover {
-      background: var(--crimson-dark);
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-      padding: 2rem 0;
-    }
+    .btn:hover { background: var(--crimson-dark); }
 
     /* Leaderboard preview styles */
     .leaderboard-entry {
@@ -174,20 +122,11 @@
       padding: 6px 0;
       border-bottom: 1px solid #eee;
     }
+    .leaderboard-entry:last-child { border-bottom: none; }
+    .rank { font-weight: bold; width: 30px; color: var(--crimson); }
+    .score { font-weight: bold; }
 
-    .leaderboard-entry:last-child {
-      border-bottom: none;
-    }
-
-    .rank {
-      font-weight: bold;
-      width: 30px;
-      color: var(--crimson);
-    }
-
-    .score {
-      font-weight: bold;
-    }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2rem 0; }
   </style>
 </head>
 <body>
@@ -219,21 +158,12 @@
       <section class="card" aria-labelledby="kpi-title">
         <h3 id="kpi-title">Today</h3>
         <div class="row">
-          <div class="kpi">
-            <div class="tag">Calories In</div>
-            <div class="num" id="kcalIn">0</div>
-          </div>
-          <div class="kpi">
-            <div class="tag">Calories Out</div>
-            <div class="num" id="kcalOut">0</div>
-          </div>
-          <div class="kpi">
-            <div class="tag">Net Calories</div>
-            <div class="num" id="kcalNet">0</div>
-          </div>
+          <div class="kpi"><div class="tag">Calories In</div><div class="num" id="kcalIn">0</div></div>
+          <div class="kpi"><div class="tag">Calories Out</div><div class="num" id="kcalOut">0</div></div>
+          <div class="kpi"><div class="tag">Net Calories</div><div class="num" id="kcalNet">0</div></div>
         </div>
 
-        <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
           <span class="badge"><span class="dot"></span> <span id="points">0</span> pts</span>
           <span class="badge"><span class="dot"></span> <span id="streak">0</span> day streak</span>
           <span class="badge"><span class="dot"></span> Weight: <span id="weightLb">—</span> lb</span>
@@ -243,6 +173,13 @@
       <!-- LEADERBOARD PREVIEW CARD -->
       <section class="card">
         <h3>Leaderboard</h3>
+
+        <!-- Toggle Global / Friends -->
+        <div style="margin-bottom:10px; display:flex; gap:10px; align-items:center;">
+          <label><input type="radio" name="leaderboardToggle" value="global" checked> Global</label>
+          <label><input type="radio" name="leaderboardToggle" value="friends"> Friends</label>
+        </div>
+
         <div id="leaderboardList">
           <p style="color:var(--muted);">Loading top 3...</p>
         </div>
@@ -262,17 +199,16 @@
 
     function sum(list, key){ return list.reduce((a,x)=> a + (+x[key]||0), 0); }
 
-    function render(){
+    function render() {
       const inK = sum(LS.get(`meals:${todayKey()}`, []), 'calories');
       const outK = sum(LS.get(`ex:${todayKey()}`, []), 'calories');
       const netK = Math.max(0, inK - outK);
+
       document.getElementById('kcalIn').textContent = inK;
       document.getElementById('kcalOut').textContent = outK;
       document.getElementById('kcalNet').textContent = netK;
-
       document.getElementById('points').textContent = LS.get('points', 0);
       document.getElementById('streak').textContent = LS.get('streak', 0);
-
       const profile = LS.get('profile', { weight_lb: null });
       document.getElementById('weightLb').textContent = profile.weight_lb ?? "—";
     }
@@ -280,9 +216,9 @@
     render();
 
     // ----- Load leaderboard preview (top 3) -----
-    async function loadLeaderboard() {
+    async function loadLeaderboard(scope='global') {
       try {
-        const res = await fetch("/api/top-users?limit=3");
+        const res = await fetch(`/api/top-users?limit=3${scope==='friends'? '&friends=1':''}`);
         const data = await res.json();
 
         const list = document.getElementById("leaderboardList");
@@ -293,7 +229,7 @@
           return;
         }
 
-        data.users.forEach((u, i) => {
+        data.users.forEach((u,i)=>{
           const div = document.createElement("div");
           div.className = "leaderboard-entry";
           div.innerHTML = `
@@ -304,13 +240,19 @@
           list.appendChild(div);
         });
 
-      } catch (err) {
+      } catch(err) {
         document.getElementById("leaderboardList").innerHTML =
           "<p style='color:red'>Failed to load leaderboard.</p>";
       }
     }
 
+    // Initial load
     loadLeaderboard();
+
+    // Toggle handler
+    document.querySelectorAll('input[name="leaderboardToggle"]').forEach(el=>{
+      el.addEventListener('change', e=> loadLeaderboard(e.target.value));
+    });
   </script>
 
 </body>

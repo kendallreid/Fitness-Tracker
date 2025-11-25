@@ -36,15 +36,8 @@
       padding: 0 1rem;
     }
 
-    header .title {
-      font-size: 1.8rem;
-      font-weight: bold;
-    }
-
-    header .sub {
-      opacity: 0.9;
-      font-size: 0.95rem;
-    }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
 
     nav {
       background: #fff;
@@ -74,19 +67,10 @@
       transition: 0.2s;
     }
 
-    .tab:hover {
-      background: var(--crimson);
-      color: #fff;
-    }
+    .tab:hover { background: var(--crimson); color: #fff; }
+    .tab.active { background: var(--crimson); color: #fff; }
 
-    .tab.active {
-      background: var(--crimson);
-      color: #fff;
-    }
-
-    main {
-      padding: 2rem 1rem;
-    }
+    main { padding: 2rem 1rem; }
 
     .card {
       background: var(--card);
@@ -97,11 +81,9 @@
       border-top: 3px solid var(--crimson);
     }
 
-    .card h3 {
-      margin: 0 0 1rem;
-      color: var(--crimson);
-    }
+    .card h3 { margin: 0 0 1rem; color: var(--crimson); }
 
+    /* Leaderboard styles */
     .leaderboard-entry {
       display: flex;
       justify-content: space-between;
@@ -109,19 +91,9 @@
       border-bottom: 1px solid #eee;
     }
 
-    .leaderboard-entry:last-child {
-      border-bottom: none;
-    }
-
-    .rank {
-      font-weight: bold;
-      width: 40px;
-      color: var(--crimson);
-    }
-
-    .score {
-      font-weight: bold;
-    }
+    .leaderboard-entry:last-child { border-bottom: none; }
+    .rank { font-weight: bold; width: 40px; color: var(--crimson); }
+    .score { font-weight: bold; }
 
     footer {
       text-align: center;
@@ -158,6 +130,13 @@
     <div class="wrap">
       <section class="card">
         <h3>Top 100 Users</h3>
+
+        <!-- Toggle Global / Friends -->
+        <div style="margin-bottom:15px; display:flex; gap:20px; align-items:center;">
+          <label><input type="radio" name="leaderboardToggle" value="global" checked> Global</label>
+          <label><input type="radio" name="leaderboardToggle" value="friends"> Friends</label>
+        </div>
+
         <div id="leaderboardList">
           <p style="color:var(--muted);">Loading leaderboard...</p>
         </div>
@@ -170,9 +149,9 @@
   </footer>
 
   <script>
-    async function loadLeaderboard() {
+    async function loadLeaderboard(scope='global') {
       try {
-        const res = await fetch("/api/top-users?limit=100");
+        const res = await fetch(`/api/top-users?limit=100${scope==='friends'? '&friends=1':''}`);
         const data = await res.json();
 
         const list = document.getElementById("leaderboardList");
@@ -183,7 +162,7 @@
           return;
         }
 
-        data.users.forEach((u, i) => {
+        data.users.forEach((u,i)=>{
           const div = document.createElement("div");
           div.className = "leaderboard-entry";
           div.innerHTML = `
@@ -194,13 +173,19 @@
           list.appendChild(div);
         });
 
-      } catch (err) {
+      } catch(err) {
         document.getElementById("leaderboardList").innerHTML =
           "<p style='color:red'>Failed to load leaderboard.</p>";
       }
     }
 
+    // Initial load
     loadLeaderboard();
+
+    // Toggle handler
+    document.querySelectorAll('input[name="leaderboardToggle"]').forEach(el=>{
+      el.addEventListener('change', e=> loadLeaderboard(e.target.value));
+    });
   </script>
 
 </body>
