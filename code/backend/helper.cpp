@@ -24,6 +24,17 @@ std::string getCurrentDateTime() {
     return oss.str();
 }
 
+std::string getDateNDaysAgo(int days) {
+    auto now = std::chrono::system_clock::now();
+    auto target = now - std::chrono::hours(24 * days);
+    std::time_t t = std::chrono::system_clock::to_time_t(target);
+    std::tm tm = *std::localtime(&t);
+
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d");
+    return oss.str();
+}
+
 bool validateMealData(const crow::json::rvalue& data, std::string& error) {
     if (!data.has("meal_type") || !data.has("meal_name") || !data.has("calories")) {
         error = "Missing required fields: meal_type, meal_name, and calories.";

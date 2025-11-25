@@ -74,5 +74,10 @@ inline crow::json::wvalue serializeGoals(const std::vector<Goal>& goals, sqlite3
     result["goals"] = std::move(arr);
     return result;
 }
+// Date utility functions
+std::string getCurrentDate();
+std::string getCurrentDateTime();
+std::string getDateNDaysAgo(int days);
+bool validateMealData(const crow::json::rvalue& data, std::string& error);
 
 #endif // HELPERS_H
