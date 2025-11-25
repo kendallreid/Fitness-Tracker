@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Log - Calorie Tracker</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-dark: #6b0014;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: #222;
+    }
+
+    header {
+      background: var(--crimson);
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
+
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0.8rem 0;
+    }
+
+    .tab {
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--crimson);
+      color: var(--crimson);
+      font-weight: 600;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .tab:hover, .tab.active { background: var(--crimson); color: #fff; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.5rem;
+      border-top: 3px solid var(--crimson);
+      margin-bottom: 20px;
+    }
+
+    .card h3 { margin: 0 0 1rem; color: var(--crimson); }
+
+    .date-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .date-btn {
+      padding: 10px 20px;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .date-btn:hover {
+      border-color: var(--crimson);
+      background: #fef2f4;
+    }
+
+    .date-btn.active {
+      background: var(--crimson);
+      color: white;
+      border-color: var(--crimson);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .summary-item {
+      background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .summary-label {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .summary-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--crimson);
+    }
+
+    .summary-goal {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), #34d399);
+      transition: width 0.3s ease;
+    }
+
+    .meals-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .meal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #f9fafb;
+      margin-bottom: 10px;
+    }
+
+    .meal-name { font-weight: 600; }
+    .meal-details { font-size: 12px; color: var(--muted); }
+
+    .weekly-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 250px;
+      padding: 20px 10px;
+      background: #f9fafb;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .chart-bar {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 5px;
+    }
+
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, var(--crimson), var(--crimson-dark));
+      border-radius: 6px 6px 0 0;
+      min-height: 5px;
+      transition: height 0.3s ease;
+      position: relative;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -25px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--crimson);
+      width: 100%;
+      text-align: center;
+    }
+
+    .bar-label {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .weekly-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .weekly-table th,
+    .weekly-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .weekly-table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: var(--crimson);
+    }
+
+    .weekly-table tr:hover {
+      background: #f9fafb;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      .date-selector {
+        flex-direction: column;
+      }
+      .weekly-chart {
+        height: 200px;
+      }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">Weekly Log</div>
+      <div class="sub">Track your progress over the past week.</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tabs">
+      <a class="tab" href="/home">Home</a>
+      <a class="tab" href="/calorie-tracker">Food</a>
+      <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab" href="/goals-page.html">Goals</a>
+      <a class="tab active" href="/weekly.html">Weekly Log</a>
+      <a class="tab" href="/profile.html">Profile</a>
+      <a class="tab" href="/social.html">Social</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <!-- Date Selector -->
+      <div class="card">
+        <h3>Select Date</h3>
+        <div class="date-selector" id="dateSelector">
+          <div class="loading">Loading dates...</div>
+        </div>
+      </div>
+
+      <!-- Daily Summary -->
+      <div class="card">
+        <h3>Summary for <span id="selectedDateLabel">Today</span></h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="summary-label">Total Calories</div>
+            <div class="summary-value" id="dailyCalories">0</div>
+            <div class="summary-goal">Goal: 2000 cal</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="calorieProgress" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Total Protein</div>
+            <div class="summary-value" id="dailyProtein">0g</div>
+            <div class="summary-goal">Goal: 150g</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="proteinProgress" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meals for Selected Day -->
+      <div class="card">
+        <h3>Meals</h3>
+        <div id="mealsList" class="meals-list">
+          <p class="loading">Select a date to view meals</p>
+        </div>
+      </div>
+
+      <!-- Weekly Chart -->
+      <div class="card">
+        <h3>7-Day Overview</h3>
+        <div class="weekly-chart" id="weeklyChart">
+          <div class="loading">Loading weekly data...</div>
+        </div>
+      </div>
+
+      <!-- Weekly Table -->
+      <div class="card">
+        <h3>Weekly Details</h3>
+        <table class="weekly-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Calories</th>
+              <th>Protein</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+          <tbody id="weeklyTableBody">
+            <tr>
+              <td colspan="4" class="loading">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer><p>© 2025 WazuApp</p></footer>
+
+  <script>
+    const CALORIE_GOAL = 2000;
+    const PROTEIN_GOAL = 150;
+    let weeklyData = [];
+    let selectedDate = null;
+
+    // Initialize the page
+    async function init() {
+      await loadWeeklySummary();
+      createDateSelector();
+      // Select today's date by default
+      if (weeklyData.length > 0) {
+        selectDate(weeklyData[weeklyData.length - 1].date);
+      }
+    }
+
+    // Load weekly summary from API
+    async function loadWeeklySummary() {
+      try {
+        const res = await fetch('/api/weekly-summary', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch weekly summary');
+        const data = await res.json();
+        weeklyData = data.week || [];
+        renderWeeklyChart();
+        renderWeeklyTable();
+      } catch (err) {
+        console.error('Error loading weekly summary:', err);
+        document.getElementById('weeklyChart').innerHTML = 
+          '<p class="loading">Error loading data. Please try again.</p>';
+      }
+    }
+
+    // Create date selector buttons
+    function createDateSelector() {
+      const selector = document.getElementById('dateSelector');
+      selector.innerHTML = '';
+      
+      weeklyData.forEach(day => {
+        const btn = document.createElement('button');
+        btn.className = 'date-btn';
+        btn.textContent = formatDate(day.date);
+        btn.onclick = () => selectDate(day.date);
+        btn.dataset.date = day.date;
+        selector.appendChild(btn);
+      });
+    }
+
+    // Select a date and load its details
+    async function selectDate(date) {
+      selectedDate = date;
+      
+      // Update active button
+      document.querySelectorAll('.date-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.date === date);
+      });
+
+      // Update label
+      document.getElementById('selectedDateLabel').textContent = formatDate(date);
+
+      // Load daily summary
+      await loadDailySummary(date);
+      
+      // Load meals for that day
+      await loadMeals(date);
+    }
+
+    // Load daily summary
+    async function loadDailySummary(date) {
+      try {
+        const res = await fetch(`/api/daily-summary/${date}`, { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch daily summary');
+        const data = await res.json();
+        
+        const calories = data.total_calories || 0;
+        const protein = data.total_protein || 0;
+        
+        document.getElementById('dailyCalories').textContent = calories;
+        document.getElementById('dailyProtein').textContent = protein + 'g';
+        
+        const calPercent = Math.min((calories / CALORIE_GOAL) * 100, 100);
+        const protPercent = Math.min((protein / PROTEIN_GOAL) * 100, 100);
+        
+        document.getElementById('calorieProgress').style.width = calPercent + '%';
+        document.getElementById('proteinProgress').style.width = protPercent + '%';
+      } catch (err) {
+        console.error('Error loading daily summary:', err);
+      }
+    }
+
+    // Load meals for a specific date
+    async function loadMeals(date) {
+      try {
+        const res = await fetch(`/api/meals/${date}`, { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch meals');
+        const data = await res.json();
+        renderMeals(data.meals || []);
+      } catch (err) {
+        console.error('Error loading meals:', err);
+        document.getElementById('mealsList').innerHTML = 
+          '<p class="loading">Error loading meals</p>';
+      }
+    }
+
+    // Render meals list
+    function renderMeals(meals) {
+      const list = document.getElementById('mealsList');
+      if (meals.length === 0) {
+        list.innerHTML = '<p class="loading">No meals recorded for this day</p>';
+        return;
+      }
+
+      list.innerHTML = meals.map(m => `
+        <div class="meal-item">
+          <div>
+            <div class="meal-name">${m.meal_name}</div>
+            <div class="meal-details">${m.calories} cal • ${m.protein}g protein • ${m.meal_type}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render weekly chart
+    function renderWeeklyChart() {
+      const chart = document.getElementById('weeklyChart');
+      const maxCalories = Math.max(...weeklyData.map(d => d.total_calories), CALORIE_GOAL);
+      
+      chart.innerHTML = weeklyData.map(day => {
+        const height = (day.total_calories / maxCalories) * 100;
+        return `
+          <div class="chart-bar">
+            <div class="bar" style="height: ${height}%">
+              <div class="bar-value">${day.total_calories}</div>
+            </div>
+            <div class="bar-label">${formatDateShort(day.date)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render weekly table
+    function renderWeeklyTable() {
+      const tbody = document.getElementById('weeklyTableBody');
+      tbody.innerHTML = weeklyData.map(day => {
+        const calPercent = Math.min((day.total_calories / CALORIE_GOAL) * 100, 100).toFixed(0);
+        return `
+          <tr>
+            <td><strong>${formatDate(day.date)}</strong></td>
+            <td>${day.total_calories} cal</td>
+            <td>${day.total_protein}g</td>
+            <td>${calPercent}% of goal</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Format date for display (e.g., "Mon, Nov 24")
+    function formatDate(dateStr) {
+      const date = new Date(dateStr + 'T00:00:00');
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    // Format date short (e.g., "11/24")
+    function formatDateShort(dateStr) {
+      const date = new Date(dateStr + 'T00:00:00');
+      return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+    }
+
+    // Initialize on page load
+    init();
+  </script>
+</body>
+</html>

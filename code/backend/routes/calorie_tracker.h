@@ -16,6 +16,10 @@ crow::response clearDayMeals(crow::SimpleApp& app, sqlite3* db, int user_id, con
 crow::response getUserGoals(crow::SimpleApp& app, sqlite3* db, int user_id);
 crow::response updateUserGoals(crow::SimpleApp& app, sqlite3* db, int user_id, const crow::request& req);
 
+// Weekly Summary
+crow::response getDailySummary(crow::SimpleApp& app, sqlite3* db, int user_id, const std::string& date);
+crow::response getWeeklySummary(crow::SimpleApp& app, sqlite3* db, int user_id);
+
 // Utility
 std::string getCurrentDate();
 std::string getCurrentDateTime();

@@ -131,6 +131,13 @@ int main() {
     });
     setupLeaderboardRoutes(fitnessApp, db);
 
+//WEEKLY LOG//
+    CROW_ROUTE(fitnessApp, "/weekly.html")
+    ([]{
+        return serveFile("code/frontend/weekly.html", "text/html");
+    });
+
+
 //
 
 //INVITES//
