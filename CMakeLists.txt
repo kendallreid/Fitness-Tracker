@@ -26,6 +26,7 @@ add_executable(fitness ${SRC_FILES})
 # ----------------------------------------------------------------------
 target_include_directories(fitness PRIVATE
     ${CMAKE_SOURCE_DIR}/code/backend
+    ${CMAKE_SOURCE_DIR}/code/backend/crow/include
     ${CMAKE_SOURCE_DIR}/code/backend/routes
     ${VCPKG_INSTALLED_DIR}/x64-linux/include
 )

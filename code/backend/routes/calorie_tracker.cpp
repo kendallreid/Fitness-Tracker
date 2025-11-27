@@ -86,7 +86,34 @@ void setupCalorieTrackerRoutes(crow::SimpleApp& app, sqlite3* db) {
 
         return updateUserGoals(app, db, user_id, req);
     });
+   CROW_ROUTE(app, "/api/daily-summary/<string>").methods("GET"_method)
+    ([&app, db](const crow::request& req, const std::string& date) {
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return getDailySummary(app, db, user_id, date);
+    });
+
+    // Get weekly summary (last 7 days)
+    CROW_ROUTE(app, "/api/weekly-summary").methods("GET"_method)
+    ([&app, db](const crow::request& req) {
+        auto cookieHeader = req.get_header_value("Cookie");
+        std::string user_id_str = getCookieValue(cookieHeader, "user_id");
+        if (user_id_str.empty()) {
+            return crow::response{401, "Unauthorized: missing login cookie"};
+        }
+        int user_id = std::stoi(user_id_str);
+
+        return getWeeklySummary(app, db, user_id);
+    });
+    // Get daily summary for a specific date
+ 
 }
+
 
 
 
@@ -253,4 +280,63 @@ crow::response clearDayMeals(crow::SimpleApp& app, sqlite3* db, int user_id, con
 bool validateGoalsData(const crow::json::rvalue &data, std::string &error)
 {
     return false;
+}
+
+crow::response getDailySummary(crow::SimpleApp& app, sqlite3* db, int user_id, const std::string& date) {
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(db,
+        "SELECT SUM(calories) as total_calories, SUM(protein) as total_protein "
+        "FROM nutrition WHERE user_id=? AND date=?",
+        -1, &stmt, nullptr);
+
+    sqlite3_bind_int(stmt, 1, user_id);
+    sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
+
+    crow::json::wvalue result;
+    result["date"] = date;
+    result["total_calories"] = 0;
+    result["total_protein"] = 0.0;
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        result["total_calories"] = sqlite3_column_int(stmt, 0);
+        result["total_protein"] = sqlite3_column_double(stmt, 1);
+    }
+
+    sqlite3_finalize(stmt);
+    return crow::response(result);
+}
+
+crow::response getWeeklySummary(crow::SimpleApp& app, sqlite3* db, int user_id) {
+    std::vector<crow::json::wvalue> weekly_data;
+
+    // Get last 7 days of data
+    for (int i = 6; i >= 0; i--) {
+        std::string date = getDateNDaysAgo(i);
+        
+        sqlite3_stmt* stmt;
+        sqlite3_prepare_v2(db,
+            "SELECT SUM(calories) as total_calories, SUM(protein) as total_protein "
+            "FROM nutrition WHERE user_id=? AND date=?",
+            -1, &stmt, nullptr);
+
+        sqlite3_bind_int(stmt, 1, user_id);
+        sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_STATIC);
+
+        crow::json::wvalue day_summary;
+        day_summary["date"] = date;
+        day_summary["total_calories"] = 0;
+        day_summary["total_protein"] = 0.0;
+
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            day_summary["total_calories"] = sqlite3_column_int(stmt, 0);
+            day_summary["total_protein"] = sqlite3_column_double(stmt, 1);
+        }
+
+        sqlite3_finalize(stmt);
+        weekly_data.push_back(std::move(day_summary));
+    }
+
+    crow::json::wvalue result;
+    result["week"] = std::move(weekly_data);
+    return crow::response(result);
 }
