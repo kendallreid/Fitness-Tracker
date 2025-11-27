@@ -9,7 +9,7 @@
 #include "routes/session.h"
 #include "leaderboard.h"
 #include "invites.h"
-
+#include "reset.h"
 #include "routes/calorie_tracker.h"
 using namespace std;
 
@@ -26,6 +26,8 @@ int main() {
     return 1;
     }
 
+    // Load email configuration from environment variables
+    EmailConfig emailCfg = load_email_config_from_env();
 
     int rc = sqlite3_exec(db, "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
     if (rc != SQLITE_OK) {
@@ -150,6 +152,19 @@ int main() {
 
 //
 
+//PASSWORD RESET//
+    CROW_ROUTE(fitnessApp, "/auth/email-reset")
+    ([]{
+        return serveFile("code/frontend/emailReset.html", "text/html");
+    });
+    CROW_ROUTE(fitnessApp, "/auth/new-password")
+    ([]{
+        return serveFile("code/frontend/newpassword.html", "text/html");
+    });
+
+    // Hook up password reset routes
+    setupPasswordResetRoutes(fitnessApp, db, emailCfg);
+//
     // Start server
     fitnessApp.port(8080).multithreaded().run();
 

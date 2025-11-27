@@ -8,6 +8,8 @@ services:
     container_name: fitness-backend
     ports:
       - "8080:8080"
+    env_file:
+      - email.env              # load EMAIL_* into the container
     environment:
       - FITNESS_DB_PATH=/app/code/backend/fitness.db
     volumes:

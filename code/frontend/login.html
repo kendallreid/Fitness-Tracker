@@ -61,6 +61,17 @@
       font-size: 0.9rem;
       display: none;
     }
+    .forgot-link {
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .forgot-link a {
+      color: var(--crimson);
+      text-decoration: none;
+    }
+    .forgot-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +81,12 @@
       <input type="text" name="username" placeholder="Username" required />
       <input type="password" name="password" placeholder="Password" required />
       <button type="submit">Login</button>
+
+      <!-- ✔️ Added forgot password link -->
+      <p class="forgot-link">
+        <a href="/auth/email-reset">Forgot password?</a>
+      </p>
+
       <p id="errorMsg" class="error">Incorrect username or password</p>
     </form>
   </div>
