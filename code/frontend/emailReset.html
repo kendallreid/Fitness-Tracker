@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forgot Password</title>
+  <style>
+    :root {
+      --crimson: #8C001A;
+      --crimson-600: #a30020;
+      --text: #222;
+      --muted: #666;
+      --border: #8c001a44;
+      --bg: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      border: 2px solid var(--crimson);
+      border-radius: 10px;
+      padding: 30px;
+      width: 320px;
+      text-align: center;
+      background-color: #fff;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: var(--crimson);
+    }
+    .login-box p.subtitle {
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .login-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 10px;
+      background-color: var(--crimson);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .login-box button:hover {
+      background-color: var(--crimson-600);
+    }
+    .message {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .message.error {
+      color: red;
+    }
+    .message.success {
+      color: green;
+    }
+    .back-link {
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .back-link a {
+      color: var(--crimson);
+      text-decoration: none;
+    }
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Forgot Password</h2>
+    <p class="subtitle">Enter your email and we’ll send you a reset link.</p>
+
+    <form id="forgotForm">
+      <input
+        type="email"
+        name="email"
+        id="emailInput"
+        placeholder="Email"
+        required
+      />
+      <button type="submit">Send Reset Link</button>
+
+      <p id="successMsg" class="message success">
+        If an account exists for this email, a reset link has been sent.
+      </p>
+      <p id="errorMsg" class="message error">
+        Something went wrong. Please try again.
+      </p>
+    </form>
+
+    <p class="back-link">
+      <a href="/auth/login">Back to login</a>
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById("forgotForm");
+    const emailInput = document.getElementById("emailInput");
+    const successMsg = document.getElementById("successMsg");
+    const errorMsg = document.getElementById("errorMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      successMsg.style.display = "none";
+      errorMsg.style.display = "none";
+
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      try {
+        const res = await fetch("/auth/api/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        // Your backend always returns 200 + {status:"success"} even if email doesn't exist
+        if (res.ok) {
+          successMsg.style.display = "block";
+        } else {
+          errorMsg.style.display = "block";
+        }
+      } catch (err) {
+        errorMsg.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>

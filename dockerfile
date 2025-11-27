@@ -16,7 +16,9 @@ RUN apt update && apt install -y \
     libsqlite3-dev \
     autoconf \
     automake \
-    libtool
+    libtool \
+    libcurl4-openssl-dev \
+    ca-certificates
 
 
 # ---- Install vcpkg ----
@@ -51,7 +53,7 @@ RUN cmake --build build --config Release
 # ============================
 FROM ubuntu:22.04 AS runtime
 
-RUN apt update && apt install -y sqlite3 libsqlite3-0 && apt clean
+RUN apt update && apt install -y sqlite3 libsqlite3-0 libcurl4 && apt clean
 
 WORKDIR /app
 

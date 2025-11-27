@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # ----------------------------------------------------------------------
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(CURL REQUIRED)
 
 # ----------------------------------------------------------------------
 # Source files
@@ -36,5 +37,6 @@ target_include_directories(fitness PRIVATE
 target_link_libraries(fitness PRIVATE
     SQLite::SQLite3
     Threads::Threads
+    CURL::libcurl
     ${VCPKG_INSTALLED_DIR}/x64-linux/lib/libsodium.a
 )

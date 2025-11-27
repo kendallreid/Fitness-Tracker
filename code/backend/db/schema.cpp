@@ -123,8 +123,17 @@ bool createTables(sqlite3 *db)
             FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE
         );
 
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            token TEXT NOT NULL UNIQUE,      -- random, hard-to-guess string
+            expires_at TEXT NOT NULL,        -- ISO 8601 UTC, e.g. "2025-11-26T18:30:00Z"
+            used INTEGER NOT NULL DEFAULT 0, -- 0 = not used, 1 = used
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
 
-
+        CREATE INDEX IF NOT EXISTS idx_password_reset_user_id
+            ON password_reset_tokens(user_id);
 )";
 
     // sqlite3_exec executes the queries that are provided to it in the message above. In this case, it will create the tables if they do not already exist.
