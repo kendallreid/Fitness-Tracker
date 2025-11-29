@@ -5,39 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sleep Tracker - Fitness Dashboard</title>
   <style>
+
     :root {
       --crimson: #8C001A;
-      --crimson-600: #a30020;
-      --bg: #ffffff;
-      --ink: #222222;
-      --muted: #6b7280;
+      --crimson-dark: #6b0014;
+      --bg: #f7f8fa;
       --card: #ffffff;
-      --border: #8c001a33;
+      --border: #ddd;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
       --success: #10b981;
-      --warning: #f59e0b;
       --error: #ef4444;
     }
-    
+
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      font-family: "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
-      color: var(--ink);
+      color: #222;
+    }
+
+    header {
+      background: var(--crimson);
+      color: #fff;
+      padding: 1.2rem 0;
+      box-shadow: 0 2px 6px var(--shadow);
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
-    }
-    
-    .header {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
     }
     
     .header h1 {
@@ -60,41 +59,23 @@
     
     .card {
       background: var(--card);
-      border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 20px;
+      box-shadow: 0 2px 8px var(--shadow);
+      padding: 1.5rem;
+      border-top: 3px solid var(--crimson);
     }
-    
-    .card h2 {
-      margin: 0 0 20px;
-      color: var(--crimson);
-      font-size: 20px;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-    
+
+    .card h2 { margin: 0 0 1rem; color: var(--crimson); }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display:block;margin-bottom:5px;font-weight:600;color:#222; }
     .form-group input, .form-group select {
-      width: 100%;
-      padding: 10px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color 0.2s;
+      width: 100%; padding: 10px; border: 1.5px solid #ccc; border-radius: 8px; font-size: 14px;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: var(--crimson);
+      box-shadow: 0 0 0 2px rgba(140, 0, 26, 0.1);
     }
     
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: var(--crimson);
-    }
     
     .btn {
       background: var(--crimson);
@@ -220,6 +201,10 @@
       display: none;
     }
     
+    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
+    header .title { font-size: 1.8rem; font-weight: bold; }
+    header .sub { opacity: 0.9; font-size: 0.95rem; }
+
     nav {
       background: #fff;
       border-bottom: 2px solid var(--crimson);
@@ -249,20 +234,25 @@
     }
     .tab:hover, .tab.active { background: var(--crimson); color: #fff; }
     
-    @media (max-width: 768px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-    }
+
+    footer { text-align:center; color:var(--muted); font-size:0.8rem; padding:2rem 0; }
+    @media(max-width:768px){ .main-content { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
+  <header>
+    <div class="wrap">
+      <div class="title">Sleep Tracker</div>
+      <div class="sub">Track and monitor your weekly sleep and its quality.</div>
+    </div>
+  </header>
   
   <nav>
     <div class="tabs">
-      <a class="tab" href="/home">Home</a>
-      <a class="tab active" href="/calorie-tracker">Food</a>
+      <a class="tab active" href="/home">Home</a>
+      <a class="tab" href="/calorie-tracker">Food</a>
       <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab" href="/sleep-tracker">Sleep</a>
       <a class="tab" href="/goals-page.html">Goals</a>
       <a class="tab" href="/weekly.html">Weekly Log</a>
       <a class="tab" href="/profile.html">Profile</a>
@@ -270,77 +260,78 @@
     </div>
   </nav>
 
-  <div class="container">
-    <div class="header">
-      <h1>Sleep Tracker</h1>
-      <p>Track and monitor your weekly sleep and its quality</p>
-    </div>
-    
-    <div class="main-content">
-      <!-- Input Form -->
-      <div class="card">
-        <h2>Log Sleep</h2>
-        
-        <div id="errorMessage" class="error-message hidden"></div>
-        <div id="successMessage" class="success-message hidden"></div>
-        
-        <form id="sleepForm">
-          <div class="form-group">
-            <label for="sleepDate">Date</label>
-            <input type="text" id="sleepDate" name="sleepDate" placeholder="mm-dd-yyyy" pattern="\d{2}-\d{2}-\d{4}">
-          </div>
+  <main>
+    <div class="container">  
+      <div class="main-content">
+        <!-- Input Form -->
+        <div class="card">
+          <h2>Log Sleep</h2>
           
-          <div class="form-group">
-            <label for="sleepStartTime">Time</label>
-            <input type="text" id="sleepStartTime" name="sleepStartTime"  placeholder="hh:mm" pattern="\d{2}:\d{2}">
-          </div>
-		  
-          <div class="form-group">
-            <label for="sleepDuration">Duration (minutes)</label>
-            <input type="number" id="sleepDuration" name="sleepDuration" placeholder="e.g., 480" min="1" required>
-          </div>
-                  
-          <div class="form-group">
-            <label for="sleepType">Sleep Quality</label>
-            <select id="sleepType" name="sleepType" required>
-              <option value="">Select sleep type</option>
-              <option value="very_poor">Very Poor</option>
-              <option value="poor">Poor</option>
-              <option value="fair">Fair</option>
-              <option value="good">Good</option>
-              <option value="excellent">Excellent</option>
-            </select>
-          </div>
+          <div id="errorMessage" class="error-message hidden"></div>
+          <div id="successMessage" class="success-message hidden"></div>
           
-          <button type="submit" class="btn">Log Sleep</button>
-        </form>
+          <form id="sleepForm">
+            <div class="form-group">
+              <label for="sleepDate">Date</label>
+              <input type="text" id="sleepDate" name="sleepDate" placeholder="mm-dd-yyyy" pattern="\d{2}-\d{2}-\d{4}">
+            </div>
+            
+            <div class="form-group">
+              <label for="sleepStartTime">Time</label>
+              <input type="text" id="sleepStartTime" name="sleepStartTime"  placeholder="hh:mm" pattern="\d{2}:\d{2}">
+            </div>
+        
+            <div class="form-group">
+              <label for="sleepDuration">Duration (minutes)</label>
+              <input type="number" id="sleepDuration" name="sleepDuration" placeholder="e.g., 480" min="1" required>
+            </div>
+                    
+            <div class="form-group">
+              <label for="sleepType">Sleep Quality</label>
+              <select id="sleepType" name="sleepType" required>
+                <option value="">Select sleep type</option>
+                <option value="very_poor">Very Poor</option>
+                <option value="poor">Poor</option>
+                <option value="fair">Fair</option>
+                <option value="good">Good</option>
+                <option value="excellent">Excellent</option>
+              </select>
+            </div>
+            
+            <button type="submit" class="btn">Log Sleep</button>
+          </form>
+        </div>
+        
+        <!-- Progress and Stats -->
+        <div class="card">
+          <h2>Weekly Sleep Progress</h2>
+          
+          <div class="progress-section">
+            <div class="progress-text">
+              <span>Total sleep hours in last 7 days: <span id="weekHours">0</span> / <span id="sleepGoal">168</span></span>
+              <span id="hoursPercentage">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="hoursProgressBar" style="width: 0%"></div>
+            </div>
+          </div>
+                
+        </div>
       </div>
       
-      <!-- Progress and Stats -->
-      <div class="card">
-        <h2>Weekly Sleep Progress</h2>
-        
-        <div class="progress-section">
-          <div class="progress-text">
-            <span>Total sleep hours in last 7 days: <span id="weekHours">0</span> / <span id="sleepGoal">168</span></span>
-            <span id="hoursPercentage">0%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="hoursProgressBar" style="width: 0%"></div>
-          </div>
+      <!-- Sleeps List -->
+      <div class="card" style="margin-top: 20px;">
+        <h2>Last Week Sleep Logs</h2>
+        <div id="sleepsList" class="sleeps-list">
+          <p style="text-align: center; color: var(--muted); padding: 20px;">No sleep logs added in the last 7 days. Add your first sleep log above!</p>
         </div>
-               
       </div>
     </div>
-    
-    <!-- Sleeps List -->
-    <div class="card" style="margin-top: 20px;">
-      <h2>Last Week Sleep Logs</h2>
-      <div id="sleepsList" class="sleeps-list">
-        <p style="text-align: center; color: var(--muted); padding: 20px;">No sleep logs added in the last 7 days. Add your first sleep log above!</p>
-      </div>
-    </div>
-  </div>
+  </main>
+  
+  <footer>
+    <p>© 2025 WazuFit</p>
+  </footer>
 
   <script>
     const SLEEP_TIME_GOAL = 3360;
@@ -495,7 +486,7 @@
         <div class="sleep-item">
           <div class="sleep-info">
             <div class="sleep-details">
-              ${sleep.date} • ${sleep.duration}min slept • ${sleep.sleep_type}
+              Starting at ${sleep.date} you slept ${sleep.duration}min and the quality was ${sleep.sleep_type}.
             </div>
           </div>
           <div class="sleep-actions">

@@ -11,6 +11,7 @@
 #include "invites.h"
 #include "reset.h"
 #include "routes/calorie_tracker.h"
+#include "routes/sleep_tracker.h"
 using namespace std;
 
 int main() {
@@ -125,6 +126,10 @@ int main() {
 
         // Start server
     setupCalorieTrackerRoutes(fitnessApp, db);
+
+    
+     // Start sleep tracker server
+    setupSleepTrackerRoutes(fitnessApp, db);
 
 //LEADERBOARD//
     CROW_ROUTE(fitnessApp, "/leaderboard.html")

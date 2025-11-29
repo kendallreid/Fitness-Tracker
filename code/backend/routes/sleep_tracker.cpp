@@ -172,7 +172,7 @@ crow::response getSleeps(crow::SimpleApp& app, sqlite3* db, int user_id, const s
     std::string sevenDaysAgo = seven_days_ago();
     sqlite3_prepare_v2(db,
         "SELECT sleep_id, sleep_start_time, duration, sleep_type, created_at "
-        "FROM sleepTable WHERE user_id=? AND sleep_start_time>=? ORDER BY created_at DESC",
+        "FROM sleepTable WHERE user_id=? AND sleep_start_time>=? ORDER BY sleep_start_time DESC",
         -1, &stmt, nullptr);
 
     sqlite3_bind_int(stmt, 1, user_id);
