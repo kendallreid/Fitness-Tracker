@@ -58,7 +58,7 @@ bool createTables(sqlite3 *db)
             user_id INTEGER NOT NULL,
             sleep_start_time TIMESTAMP NOT NULL,
             duration INTEGER NOT NULL,
-            sleep_quality TEXT NOT NULL,
+            sleep_type TEXT NOT NULL,
             created_at TEXT NOT NULL,
             FOREIGN KEY(user_id) REFERENCES users(id)
         );

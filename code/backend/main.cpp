@@ -102,8 +102,8 @@ int main() {
     setupSleepTrackerRoutes(fitnessApp, db);
 
     // Start server
-    fitnessApp.port(8080).multithreaded().run();
-    sqlite3_close(db);
+    fitnessApp.port(8080).multithreaded().run(); 
+    sqlite3_close(db);   
 
     
     return 0;

@@ -144,7 +144,7 @@
     .progress-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--success), #34d399);
-      transition: width 0.3s ease;
+      transition: width 0.3s ease; 
     }
     
     .progress-text {
@@ -220,6 +220,35 @@
       display: none;
     }
     
+    nav {
+      background: #fff;
+      border-bottom: 2px solid var(--crimson);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      padding: 0.8rem 0;
+    }
+
+    .tab {
+      text-decoration: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--crimson);
+      color: var(--crimson);
+      font-weight: 600;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .tab:hover, .tab.active { background: var(--crimson); color: #fff; }
+    
     @media (max-width: 768px) {
       .main-content {
         grid-template-columns: 1fr;
@@ -228,6 +257,19 @@
   </style>
 </head>
 <body>
+  
+  <nav>
+    <div class="tabs">
+      <a class="tab" href="/home">Home</a>
+      <a class="tab active" href="/calorie-tracker">Food</a>
+      <a class="tab" href="/sessions">Exercise</a>
+      <a class="tab" href="/goals-page.html">Goals</a>
+      <a class="tab" href="/weekly.html">Weekly Log</a>
+      <a class="tab" href="/profile.html">Profile</a>
+      <a class="tab" href="/social.html">Social</a>
+    </div>
+  </nav>
+
   <div class="container">
     <div class="header">
       <h1>Sleep Tracker</h1>
@@ -288,9 +330,6 @@
           </div>
         </div>
                
-        <div style="margin-top: 20px;">
-          <button class="btn btn-secondary" onclick="clearAllSleeps()">Clear sleep logs from last 7 days</button>
-        </div>
       </div>
     </div>
     
@@ -321,9 +360,24 @@
       currentUser = JSON.parse(localStorage.getItem('currentUser')) || { id: 1, username: 'demo_user' };
     }
     
-    function loadSleeps() {
-      const today = new Date().toISOString().split('T')[0];
-      sleeps = JSON.parse(localStorage.getItem(`sleeps_${currentUser.id}_${today}`)) || [];
+    async function loadSleeps() {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const res = await fetch(`/api/sleeps?user_id=${currentUser.id}&sleepDate=${today}`);
+
+        if (!res.ok) {
+          sleeps = [];
+          return;
+        }
+
+        const json = await res.json();
+        sleeps = json.sleeps || [];
+      } catch (err) {
+        console.error("Failed to load sleeps", err);
+        sleeps = [];
+      }
+
+      render();
     }
     
     function saveSleeps() {
@@ -335,30 +389,35 @@
       document.getElementById('sleepForm').addEventListener('submit', handleSleepSubmit);
     }
     
-    function handleSleepSubmit(e) {
+    async function handleSleepSubmit(e) {
       e.preventDefault();
-      
+
       const formData = new FormData(e.target);
+
       const sleepData = {
-        id: Date.now(),
-        date: formData.get('sleepDate').trim(),
-        time: formData.get('sleepStartTime').trim(),		
-        duration: parseInt(formData.get('sleepDuration')),	
-        sleepType: formData.get('sleepType'),
-        timestamp: new Date().toISOString()
+        user_id: currentUser.id,
+        date: formData.get("sleepDate"),
+        time: formData.get("sleepStartTime"),
+        duration: parseInt(formData.get("sleepDuration")),
+        sleep_type: formData.get("sleepType")
       };
-      
-      if (!validateSleep(sleepData)) {
+
+      if (!validateSleep(sleepData)) return;
+
+      const res = await fetch("/api/sleeps", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(sleepData)
+      });
+
+      if (!res.ok) {
+        showMessage("Failed to save sleep log.", "error");
         return;
       }
-      
-      sleeps.push(sleepData);
-      saveSleeps();
-      render();
-      
+
+      await loadSleeps();  // reload from backend
       e.target.reset();
-      
-      showMessage('Sleep log added successfully!', 'success');
+      showMessage("Sleep log added successfully!", "success");
     }
     
     function validateSleep(sleep) {
@@ -378,7 +437,7 @@
       }
       
       
-      if (!sleep.sleepType) {
+      if (!sleep.sleep_type) {
         showMessage('Please select the quality of your sleep.', 'error');
         return false;
       }
@@ -418,7 +477,7 @@
       const durationPercentage = Math.min((totalWeeklySleepDuration / SLEEP_TIME_GOAL) * 100, 100);
       document.getElementById('weekHours').textContent = totalWeeklySleepDuration;
       document.getElementById('sleepGoal').textContent = SLEEP_TIME_GOAL;
-      document.getElementById('hoursPercentage').textContent = Math.round(durationPercentage) + '%';h
+      document.getElementById('hoursPercentage').textContent = Math.round(durationPercentage) + '%';
       document.getElementById('hoursProgressBar').style.width = durationPercentage + '%';
 
     }
@@ -435,51 +494,49 @@
       sleepsList.innerHTML = sleeps.map(sleep => `
         <div class="sleep-item">
           <div class="sleep-info">
-            <div class="sleep-name">${escapeHtml(sleep.name)}</div>
             <div class="sleep-details">
-              ${sleep.date} • ${sleep.time} • ${sleep.duration}min slept • ${sleep.sleepType}
+              ${sleep.date} • ${sleep.duration}min slept • ${sleep.sleep_type}
             </div>
           </div>
           <div class="sleep-actions">
-            <button class="btn btn-small btn-secondary" onclick="editSleep(${sleep.id})">Edit</button>
             <button class="btn btn-small btn-danger" onclick="deleteSleep(${sleep.id})">Delete</button>
           </div>
         </div>
       `).join('');
     }
     
-    function deleteSleep(sleepId) {
-      if (confirm('Are you sure you want to delete this sleep log?')) {
-        sleeps = sleeps.filter(sleep => sleep.id !== sleepId);
-        saveSleeps();
-        render();
-        showMessage('Sleep log deleted successfully!', 'success');
+    async function deleteSleep(sleepId) {
+      if (!confirm("Are you sure you want to delete this sleep log?")) return;
+
+      const res = await fetch(`/api/sleeps/${sleepId}`, {
+        method: "DELETE"
+      });
+
+      if (!res.ok) {
+        showMessage("Failed to delete sleep", "error");
+        return;
       }
+
+      await loadSleeps();
+      showMessage("Sleep log deleted!", "success");
     }
-    
-    function editSleep(sleepId) {
-      const sleep = sleeps.find(m => m.id === sleepId);
-      if (sleep) {
-        document.getElementById('sleepDate').value = sleep.date;
-        document.getElementById('sleepStartTime').value = sleep.time;
-        document.getElementById('sleepDuration').value = sleep.duration;
-        document.getElementById('sleepType').value = sleep.sleepType;
-        
-        sleeps = sleeps.filter(m => m.id !== sleepId);
-        saveSleeps();
-        render();
-        
-        showMessage('Sleep log loaded for editing. Make changes and click Log Sleep.', 'success');
+      
+    async function clearAllSleeps() {
+      if (!confirm("Are you sure you want to clear all sleep logs for the last 7 days?")) return;
+
+      const today = new Date().toISOString().split("T")[0];
+
+      const res = await fetch(`/api/sleeps/clear/${currentUser.id}/${today}`, {
+        method: "DELETE"
+      });
+
+      if (!res.ok) {
+        showMessage("Failed to clear sleeps", "error");
+        return;
       }
-    }
-    
-    function clearAllSleeps() {
-      if (confirm('Are you sure you want to clear all sleep logs for the last 7 days?')) {
-        sleeps = [];
-        saveSleeps();
-        render();
-        showMessage('Last 7 days sleep logs cleared!', 'success');
-      }
+
+      await loadSleeps();
+      showMessage("Last 7 days sleep logs cleared!", "success");
     }
     
     
