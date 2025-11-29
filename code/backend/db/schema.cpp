@@ -54,6 +54,16 @@ bool createTables(sqlite3 *db)
             FOREIGN KEY(user_id) REFERENCES users(id)
         );
 
+        CREATE TABLE IF NOT EXISTS sleepTable (
+            sleep_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            sleep_start_time TIMESTAMP NOT NULL,
+            duration INTEGER NOT NULL,
+            sleep_type TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        );
+
         CREATE TABLE IF NOT EXISTS user_goals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
