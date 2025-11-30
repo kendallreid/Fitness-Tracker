@@ -123,11 +123,16 @@ int main() {
     // Hook up goal routes
     setupGoalRoutes(fitnessApp, db);
 
-
-        // Start server
+//FOOD//
+    
     setupCalorieTrackerRoutes(fitnessApp, db);
 
-    
+//SLEEP//
+    CROW_ROUTE(fitnessApp, "/sleep-tracker.html")
+    ([]{
+        return serveFile("code/frontend/SleepTracker.html", "text/html");
+    });
+
      // Start sleep tracker server
     setupSleepTrackerRoutes(fitnessApp, db);
 
