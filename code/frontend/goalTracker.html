@@ -29,6 +29,7 @@
       color: #fff;
       padding: 1.2rem 0;
       box-shadow: 0 2px 6px var(--shadow);
+      position: relative;
     }
 
     .wrap {
@@ -187,6 +188,25 @@
       width: 100%;
     }
 
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ffffff;
+      color: var(--crimson);
+      border: 2px solid var(--crimson);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
+
     footer {
       text-align: center;
       color: var(--muted);
@@ -201,6 +221,7 @@
     <div class="wrap">
       <div class="title">Goals</div>
       <div class="sub">Track and update your fitness goals.</div>
+      <button id="logoutBtn" class="logout-btn">Sign Out</button>
     </div>
   </header>
 
@@ -415,6 +436,19 @@
 
     document.getElementById('viewCompletedBtn').addEventListener('click', () => {
       window.location.href = '/completedGoals.html';
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => 
+    {
+      // remove user session information
+      localStorage.removeItem("currentUser");
+      localStorage.clear();  // optional: clears all cached logs
+
+      // delete cookie if you use one
+      document.cookie = "user_id=; Max-Age=0; path=/;";
+
+      // redirect to web home
+      window.location.href = "/";
     });
 
     renderGoals();

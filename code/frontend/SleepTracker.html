@@ -49,6 +49,7 @@
       margin: 0;
       color: var(--muted);
       font-size: 16px;
+      position: relative;
     }
     
     .main-content {
@@ -176,6 +177,25 @@
       padding: 6px 12px;
       font-size: 12px;
     }
+
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ffffff;
+      color: var(--crimson);
+      border: 2px solid var(--crimson);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
     
     .error-message {
       background: #fef2f2;
@@ -244,6 +264,7 @@
     <div class="wrap">
       <div class="title">Sleep Tracker</div>
       <div class="sub">Track and monitor your weekly sleep and its quality.</div>
+      <button id="logoutBtn" class="logout-btn">Sign Out</button>
     </div>
   </header>
   
@@ -552,6 +573,20 @@
       div.textContent = text;
       return div.innerHTML;
     }
+
+    document.getElementById("logoutBtn").addEventListener("click", () => 
+    {
+      // remove user session information
+      localStorage.removeItem("currentUser");
+      localStorage.clear();  // optional: clears all cached logs
+
+      // delete cookie if you use one
+      document.cookie = "user_id=; Max-Age=0; path=/;";
+
+      // redirect to web home
+      window.location.href = "/";
+    });
+
   </script>
 </body>
 </html>
