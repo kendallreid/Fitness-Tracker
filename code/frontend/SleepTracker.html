@@ -249,13 +249,12 @@
   
   <nav>
     <div class="tabs">
-      <a class="tab active" href="/home">Home</a>
+      <a class="tab" href="/home">Home</a>
       <a class="tab" href="/calorie-tracker">Food</a>
       <a class="tab" href="/sessions">Exercise</a>
-      <a class="tab" href="/sleep-tracker">Sleep</a>
+      <a class="tab active" href="/sleep-tracker">Sleep</a>
       <a class="tab" href="/goals-page.html">Goals</a>
       <a class="tab" href="/weekly.html">Weekly Log</a>
-      <a class="tab" href="/profile.html">Profile</a>
       <a class="tab" href="/social.html">Social</a>
     </div>
   </nav>
@@ -273,7 +272,8 @@
           <form id="sleepForm">
             <div class="form-group">
               <label for="sleepDate">Date</label>
-              <input type="text" id="sleepDate" name="sleepDate" placeholder="mm-dd-yyyy" pattern="\d{2}-\d{2}-\d{4}">
+              <!-- calendar picker, but we still send MM-DD-YYYY to backend -->
+              <input type="date" id="sleepDate" name="sleepDate">
             </div>
             
             <div class="form-group">
@@ -339,6 +339,15 @@
     
     let sleeps = [];
     let currentUser = null;
+
+    // helper: convert "YYYY-MM-DD" -> "MM-DD-YYYY"
+    function toMMDDYYYY(isoDate) {
+      if (!isoDate) return "";
+      const parts = isoDate.split("-");
+      if (parts.length !== 3) return isoDate;
+      const [year, month, day] = parts;
+      return `${month}-${day}-${year}`;
+    }
     
     document.addEventListener('DOMContentLoaded', function() {
       loadUserData();
@@ -353,8 +362,11 @@
     
     async function loadSleeps() {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const res = await fetch(`/api/sleeps?user_id=${currentUser.id}&sleepDate=${today}`);
+        // use today's date in MM-DD-YYYY form (to match how we send/store it)
+        const todayIso = new Date().toISOString().split('T')[0];
+        const todayFormatted = toMMDDYYYY(todayIso);
+
+        const res = await fetch(`/api/sleeps?user_id=${currentUser.id}&sleepDate=${encodeURIComponent(todayFormatted)}`);
 
         if (!res.ok) {
           sleeps = [];
@@ -385,9 +397,12 @@
 
       const formData = new FormData(e.target);
 
+      const rawDate = formData.get("sleepDate"); // "YYYY-MM-DD" from <input type="date">
+      const formattedDate = toMMDDYYYY(rawDate); // convert back to "MM-DD-YYYY"
+
       const sleepData = {
         user_id: currentUser.id,
-        date: formData.get("sleepDate"),
+        date: formattedDate,
         time: formData.get("sleepStartTime"),
         duration: parseInt(formData.get("sleepDuration")),
         sleep_type: formData.get("sleepType")
@@ -515,9 +530,10 @@
     async function clearAllSleeps() {
       if (!confirm("Are you sure you want to clear all sleep logs for the last 7 days?")) return;
 
-      const today = new Date().toISOString().split("T")[0];
+      const todayIso = new Date().toISOString().split("T")[0];
+      const todayFormatted = toMMDDYYYY(todayIso);
 
-      const res = await fetch(`/api/sleeps/clear/${currentUser.id}/${today}`, {
+      const res = await fetch(`/api/sleeps/clear/${currentUser.id}/${encodeURIComponent(todayFormatted)}`, {
         method: "DELETE"
       });
 
