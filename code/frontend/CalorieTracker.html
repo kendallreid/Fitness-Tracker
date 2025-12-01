@@ -30,6 +30,7 @@
       color: #fff;
       padding: 1.2rem 0;
       box-shadow: 0 2px 6px var(--shadow);
+      position: relative;
     }
 
     .wrap { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
@@ -112,6 +113,25 @@
     .success-message { background:#f0fdf4; border:1px solid #bbf7d0; color:var(--success); }
     .hidden { display:none; }
 
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ffffff;
+      color: var(--crimson);
+      border: 2px solid var(--crimson);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
+
     footer { text-align:center; color:var(--muted); font-size:0.8rem; padding:2rem 0; }
     @media(max-width:768px){ .main-content { grid-template-columns:1fr; } }
   </style>
@@ -122,6 +142,7 @@
     <div class="wrap">
       <div class="title">Calorie Tracker</div>
       <div class="sub">Track your meals and nutrition goals.</div>
+      <button id="logoutBtn" class="logout-btn">Sign Out</button>
     </div>
   </header>
 
@@ -329,6 +350,19 @@
       div.classList.remove("hidden");
       setTimeout(() => div.classList.add("hidden"), 3000);
     }
+
+    document.getElementById("logoutBtn").addEventListener("click", () => 
+    {
+      // remove user session information
+      localStorage.removeItem("currentUser");
+      localStorage.clear();  // optional: clears all cached logs
+
+      // delete cookie if you use one
+      document.cookie = "user_id=; Max-Age=0; path=/;";
+
+      // redirect to web home
+      window.location.href = "/";
+    });
 
     fetchMeals();
   </script>
