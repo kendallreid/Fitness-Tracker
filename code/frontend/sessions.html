@@ -11,7 +11,7 @@
     }
     body{margin:0;font-family:"Segoe UI",Roboto,sans-serif;background:var(--bg);color:#222;}
     header{background:var(--crimson);color:#fff;padding:1.2rem 0;box-shadow:0 2px 6px var(--shadow);}
-    .wrap{max-width:1000px;margin:0 auto;padding:0 1rem;}
+    .wrap{max-width:1000px;margin:0 auto;padding:0 1rem;position: relative;}
     header .title{font-size:1.8rem;font-weight:bold;}
     nav{background:#fff;border-bottom:2px solid var(--crimson);box-shadow:0 1px 4px rgba(0,0,0,0.05);}
     .tabs{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;padding:.8rem 0;}
@@ -37,11 +37,29 @@
     .edit-btn{background:var(--crimson);}
     .delete-btn:hover{background:#888;}
     .edit-btn:hover{background:var(--crimson-dark);}
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ffffff;
+      color: var(--crimson);
+      border: 2px solid var(--crimson);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--crimson);
+      color: #fff;
+    }
     footer{text-align:center;color:var(--muted);font-size:.8rem;padding:2rem 0;}
   </style>
 </head>
 <body>
-  <header><div class="wrap"><div class="title">Exercise Sessions</div><div class="sub">Create, view, and manage your fitness sessions.</div></div></header>
+  <header><div class="wrap"><div class="title">Exercise Sessions</div><div class="sub">Create, view, and manage your fitness sessions.</div><button id="logoutBtn" class="logout-btn">Sign Out</button></div></header>
   <nav><div class="tabs">
     <a class="tab" href="/home">Home</a>
     <a class="tab" href="/calorie-tracker">Food</a>
@@ -166,6 +184,20 @@
     document.getElementById("seeAllBtn").addEventListener("click", () => { showingAll=!showingAll; renderSessions(); });
 
     fetchSessions();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => 
+    {
+      // remove user session information
+      localStorage.removeItem("currentUser");
+      localStorage.clear();  // optional: clears all cached logs
+
+      // delete cookie if you use one
+      document.cookie = "user_id=; Max-Age=0; path=/;";
+
+      // redirect to web home
+      window.location.href = "/";
+    });
+
   </script>
 </body>
 </html>

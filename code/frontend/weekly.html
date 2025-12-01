@@ -30,6 +30,7 @@
       color: #fff;
       padding: 1.2rem 0;
       box-shadow: 0 2px 6px var(--shadow);
+      position: relative;
     }
 
     .wrap { max-width: 1000px; margin: 0 auto; padding: 0 1rem; }
@@ -84,6 +85,25 @@
       margin-bottom: 20px;
       flex-wrap: wrap;
       justify-content: center;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: #ffffff;
+      color: var(--crimson);
+      border: 2px solid var(--crimson);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: var(--crimson);
+      color: #fff;
     }
 
     .date-btn {
@@ -275,6 +295,7 @@
     <div class="wrap">
       <div class="title">Weekly Log</div>
       <div class="sub">Track your progress over the past week.</div>
+      <button id="logoutBtn" class="logout-btn">Sign Out</button>
     </div>
   </header>
 
@@ -532,6 +553,20 @@
 
     // Initialize on page load
     init();
+
+    document.getElementById("logoutBtn").addEventListener("click", () => 
+    {
+      // remove user session information
+      localStorage.removeItem("currentUser");
+      localStorage.clear();  // optional: clears all cached logs
+
+      // delete cookie if you use one
+      document.cookie = "user_id=; Max-Age=0; path=/;";
+
+      // redirect to web home
+      window.location.href = "/";
+    });
+
   </script>
 </body>
 </html>
