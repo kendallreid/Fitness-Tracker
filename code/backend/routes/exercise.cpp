@@ -1,5 +1,6 @@
 #include "crow.h"
 #include "exercise.h"
+#include "score_tracker.h"
 
 bool addExercise(sqlite3 *db, const Exercise &e)
 {
@@ -42,6 +43,8 @@ bool addExercise(sqlite3 *db, const Exercise &e)
 
     // Finalize the statement to release resources
     sqlite3_finalize(stmt);
+    
+    
 
     return success;
 }

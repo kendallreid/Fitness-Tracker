@@ -1,4 +1,5 @@
 #include "sleep_tracker.h"
+#include "score_tracker.h"
 #include "../helper.h"
 #include <iostream>
 #include <sstream>
@@ -163,6 +164,8 @@ crow::response addSleep(crow::SimpleApp& app, sqlite3* db, int user_id, const cr
     int sleep_id = sqlite3_last_insert_rowid(db);
     sqlite3_finalize(stmt);
 
+    addPoints(user_id, 2, db);
+
     return crow::response(201, "{\"sleep_id\":" + std::to_string(sleep_id) + "}");
 }
 
@@ -204,7 +207,7 @@ crow::response deleteSleep(crow::SimpleApp&, sqlite3* db, int sleep_id) {
 
     bool ok = sqlite3_step(stmt) == SQLITE_DONE;
     sqlite3_finalize(stmt);
-
+    
     return ok ? crow::response(200, "Deleted") : crow::response(500, "Failed");
 }
 

@@ -2,6 +2,7 @@
 #include <sqlite3.h>
 #include "../goalTracker.h"
 #include "../helper.h"
+#include "score_tracker.h"
 #include <vector>
 #include <ctime>
 #include <iostream>
@@ -161,6 +162,9 @@ void setupGoalRoutes(crow::SimpleApp& app, sqlite3* db) {
         sqlite3_bind_int(stmt, 1, goal_id);
         int rc = sqlite3_step(stmt);
         sqlite3_finalize(stmt);
+
+        addGoalPoints(goal_id, 20, db);
+
         if (rc == SQLITE_DONE)
             return makeSuccess(200, "Goal marked as completed");
         else

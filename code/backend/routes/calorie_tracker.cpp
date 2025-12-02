@@ -1,4 +1,5 @@
 #include "calorie_tracker.h"
+#include "score_tracker.h"
 #include "../helper.h"
 #include <iostream>
 #include <sstream>
@@ -160,6 +161,8 @@ crow::response addMeal(crow::SimpleApp& app, sqlite3* db, const crow::request& r
 
     int meal_id = sqlite3_last_insert_rowid(db);
     sqlite3_finalize(stmt);
+    
+    addPoints(user_id, 1, db);
 
     return crow::response(201, "{\"meal_id\":" + std::to_string(meal_id) + "}");
 }
@@ -203,7 +206,7 @@ crow::response deleteMeal(crow::SimpleApp&, sqlite3* db, int meal_id) {
 
     bool ok = sqlite3_step(stmt) == SQLITE_DONE;
     sqlite3_finalize(stmt);
-
+    
     return ok ? crow::response(200, "Deleted") : crow::response(500, "Failed");
 }
 

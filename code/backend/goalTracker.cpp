@@ -1,4 +1,5 @@
 #include "goalTracker.h"
+#include "score_tracker.h"
 #include <iostream>
 
 std::vector<Goal> getAllGoals(sqlite3* db, int user_id, const std::string& status_filter) {
@@ -68,6 +69,8 @@ bool addGoal(sqlite3* db, int user_id, const std::string& goal_name,
         std::cerr << "Error inserting goal: " << sqlite3_errmsg(db) << std::endl;
 
     sqlite3_finalize(stmt);
+
+    if (success) addPoints(user_id, 5, db);
     return success;
 }
 
@@ -114,6 +117,7 @@ bool addGoalProgress(sqlite3* db, int goal_id, double value) {
         std::cerr << "Error inserting goal progress: " << sqlite3_errmsg(db) << std::endl;
 
     sqlite3_finalize(stmt);
+
     return success;
 }
 

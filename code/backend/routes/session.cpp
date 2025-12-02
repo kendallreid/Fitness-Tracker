@@ -1,5 +1,6 @@
 #include "session.h"
 #include "exercise.h"
+#include "score_tracker.h"
 #include "helper.h"
 
 bool createSession(sqlite3 *db, const Session &session)
@@ -19,6 +20,9 @@ bool createSession(sqlite3 *db, const Session &session)
     bool success = sqlite3_step(stmt) == SQLITE_DONE;
     if (success) {
         CROW_LOG_INFO << "Session created successfully";
+        
+        addPoints(session.user_id, 2, db);
+
     } else {
         std::cerr << "Insert failed: " << sqlite3_errmsg(db) << std::endl;
         std::cerr << "user_id=" << session.user_id
@@ -30,6 +34,7 @@ bool createSession(sqlite3 *db, const Session &session)
     }
 
     sqlite3_finalize(stmt);
+
     return success;
 }
 
