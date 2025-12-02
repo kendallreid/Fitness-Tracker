@@ -306,11 +306,11 @@
           const title = document.createElement("span");
           title.className = "list-title";
           // backend only returns sender_id; if you later add sender_username, show that instead.
-          title.textContent = `User #${req.sender_id}`;
+          title.textContent = `${req.sender_username}`;
 
           const meta = document.createElement("span");
           meta.className = "list-meta";
-          meta.textContent = `Request ID ${req.id} · Status: ${req.status}`;
+          meta.textContent = `Status: ${req.status}`;
 
           main.appendChild(title);
           main.appendChild(meta);

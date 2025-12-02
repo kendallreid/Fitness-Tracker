@@ -330,6 +330,7 @@ void setupInviteRoutes(crow::SimpleApp &app, sqlite3 *db)
             frJson["id"] = fr.id;
             frJson["sender_id"] = fr.senderId;
             frJson["receiver_id"] = fr.receiverId;
+            frJson["sender_username"] = getUsernameById(db, fr.senderId).value_or("");
             frJson["status"] = fr.status;
             frJson["created_at"] = fr.createdAt;
             arr.push_back(frJson);
