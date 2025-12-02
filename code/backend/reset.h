@@ -59,6 +59,6 @@ bool is_token_expired(const std::string& expires_at_iso);
 
 bool send_reset_email(const EmailConfig& cfg, const std::string& to, const std::string& reset_url);
 
-bool send_email_via_mailgun(const EmailConfig& cfg, const std::string& to, const std::string& subject, const std::string& body_text);
+bool send_email_via_mailgun(const EmailConfig& cfg, const std::string& to, const std::string& subject, const std::string& body_text, const std::string& body_html = "");
 
 void setupPasswordResetRoutes(crow::SimpleApp& app, sqlite3* db, const EmailConfig& email_cfg);
